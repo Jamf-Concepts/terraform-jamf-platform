@@ -75,6 +75,7 @@ locals {
 resource "jamfpro_mobile_device_configuration_profile_plist" "config_ios17" {
   for_each           = local.ios17_stig_dict
   name               = "iOS 17 DISA STIG - ${each.key} [${random_integer.entropy.result}]"
+  description        = "To scope this configuration profile, navigate to Smart Device Groups, select the 'iOS 17 - DISA STIG' Smart Group and remove the placeholder serial number criteria."
   deployment_method  = "Install Automatically"
   level              = "Device Level"
   redeploy_on_update = "Newly Assigned"

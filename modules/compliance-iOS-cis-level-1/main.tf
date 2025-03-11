@@ -72,6 +72,7 @@ locals {
 resource "jamfpro_mobile_device_configuration_profile_plist" "config_ios17" {
   for_each           = local.ios17_cis_lvl1_dict
   name               = "iOS 17 CIS Level 1 - ${each.key} [${random_integer.entropy.result}]"
+  description        = "To scope this configuration profile, navigate to Smart Device Groups, select the 'iOS 17 - CIS Level 1' Smart Group and remove the placeholder serial number criteria."
   deployment_method  = "Install Automatically"
   level              = "Device Level"
   redeploy_on_update = "Newly Assigned"
@@ -98,6 +99,7 @@ locals {
 resource "jamfpro_mobile_device_configuration_profile_plist" "config_ios18" {
   for_each           = local.ios18_cis_lvl1_dict
   name               = "iOS 18 CIS Level 1 - ${each.key} [${random_integer.entropy.result}]"
+  description        = "To scope this configuration profile, navigate to Smart Device Groups, select the 'iOS 18 - CIS Level 1' Smart Group and remove the placeholder serial number criteria."
   deployment_method  = "Install Automatically"
   level              = "Device Level"
   redeploy_on_update = "Newly Assigned"

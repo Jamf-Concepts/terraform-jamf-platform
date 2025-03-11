@@ -322,6 +322,7 @@ locals {
 resource "jamfpro_macos_configuration_profile_plist" "sonoma_cis_lvl1" {
   for_each            = local.sonoma_cis_lvl1_dict
   name                = "Sonoma CIS Level 1 - ${each.key} [${random_integer.entropy.result}]"
+  description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Sonoma Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
   category_id         = jamfpro_category.category_sonoma_cis_lvl1_benchmarks.id
@@ -363,6 +364,7 @@ locals {
 resource "jamfpro_macos_configuration_profile_plist" "sequoia_cis_lvl1" {
   for_each            = local.sequoia_cis_lvl1_dict
   name                = "Sequoia CIS Level 1 - ${each.key} [${random_integer.entropy.result}]"
+  description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
   category_id         = jamfpro_category.category_sequoia_cis_lvl1_benchmarks.id
