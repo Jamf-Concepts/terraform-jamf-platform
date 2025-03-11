@@ -9,3 +9,5 @@ Running this will complete the following steps:
 - Collect the Activation Profile plist for Supervised Mobile Devices and create a new Configuration Profile in Jamf Pro
 - Collect the Activation Profile plist for Unsupervised Mobile Devices and create a new Configuration Profile in Jamf Pro
 - Collect the Activation Profile plist for BYOD Mobile Devices and create a new Configuration Profile in Jamf Pro
+
+Notice: All configuration profiles are scoped to a Smart Group that contains a placeholder serial number. To get devices fully into scope, you must remove that serial number criteria line. 
