@@ -56,6 +56,14 @@ module "onboarder-app-installers" {
   source = "./modules/onboarder-app-installers"
 }
 
+module "configuration-jamf-pro-admin-sso" {
+  count                 = var.include_admin_sso == true ? 1 : 0
+  source                = "./modules/configuration-jamf-pro-admin-sso"
+  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_client_id     = var.jamfpro_client_id
+  jamfpro_client_secret = var.jamfpro_client_secret
+}
+
 ## Initialize common modules
 
 ## Initialize Protect (for macOS) module

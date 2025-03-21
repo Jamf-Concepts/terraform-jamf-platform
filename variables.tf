@@ -507,6 +507,11 @@ variable "include_onboarder_app_installers" {
   default = false
 }
 
+variable "include_admin_sso" {
+  type    = bool
+  default = false
+}
+
 variable "app_installers" {
   description = "Set of selected App Installers"
   type        = list(string)
