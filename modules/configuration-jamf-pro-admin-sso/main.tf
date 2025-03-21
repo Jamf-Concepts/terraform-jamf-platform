@@ -20,4 +20,9 @@ resource "null_resource" "run_script" {
     command = "${path.module}/adminssoconfigure.sh ${var.jamfpro_instance_url} ${var.jamfpro_client_id} ${var.jamfpro_client_secret}"
     when    = create
   }
+
+  provisioner "local-exec" {
+    command = "${path.module}/adminssodelete.sh ${self.triggers.jamfpro_instance_url} ${self.triggers.jamfpro_client_id} ${self.triggers.jamfpro_client_secret}"
+    when    = destroy
+  }
 }
