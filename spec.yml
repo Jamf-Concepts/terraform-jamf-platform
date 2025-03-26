@@ -198,3 +198,100 @@ options:
     category: Endpoint Compliance
     display_name: Configure and Apply US CMMC 2.0 Level 1 for macOS
     display_desc: For managed computers, prepares and uploads the necessary components for US CMMC 2.0 Level 1 profile for macOS Sonoma and Sequoia (Smart Card profile is not scoped due to potential login impact). Smart Groups are pre-set to not deploy automatically. Edit the group to enforce compliance, auditing, and remediation by modifying or removing the Serial Number criteria. **Benchmark from macOS Security Compliance Project**
+
+   ### App Installer Modules
+  - key: management-app-installers-microsoft-edge
+    presence: optional
+    module_name: module.management-app-installers-microsoft-edge
+    content: Indicates whether to include the Microsoft Edge App Installer
+    category: Browsers
+    display_name: Microsoft Edge
+    display_desc: Configures Microsoft Edge in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-google-chrome
+    presence: optional
+    module_name: module.management-app-installers-google-chrome
+    content: Indicates whether to include the Google Chrome App Installer
+    category: Browsers
+    display_name: Google Chrome
+    display_desc: Configures Google Chrome in to be deployable to managed computers.
+
+  - key: management-app-installers-mozilla-firefox
+    presence: optional
+    module_name: module.management-app-installers-mozilla-firefox
+    content: Indicates whether to include the Mozilla Firefox App Installer
+    category: Browsers
+    display_name: Mozilla Firefox
+    display_desc: Configures Mozilla Firefox in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-slack
+    presence: optional
+    module_name: module.management-app-installers-slack
+    content: Indicates whether to include the Slack App Installer
+    category: Productivity
+    display_name: Slack
+    display_desc: Configures Slack in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-dropbox
+    presence: optional
+    module_name: module.management-app-installers-dropbox
+    content: Indicates whether to include the Dropbox App Installer
+    category: Productivity
+    display_name: Dropbox
+    display_desc: Configures Dropbox in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-google-drive
+    presence: optional
+    module_name: module.management-app-installers-google-drive
+    content: Indicates whether to include the Google Drive App Installer
+    category: Productivity
+    display_name: Google Drive
+    display_desc: Configures Google Drive in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-jamfcheck
+    presence: optional
+    module_name: module.management-app-installers-jamfcheck
+    content: Indicates whether to include the JamfCheck App Installer
+    category: Utilities
+    display_name: JamfCheck
+    display_desc: Configures JamfCheck in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-zoom
+    presence: optional
+    module_name: module.management-app-installers-zoom
+    content: Indicates whether to include the Zoom App Installer
+    category: Productivity
+    display_name: Zoom Client for Meetings
+    display_desc: Configures Zoom in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-adobe-creative-cloud
+    presence: optional
+    module_name: module.management-app-installers-adobe-creative-cloud
+    content: Indicates whether to include the Adobe Creative Cloud App Installer
+    category: Productivity
+    display_name: Adobe Creative Cloud
+    display_desc: Configures Adboe Creative Cloud in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-box-drive
+    presence: optional
+    module_name: module.management-app-installers-box-drive
+    content: Indicates whether to include the Box Drive App Installer
+    category: Productivity
+    display_name: Box Drive
+    display_desc: Configures Box Drive in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-nudge
+    presence: optional
+    module_name: module.management-app-installers-nudge
+    content: Indicates whether to include the Nudge App Installer
+    category: Utilities
+    display_name: Nudge
+    display_desc: Configures Nudge in Jamf Pro to be deployable to managed computers.
+
+  - key: management-app-installers-text-expander
+    presence: optional
+    module_name: module.management-app-installers-text-expander
+    content: Indicates whether to include the Text Expander App Installer
+    category: Productivity
+    display_name: TextExpander
+    display_desc: Configures Text Expander in Jamf Pro to be deployable to managed computers.
