@@ -1,90 +1,54 @@
-variable "KeyName" {
-  type        = string
-  sensitive   = false
-  default     = ""
-  description = "AWS Keyname to attach to SaaS Tenancy instance. If blank, no SSH access will be possible"
+variable "application_name" {
+  description = "Value to tag the attributes within AWS"
+  type = string
+  default = "Jamf SaaS Tenancy"
 }
 
-variable "VPCId" {
-  type        = string
-  sensitive   = false
-  default     = ""
-  description = "AWS VPC to attach SaaS Tenancy Instance to."
+variable "region" {
+  type    = string
+  default = ""
 }
 
-variable "SubnetId" {
-  type        = string
-  sensitive   = false
-  default     = ""
-  description = "AWS SubnetID to attach SaaS Tenancy Instance to."
-}
-
-variable "CertificateBody" {
-  type        = string
-  sensitive   = false
-  default     = ""
-  description = "Provided Cert Body for TLS inspection. If not provided, self-signed will be generated"
-}
-
-variable "CertificatePrivateKey" {
-  type        = string
-  sensitive   = true
-  default     = ""
-  description = "Provided Cert PrivateKey for TLS inspection. If not provided, self-signed will be generated"
-}
-
-variable "aws_region" {
-  type        = string
-  sensitive   = false
-  default     = "us-west-2"
-  description = "AWS region for SaaS tenancy instance"
-}
-
-variable "jsc_username" {
-  description = "JSC username (email)"
-  type        = string
-}
-
-variable "jsc_password" {
-  description = "JSC password"
-  type        = string
-  sensitive   = true
+variable "ec2_type" {
+  type    = string
+  default = "t4g.micro"
 }
 
 
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "us-west-2"
+variable "aws_profile" {
+  type    = string
+  default = ""
 }
 
-variable "Domain" {
-  description = "internal domain to add to the header if multiple seperated by space"
+variable "ssh_key_name" {
+  description = "Name of an existing EC2 Key Pair in AWS, or one you’ll create below"
   type        = string
-  default     = "accounts.google.com"
+  default = ""
 }
-variable "SaaSApplication" {
-  description = "Choose which application to allow for the domain"
+
+variable "allowed_domains" {
+  description = "A list of the domains to be allowed access"
+  type        = list(string)
+  default     = [
+    "jamf.com",
+    "jamfse.io",
+  ]
+}
+
+variable "saas_application" {
+  description = "SaaS Application: Options are Google, Microsoft, Slack, Dropbox"
   type        = string
   default     = "Google"
 }
-variable "InstanceType" {
-  description = "EC2 instance type"
+
+variable "certificate_file" {
+  description = "Path to SSL certificate to be used for resigning if left blank one will be generated"
   type        = string
-  default     = "t4g.micro"
+  default     = ""
 }
 
-variable "jamfpro_client_id" {
-  type      = string
-  sensitive = true
-}
-
-variable "jamfpro_client_secret" {
-  type      = string
-  sensitive = true
-}
-
-variable "jamfpro_instance_url" {
-  type      = string
-  sensitive = true
+variable "private_key_file" {
+  description = "Path to SSL private key to be used for resigning if left blank one will be generated"
+  type        = string
+  default     = ""
 }

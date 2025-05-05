@@ -1,19 +1,16 @@
-
 terraform {
   required_providers {
-    jsc = {
-      source                = "danjamf/jsctfprovider"
-      configuration_aliases = [jsc.jsc]
-    }
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
-    }
     aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.16"
     }
   }
+
+  required_version = ">= 1.2.0"
 }
 
-
-
+provider "aws" {
+  region  = var.region
+  profile = var.aws_profile
+}
 
