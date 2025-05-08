@@ -25,6 +25,8 @@
     <key>PayloadContent</key>
     <array>
       <dict>
+        <key>PayloadDisplayName</key>
+        <string>Root Certificate</string>
         <key>PayloadUUID</key>
         <string>F866D848-8C52-42A9-92CF-3E639ABBAFCD</string>
         <key>PayloadType</key>
@@ -35,16 +37,8 @@
         <data>${root_cert_body}</data>
       </dict>
       <dict>
-        <key>PayloadUUID</key>
-        <string>F4CAC5C7-3B70-42AB-B29D-79A531D251AE</string>
-        <key>PayloadType</key>
-        <string>com.apple.security.pkcs1</string>
-        <key>PayloadCertificateFileName</key>
-        <string>intermediate.cer</string>
-        <key>PayloadContent</key>
-        <data>${intermediate_cert_body}</data>
-      </dict>
-      <dict>
+        <key>PayloadDisplayName</key>
+        <string>Leaf Certificate</string>
         <key>PayloadUUID</key>
         <string>605B9E0B-E31A-4132-8148-8FF396D9E483</string>
         <key>PayloadType</key>
