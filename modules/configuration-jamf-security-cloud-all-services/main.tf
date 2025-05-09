@@ -2,12 +2,14 @@
 terraform {
   required_providers {
     jamfpro = {
-      source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      source = "deploymenttheory/jamfpro"
+      # configuration_aliases = [jamfpro.jpro]
+      version = "0.13.2"
     }
     jsc = {
-      source                = "danjamf/jsctfprovider"
-      configuration_aliases = [jsc.jsc]
+      source = "danjamf/jsctfprovider"
+      # configuration_aliases = [jsc.jsc]
+      version = "0.0.24"
     }
   }
 }
