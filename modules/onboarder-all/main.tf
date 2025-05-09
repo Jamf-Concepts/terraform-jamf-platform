@@ -71,10 +71,10 @@ module "configuration-jamf-security-cloud-all-services" {
   jamfpro_client_secret = var.jamfpro_client_secret
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
-  providers = {
-    jamfpro.jpro = jamfpro.jpro
-    jsc.jsc      = jsc.jsc
-  }
+  # providers = {
+  #   jamfpro.jpro = jamfpro.jpro
+  #   jsc.jsc      = jsc.jsc
+  # }
 }
 
 module "configuration-jamf-security-cloud-block-pages" {

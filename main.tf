@@ -303,10 +303,10 @@ module "configuration-jamf-security-cloud-all-services" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
-  providers = {
-    jamfpro.jpro = jamfpro.jpro
-    jsc.jsc      = jsc.jsc
-  }
+  # providers = {
+  #   jamfpro.jpro = jamfpro.jpro
+  #   jsc.jsc      = jsc.jsc
+  # }
 }
 
 module "network-security-access-policy" {
