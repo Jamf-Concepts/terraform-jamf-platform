@@ -4,6 +4,19 @@ variable "jamfpro_instance_url" {
   default   = ""
 }
 
+variable "jamfpro_username" {
+  description = "Jamf Pro username used for authentication."
+  type        = string
+  default     = ""
+}
+
+variable "jamfpro_password" {
+  description = "Jamf Pro password used for authentication."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
 variable "jsc_username" {
   type      = string
   sensitive = false
@@ -11,6 +24,18 @@ variable "jsc_username" {
 }
 
 variable "jsc_password" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "jsc_applicationid" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "jsc_applicationsecret" {
   type      = string
   sensitive = true
   default   = ""
