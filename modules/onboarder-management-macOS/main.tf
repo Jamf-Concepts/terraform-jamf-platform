@@ -2,8 +2,8 @@
 terraform {
   required_providers {
     jamfpro = {
-      source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      source  = "deploymenttheory/jamfpro"
+      version = ">= 0.19.1"
     }
   }
 }
@@ -13,9 +13,9 @@ module "configuration-jamf-pro-smart-groups" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
-  providers = {
-    jamfpro.jpro = jamfpro.jpro
-  }
+  # providers = {
+  #   jamfpro.jpro = jamfpro.jpro
+  # }
 }
 
 module "configuration-jamf-pro-categories" {
@@ -23,9 +23,9 @@ module "configuration-jamf-pro-categories" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
-  providers = {
-    jamfpro.jpro = jamfpro.jpro
-  }
+  # providers = {
+  #   jamfpro.jpro = jamfpro.jpro
+  # }
 }
 
 module "configuration-jamf-pro-computer-management-settings" {
@@ -33,9 +33,9 @@ module "configuration-jamf-pro-computer-management-settings" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
-  providers = {
-    jamfpro.jpro = jamfpro.jpro
-  }
+  # providers = {
+  #   jamfpro.jpro = jamfpro.jpro
+  # }
 }
 
 module "management-macOS-rosetta" {
@@ -43,9 +43,9 @@ module "management-macOS-rosetta" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
-  providers = {
-    jamfpro.jpro = jamfpro.jpro
-  }
+  # providers = {
+  #   jamfpro.jpro = jamfpro.jpro
+  # }
 }
 
 module "microsoft_365" {
@@ -53,7 +53,7 @@ module "microsoft_365" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
-  providers = {
-    jamfpro.jpro = jamfpro.jpro
-  }
+  # providers = {
+  #   jamfpro.jpro = jamfpro.jpro
+  # }
 }

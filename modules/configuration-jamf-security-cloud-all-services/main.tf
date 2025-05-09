@@ -4,12 +4,12 @@ terraform {
     jamfpro = {
       source  = "deploymenttheory/jamfpro"
       version = ">= 0.13.2"
-      # configuration_aliases = [jamfpro.jpro]
+      # version = ">= 0.19.1"
     }
     jsc = {
       source  = "danjamf/jsctfprovider"
       version = ">= 0.0.24"
-      # configuration_aliases = [jsc.jsc]
+      # version = ">= 0.0.23"
     }
   }
 }
