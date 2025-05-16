@@ -8,20 +8,15 @@ terraform {
   }
 }
 
-resource "random_integer" "entropy" {
-  min = 10
-  max = 999
-}
-
 ## Create categories
 resource "jamfpro_category" "category_ssoe" {
-  name     = "IdP & SSO [${random_integer.entropy.result}]"
+  name     = "IdP & SSO ${var.entropy_string}"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfpro_script" "script_ssoe-okta" {
-  name            = "SSOe-(Okta) [${random_integer.entropy.result}]"
+  name            = "SSOe-(Okta) ${var.entropy_string}"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/SSOe-(Okta).zsh")
   category_id     = jamfpro_category.category_ssoe.id
@@ -30,7 +25,7 @@ resource "jamfpro_script" "script_ssoe-okta" {
 
 ## Create Smart Computer Groups
 resource "jamfpro_smart_computer_group" "ssoe-okta" {
-  name = "SSOe-(Okta) [${random_integer.entropy.result}]"
+  name = "SSOe-(Okta) ${var.entropy_string}"
   criteria {
     name        = "Operating System Version"
     search_type = "like"
@@ -58,7 +53,7 @@ locals {
 ## Create configuration profiles for SSOe Okta (generic)
 resource "jamfpro_macos_configuration_profile_plist" "ssoe-okta" {
   for_each            = local.ssoe-okta_dict
-  name                = "Single Sign On - ${each.key} [${random_integer.entropy.result}]"
+  name                = "Single Sign On - ${each.key} ${var.entropy_string}"
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
   category_id         = jamfpro_category.category_ssoe.id
@@ -76,7 +71,7 @@ resource "jamfpro_macos_configuration_profile_plist" "ssoe-okta" {
 
 ## Create policies
 resource "jamfpro_policy" "policy_ssoe" {
-  name            = "Enable SSOe (Okta) [${random_integer.entropy.result}]"
+  name            = "Enable SSOe (Okta) ${var.entropy_string}"
   enabled         = true
   trigger_checkin = true
   frequency       = "Once per computer"

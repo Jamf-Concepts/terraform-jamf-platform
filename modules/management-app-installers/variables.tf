@@ -153,3 +153,13 @@ variable "self_service_description" {
   type        = string
   default     = "This is an app provided from your Self Service Provider."
 }
+
+variable "random_string" {
+  type    = string
+  default = ""
+}
+
+variable "entropy_string" {
+  type    = string
+  default = ""
+}

@@ -15,3 +15,13 @@ variable "jsc_password" {
   sensitive = true
   default   = ""
 }
+
+variable "random_string" {
+  type    = string
+  default = ""
+}
+
+variable "entropy_string" {
+  type    = string
+  default = ""
+}

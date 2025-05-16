@@ -13,6 +13,7 @@ module "configuration-jamf-pro-smart-groups" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
+  entropy_string        = var.entropy_string
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }
@@ -23,6 +24,7 @@ module "configuration-jamf-pro-categories" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
+  entropy_string        = var.entropy_string
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }
@@ -33,6 +35,7 @@ module "configuration-jamf-pro-computer-management-settings" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
+  entropy_string        = var.entropy_string
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }
@@ -43,6 +46,7 @@ module "management-macOS-rosetta" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
+  entropy_string        = var.entropy_string
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }

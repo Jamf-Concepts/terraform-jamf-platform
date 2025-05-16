@@ -24,3 +24,13 @@ variable "jamfpro_client_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "random_string" {
+  type    = string
+  default = ""
+}
+
+variable "entropy_string" {
+  type    = string
+  default = ""
+}

@@ -8,47 +8,41 @@ terraform {
   }
 }
 
-
 ## Categories not specific to an "outcome". If relative to an outcome the category is created in the specific outcome module
-
-resource "random_integer" "entropy" {
-  min = 10
-  max = 999
-}
 
 ## Create Categories
 
 resource "jamfpro_category" "category_communication" {
-  name     = "Communication [${random_integer.entropy.result}]"
+  name     = "Communication ${var.entropy_string}"
   priority = 9
 }
 
 resource "jamfpro_category" "category_developer_tools" {
-  name     = "Developer Tools [${random_integer.entropy.result}]"
+  name     = "Developer Tools ${var.entropy_string}"
   priority = 9
 }
 
 resource "jamfpro_category" "category_network" {
-  name     = "Network Security [${random_integer.entropy.result}]"
+  name     = "Network Security ${var.entropy_string}"
   priority = 9
 }
 
 resource "jamfpro_category" "category_printers" {
-  name     = "Printers [${random_integer.entropy.result}]"
+  name     = "Printers ${var.entropy_string}"
   priority = 9
 }
 
 resource "jamfpro_category" "category_productivity" {
-  name     = "Productivity [${random_integer.entropy.result}]"
+  name     = "Productivity ${var.entropy_string}"
   priority = 9
 }
 
 resource "jamfpro_category" "category_security_compliance" {
-  name     = "Security and Compliance [${random_integer.entropy.result}]"
+  name     = "Security and Compliance ${var.entropy_string}"
   priority = 9
 }
 
 resource "jamfpro_category" "category_uninstallers" {
-  name     = "Uninstallers [${random_integer.entropy.result}]"
+  name     = "Uninstallers ${var.entropy_string}"
   priority = 9
 }

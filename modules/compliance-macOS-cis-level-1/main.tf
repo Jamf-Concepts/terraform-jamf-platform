@@ -8,25 +8,20 @@ terraform {
   }
 }
 
-resource "random_integer" "entropy" {
-  min = 10
-  max = 999
-}
-
 ## Create categories
 resource "jamfpro_category" "category_sonoma_cis_lvl1_benchmarks" {
-  name     = "Sonoma - CIS Level 1 Benchmarks [${random_integer.entropy.result}]"
+  name     = "Sonoma - CIS Level 1 Benchmarks ${var.entropy_string}"
   priority = 9
 }
 
 resource "jamfpro_category" "category_sequoia_cis_lvl1_benchmarks" {
-  name     = "Sequoia - CIS Level 1 Benchmarks [${random_integer.entropy.result}]"
+  name     = "Sequoia - CIS Level 1 Benchmarks ${var.entropy_string}"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfpro_script" "script_sonoma_cis_lvl1_compliance" {
-  name            = "Sonoma - CIS Level 1 Compliance [${random_integer.entropy.result}]"
+  name            = "Sonoma - CIS Level 1 Compliance ${var.entropy_string}"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/sonoma_cis_lvl1_compliance.sh")
   category_id     = jamfpro_category.category_sonoma_cis_lvl1_benchmarks.id
@@ -34,7 +29,7 @@ resource "jamfpro_script" "script_sonoma_cis_lvl1_compliance" {
 }
 
 resource "jamfpro_script" "script_sequoia_cis_lvl1_compliance" {
-  name            = "Sequoia - CIS Level 1 Compliance [${random_integer.entropy.result}]"
+  name            = "Sequoia - CIS Level 1 Compliance ${var.entropy_string}"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/sequoia_cis_lvl1_compliance.sh")
   category_id     = jamfpro_category.category_sequoia_cis_lvl1_benchmarks.id
@@ -43,7 +38,7 @@ resource "jamfpro_script" "script_sequoia_cis_lvl1_compliance" {
 
 ## Create computer extension attributes
 resource "jamfpro_computer_extension_attribute" "ea_cis_lvl1_failed_count" {
-  name                   = "CIS Level 1 - Failed Results Count [${random_integer.entropy.result}]"
+  name                   = "CIS Level 1 - Failed Results Count"
   input_type             = "SCRIPT"
   enabled                = true
   data_type              = "INTEGER"
@@ -52,7 +47,7 @@ resource "jamfpro_computer_extension_attribute" "ea_cis_lvl1_failed_count" {
 }
 
 resource "jamfpro_computer_extension_attribute" "ea_cis_lvl1_failed_list" {
-  name                   = "CIS Level 1 - Failed Results List [${random_integer.entropy.result}]"
+  name                   = "CIS Level 1 - Failed Results List"
   input_type             = "SCRIPT"
   enabled                = true
   data_type              = "STRING"
@@ -61,7 +56,7 @@ resource "jamfpro_computer_extension_attribute" "ea_cis_lvl1_failed_list" {
 }
 
 resource "jamfpro_computer_extension_attribute" "ea_cis_lvl1_version" {
-  name                   = "Compliance Version [${random_integer.entropy.result}]"
+  name                   = "CIS Level 1 - Compliance Version"
   input_type             = "SCRIPT"
   enabled                = true
   data_type              = "STRING"
@@ -71,7 +66,7 @@ resource "jamfpro_computer_extension_attribute" "ea_cis_lvl1_version" {
 
 ## Create Smart Computer Groups
 resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
-  name = "CIS Level 1 - Sonoma Computers [${random_integer.entropy.result}]"
+  name = "CIS Level 1 - Sonoma Computers ${var.entropy_string}"
   criteria {
     name        = "Operating System Version"
     search_type = "like"
@@ -89,7 +84,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
 }
 
 resource "jamfpro_smart_computer_group" "group_sonoma_cis_lvl1_non_compliant" {
-  name = "CIS Level 1 - Sonoma - Non Compliant Computers [${random_integer.entropy.result}]"
+  name = "CIS Level 1 - Sonoma - Non Compliant Computers ${var.entropy_string}"
   criteria {
     name        = "Operating System Version"
     search_type = "like"
@@ -107,7 +102,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_cis_lvl1_non_compliant" {
 }
 
 resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
-  name = "CIS Level 1 - Sequoia Computers [${random_integer.entropy.result}]"
+  name = "CIS Level 1 - Sequoia Computers ${var.entropy_string}"
   criteria {
     name        = "Operating System Version"
     search_type = "like"
@@ -125,7 +120,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
 }
 
 resource "jamfpro_smart_computer_group" "group_sequoia_cis_lvl1_non_compliant" {
-  name = "CIS Level 1 - Sequoia - Non Compliant Computers [${random_integer.entropy.result}]"
+  name = "CIS Level 1 - Sequoia - Non Compliant Computers ${var.entropy_string}"
   criteria {
     name        = "Operating System Version"
     search_type = "like"
@@ -144,7 +139,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_cis_lvl1_non_compliant" {
 
 ## Create policies
 resource "jamfpro_policy" "policy_sonoma_cis_lvl1_audit" {
-  name            = "CIS Level 1 - Audit (Sonoma) [${random_integer.entropy.result}]"
+  name            = "CIS Level 1 - Audit (Sonoma) ${var.entropy_string}"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
@@ -182,7 +177,7 @@ resource "jamfpro_policy" "policy_sonoma_cis_lvl1_audit" {
 }
 
 resource "jamfpro_policy" "policy_sonoma_cis_lvl1_remediation" {
-  name            = "CIS Level 1 - Remediation (Sonoma) [${random_integer.entropy.result}]"
+  name            = "CIS Level 1 - Remediation (Sonoma) ${var.entropy_string}"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
@@ -222,7 +217,7 @@ resource "jamfpro_policy" "policy_sonoma_cis_lvl1_remediation" {
 }
 
 resource "jamfpro_policy" "policy_sequoia_cis_lvl1_audit" {
-  name            = "CIS Level 1 - Audit (Sequoia) [${random_integer.entropy.result}]"
+  name            = "CIS Level 1 - Audit (Sequoia) ${var.entropy_string}"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
@@ -260,7 +255,7 @@ resource "jamfpro_policy" "policy_sequoia_cis_lvl1_audit" {
 }
 
 resource "jamfpro_policy" "policy_sequoia_cis_lvl1_remediation" {
-  name            = "CIS Level 1 - Remediation (Sequoia) [${random_integer.entropy.result}]"
+  name            = "CIS Level 1 - Remediation (Sequoia) ${var.entropy_string}"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
@@ -321,7 +316,7 @@ locals {
 ## Create configuration profiles for Sonoma
 resource "jamfpro_macos_configuration_profile_plist" "sonoma_cis_lvl1" {
   for_each            = local.sonoma_cis_lvl1_dict
-  name                = "Sonoma CIS Level 1 - ${each.key} [${random_integer.entropy.result}]"
+  name                = "Sonoma CIS Level 1 - ${each.key} ${var.entropy_string}"
   description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Sonoma Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
@@ -363,7 +358,7 @@ locals {
 ## Create configuration profiles for Sequoia part 1
 resource "jamfpro_macos_configuration_profile_plist" "sequoia_cis_lvl1" {
   for_each            = local.sequoia_cis_lvl1_dict
-  name                = "Sequoia CIS Level 1 - ${each.key} [${random_integer.entropy.result}]"
+  name                = "Sequoia CIS Level 1 - ${each.key} ${var.entropy_string}"
   description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"

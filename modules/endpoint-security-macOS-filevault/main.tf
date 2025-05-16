@@ -8,20 +8,15 @@ terraform {
   }
 }
 
-resource "random_integer" "entropy" {
-  min = 10
-  max = 999
-}
-
 ## Create Categories
 resource "jamfpro_category" "category_disk_encrpytion" {
-  name     = "Disk Encryption [${random_integer.entropy.result}]"
+  name     = "Disk Encryption ${var.entropy_string}"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfpro_script" "script_reissuekey" {
-  name            = "Reissue FileVault 2 Key [${random_integer.entropy.result}]"
+  name            = "Reissue FileVault 2 Key ${var.entropy_string}"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/reissuekey.sh")
   category_id     = jamfpro_category.category_disk_encrpytion.id
@@ -30,7 +25,7 @@ resource "jamfpro_script" "script_reissuekey" {
 
 ## Create Smart Computer Groups - Scoping
 resource "jamfpro_smart_computer_group" "group_invalid_recovery_key" {
-  name = "Invalid FileVault 2 Recovery Key [${random_integer.entropy.result}]"
+  name = "Invalid FileVault 2 Recovery Key ${var.entropy_string}"
   criteria {
     name        = "FileVault 2 Partition Encryption State"
     search_type = "is"
@@ -48,7 +43,7 @@ resource "jamfpro_smart_computer_group" "group_invalid_recovery_key" {
 }
 
 resource "jamfpro_smart_computer_group" "group_disk_encrypted" {
-  name = "* FileVault 2 Enabled [${random_integer.entropy.result}]"
+  name = "* FileVault 2 Enabled ${var.entropy_string}"
   criteria {
     name        = "FileVault 2 Partition Encryption State"
     search_type = "is"
@@ -60,7 +55,7 @@ resource "jamfpro_smart_computer_group" "group_disk_encrypted" {
 
 ## Create policies
 resource "jamfpro_policy" "policy_reissue_recovery_key" {
-  name          = "Reissue FileVault 2 Recovery Key [${random_integer.entropy.result}]"
+  name          = "Reissue FileVault 2 Recovery Key ${var.entropy_string}"
   enabled       = true
   trigger_other = ""
   frequency     = "Ongoing"
@@ -106,7 +101,7 @@ resource "jamfpro_policy" "policy_reissue_recovery_key" {
 }
 
 resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_profile_enablefv" {
-  name                = "Enable FileVault 2 [${random_integer.entropy.result}]"
+  name                = "Enable FileVault 2 ${var.entropy_string}"
   description         = "This configuration profile enforces FileVault 2 encryption. Prompts at next login"
   level               = "System"
   category_id         = jamfpro_category.category_disk_encrpytion.id

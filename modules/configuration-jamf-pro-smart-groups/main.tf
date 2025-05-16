@@ -8,14 +8,9 @@ terraform {
   }
 }
 
-resource "random_integer" "entropy" {
-  min = 10
-  max = 999
-}
-
 ## Create Smart Computer Groups - Quality Of Life
 resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
-  name = "*Sonoma Macs [${random_integer.entropy.result}]"
+  name = "*Sonoma Macs ${var.entropy_string}"
   criteria {
     name        = "Operating System Version"
     search_type = "like"
@@ -26,7 +21,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
 }
 
 resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
-  name = "*Sequoia Macs [${random_integer.entropy.result}]"
+  name = "*Sequoia Macs ${var.entropy_string}"
   criteria {
     name        = "Operating System Version"
     search_type = "like"
@@ -37,7 +32,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
 }
 
 resource "jamfpro_smart_computer_group" "group_last_checkin" {
-  name = "*7 Days Since Last Check-In [${random_integer.entropy.result}]"
+  name = "*7 Days Since Last Check-In ${var.entropy_string}"
   criteria {
     name        = "Last Check-in"
     search_type = "more than x days ago"
@@ -48,7 +43,7 @@ resource "jamfpro_smart_computer_group" "group_last_checkin" {
 }
 
 resource "jamfpro_smart_computer_group" "group_available_swu" {
-  name = "*Available Software Updates [${random_integer.entropy.result}]"
+  name = "*Available Software Updates ${var.entropy_string}"
   criteria {
     name        = "Number of Available Updates"
     search_type = "more than"
@@ -61,7 +56,7 @@ resource "jamfpro_smart_computer_group" "group_available_swu" {
 ## Create Smart Mobile Device Groups - Quality Of Life
 
 resource "jamfpro_smart_mobile_device_group" "supervised_ios" {
-  name = "*Supervised Devices [${random_integer.entropy.result}]"
+  name = "*Supervised Devices ${var.entropy_string}"
 
   criteria {
     name        = "Supervised"
@@ -72,7 +67,7 @@ resource "jamfpro_smart_mobile_device_group" "supervised_ios" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "unsupervised_ios" {
-  name = "*Un-Supervised Devices [${random_integer.entropy.result}]"
+  name = "*Un-Supervised Devices ${var.entropy_string}"
 
   criteria {
     name        = "Supervised"
@@ -83,7 +78,7 @@ resource "jamfpro_smart_mobile_device_group" "unsupervised_ios" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "byod_ios" {
-  name = "*BYOD Devices [${random_integer.entropy.result}]"
+  name = "*BYOD Devices ${var.entropy_string}"
 
   criteria {
     name        = "Serial Number"
@@ -94,7 +89,7 @@ resource "jamfpro_smart_mobile_device_group" "byod_ios" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "ios_17" {
-  name = "*Devices Running iOS 17 [${random_integer.entropy.result}]"
+  name = "*Devices Running iOS 17 ${var.entropy_string}"
 
   criteria {
     name        = "OS Version"
@@ -105,7 +100,7 @@ resource "jamfpro_smart_mobile_device_group" "ios_17" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "ios_18" {
-  name = "*Devices Running iOS 18 [${random_integer.entropy.result}]"
+  name = "*Devices Running iOS 18 ${var.entropy_string}"
 
   criteria {
     name        = "OS Version"
@@ -116,7 +111,7 @@ resource "jamfpro_smart_mobile_device_group" "ios_18" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "group_last_checkin" {
-  name = "*Last Check-In More Than a Week Ago [${random_integer.entropy.result}]"
+  name = "*Last Check-In More Than a Week Ago ${var.entropy_string}"
 
   criteria {
     name        = "Last Inventory Update"
@@ -127,7 +122,7 @@ resource "jamfpro_smart_mobile_device_group" "group_last_checkin" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "group_used_space_above_75" {
-  name = "*Used Storage above 75 percent [${random_integer.entropy.result}]"
+  name = "*Used Storage above 75 percent ${var.entropy_string}"
 
   criteria {
     name        = "Used Space Percentage"
@@ -138,7 +133,7 @@ resource "jamfpro_smart_mobile_device_group" "group_used_space_above_75" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "group_passcode_not_present" {
-  name = "*Passcode Not Present [${random_integer.entropy.result}]"
+  name = "*Passcode Not Present ${var.entropy_string}"
 
   criteria {
     name        = "Passcode Status"

@@ -13,7 +13,6 @@ data "http" "defender_combined" {
   url = "https://raw.githubusercontent.com/microsoft/mdatp-xplat/refs/heads/master/macos/mobileconfig/combined/mdatp.mobileconfig"
 }
 
-
 ## Create Categories
 resource "jamfpro_category" "category_defender" {
   name     = "MS Windows Defender"

@@ -88,3 +88,13 @@ variable "jamfpro_instance_url" {
   type      = string
   sensitive = true
 }
+
+variable "random_string" {
+  type    = string
+  default = ""
+}
+
+variable "entropy_string" {
+  type    = string
+  default = ""
+}
