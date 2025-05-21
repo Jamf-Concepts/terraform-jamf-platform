@@ -4,7 +4,7 @@ jamfpro_instance_url="$1"
 jamfpro_client_id="$2"
 jamfpro_client_secret="$3"
 jamfprotect_url="$4"
-jamfprotect_clientID="$5"
+jamfprotect_clientid="$5"
 jamfprotect_client_password="$6"
 
 response=$(curl --silent --location --request POST "${jamfpro_instance_url}/api/oauth/token" \
