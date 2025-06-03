@@ -181,8 +181,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
   payloads           = file("${path.module}/support_files/kiosk_mode_safari_single_app_mode.mobileconfig")
 
   scope {
-    all_mobile_devices      = false
-    mobile_device_group_ids = [jamfpro_smart_mobile_device_group.device_type_kiosk_mode.id]
+    all_mobile_devices = false
   }
 }
 
@@ -196,7 +195,6 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
   payloads           = file("${path.module}/support_files/shared_device_restrictions.mobileconfig")
 
   scope {
-    all_mobile_devices      = false
-    mobile_device_group_ids = [jamfpro_smart_mobile_device_group.device_type_shared_device_mode.id]
+    all_mobile_devices = false
   }
 }
