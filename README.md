@@ -21,6 +21,8 @@ cd /Users/[FIRST.LAST]/PATH
 nano terraform.tfvars
 ```
 
+If you need to create an API Client in your Jamf Pro to enable this functionality, please use the script found at ```tools/JamfPro-API_create-role-client_prompt-for-permissions.sh``` to do so. If you have not enabled ```basic auth``` in the past in Jamf Pro and you are running version 11.17 or later, you'll need to submit a support ticket to enable ```basic auth``` to run this script. 
+
 Copy and paste the following data then customize it with your own credentials and set knobs to enable specific modules contained within this project.
 
 ```
@@ -74,5 +76,3 @@ terraform init -upgrade
 ```
 
 Terraform must be formatted correctly to run, which can be done manually after saving changes before each run with `terraform fmt`. If using Visual Studio Code, use [this guide](https://medium.com/nerd-for-tech/how-to-auto-format-hcl-terraform-code-in-visual-studio-code-6fa0e7afbb5e) to never have to run the format command again!
-
-< INSERT INSTRUCTIONS FOR RUNNING TERRAFORM MODULES>
