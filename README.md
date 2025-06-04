@@ -2,12 +2,6 @@
 
 Terraform configuration for the Jamf Platform.
 
-Provider versions used in this release:
-
-- deploymenttheory/jamfpro = v0.19.1
-- danjamf/jsctfprovider >= v0.0.23
-- hasicorp/aws v55.62.0 (optional with SaaS tenancy control)
-
 This project utlizes the community Terraform providers for [Jamf Pro](https://registry.terraform.io/providers/deploymenttheory/jamfpro/latest) and [Jamf Security Cloud](https://registry.terraform.io/providers/danjamf/jsctfprovider/latest)
 
 ## Parallelism and API delay
@@ -15,90 +9,7 @@ This project utlizes the community Terraform providers for [Jamf Pro](https://re
 Lowering Terraform parallelism from 10 to 1 reduces the chances of API call errors. Run this command before applying your configuration
 
 ```
-export TF_CLI_ARGS_apply="-parallelism=1"
-```
-
-We also recommend setting the `mandatory_request_delay_milliseconds`provider key to 100.
-
-# Running Included Modules
-
-The modules included here are using aliased calls to the Jamf Pro and Jamf Security Cloud providers that are used. This is done to ensure that you only need credentials for the module you are running. 
-
-To run these successfully in your environment, include the following:
-
-1. In your root main.tf file, add the required providers
-2. Add the Provider configs for your required provider. Change whatever is needed but make sure to leave the ```alias``` variable. Here's are examples for both included providers:
-```
-## Jamf Pro provider root configuration
-provider "jamfpro" {
-  alias                                = "jpro"
-  jamfpro_instance_fqdn                = var.jamfpro_instance_url
-  auth_method                          = var.jamfpro_auth_method
-  basic_auth_username                  = var.jamfpro_username
-  basic_auth_password                  = var.jamfpro_password
-  client_id                            = var.jamfpro_client_id
-  client_secret                        = var.jamfpro_client_secret
-  enable_client_sdk_logs               = false
-  hide_sensitive_data                  = true # Hides sensititve data in logs
-  token_refresh_buffer_period_seconds  = 5    # minutes
-  jamfpro_load_balancer_lock           = true
-  mandatory_request_delay_milliseconds = 100
-}
-
-# JSC provider root configuration
-provider "jsc" {
-  alias             = "jsc"
-  username          = var.jsc_username
-  password          = var.jsc_password
-  applicationid     = var.jsc_applicationid
-  applicationsecret = var.jsc_applicationsecret
-}
-```
-3. Add a ```providers``` block to each sub-module call. Here's an example:
-```
-module "configuration-jamf-security-cloud-jamf-pro" {
-  source                = "module/source/file/path"
-  jamfpro_instance_url  = var.jamfpro_instance_url
-  jamfpro_client_id     = var.jamfpro_client_id
-  jamfpro_client_secret = var.jamfpro_client_secret
-  jsc_username          = var.jsc_username
-  jsc_password          = var.jsc_password
-  providers = {
-    jamfpro.jpro = jamfpro.jpro
-    jsc.jsc      = jsc.jsc
-  }
-}
-```
-4. Sub-modules will need to call the required provider slightly differently. 
-### Normal method - (also used for your root main.tf):
-```
-terraform {
-  required_providers {
-    jamfpro = {
-      source  = "deploymenttheory/jamfpro"
-      version = "0.19.1"
-    }
-    jsc = {
-      source  = "danjamf/jsctfprovider"
-      version = ">= 0.0.23"
-    }
-  }
-}
-```
-### Revised method for sub-modules:
-```
-terraform {
-  required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
-    }
-    jsc = {
-      source                = "danjamf/jsctfprovider"
-      configuration_aliases = [jsc.jsc]
-    }
-  }
-}
+terraform apply -parallelism=1
 ```
 
 ## Variables definition
