@@ -21,7 +21,9 @@ cd /Users/[FIRST.LAST]/PATH
 nano terraform.tfvars
 ```
 
-* NOTE: If you need to create an API Client in your Jamf Pro to enable this functionality, please use the script found at ```tools/JamfPro-API_create-role-client_prompt-for-permissions.sh``` to do so. If you have not enabled ```basic auth``` in the past in Jamf Pro and you are running version 11.17 or later, you'll need to submit a support ticket to enable ```basic auth``` to run this script.
+* NOTE: If you need to create an API Client in your Jamf Pro to enable this functionality, please use the script found at ```tools/JamfPro-API_create-role-client_prompt-for-permissions.sh``` to do so. 
+
+## Configuration
 
 Copy and paste the following data then customize it with your own credentials and set knobs to enable specific modules contained within this project.
 
