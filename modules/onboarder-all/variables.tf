@@ -98,12 +98,12 @@ variable "aws_region" {
 ## Define Okta-related variables
 variable "tje_okta_clientid" {
   type    = string
-  default = "0oa1qa4x0qj2Jzeco1d8"
+  default = "0oadb9ke61k2h6JiT1d7"
 }
 
 variable "tje_okta_orgdomain" {
   type    = string
-  default = "jamf-harbor.okta.com"
+  default = "sso.tryjamf.com"
 }
 
 variable "include_mobile_cis_lvl1_benchmark" {
