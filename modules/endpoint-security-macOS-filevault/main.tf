@@ -36,7 +36,7 @@ resource "jamfpro_smart_computer_group" "group_invalid_recovery_key" {
   criteria {
     name        = "FileVault 2 Individual Key Validation"
     search_type = "is not"
-    value       = "valid"
+    value       = "Valid"
     and_or      = "and"
     priority    = 1
   }
