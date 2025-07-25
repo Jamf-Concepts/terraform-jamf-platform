@@ -12,37 +12,37 @@ terraform {
 
 ## Create Categories
 
-resource "jamfpro_category" "category_communication" {
-  name     = "Communication"
+resource "jamfpro_category" "apollo_11" {
+  name     = "Apollo 11"
   priority = 9
 }
 
-resource "jamfpro_category" "category_developer_tools" {
-  name     = "Developer Tools"
+resource "jamfpro_category" "apollo_12" {
+  name     = "Apollo 12"
   priority = 9
 }
 
-resource "jamfpro_category" "category_network" {
-  name     = "Network Security"
+resource "jamfpro_category" "apollo_13" {
+  name     = "Apollo 13"
   priority = 9
 }
 
-resource "jamfpro_category" "category_printers" {
-  name     = "Printers"
+resource "jamfpro_category" "apollo_14" {
+  name     = "Apollo 14"
   priority = 9
 }
 
-resource "jamfpro_category" "category_productivity" {
-  name     = "Productivity"
+resource "jamfpro_category" "apollo_15" {
+  name     = "Apollo 15"
   priority = 9
 }
 
-resource "jamfpro_category" "category_security_compliance" {
-  name     = "Security and Compliance"
+resource "jamfpro_category" "apollo_16" {
+  name     = "Apollo 16"
   priority = 9
 }
 
-resource "jamfpro_category" "category_uninstallers" {
-  name     = "Uninstallers"
+resource "jamfpro_category" "apollo_17" {
+  name     = "Apollo 17"
   priority = 9
 }

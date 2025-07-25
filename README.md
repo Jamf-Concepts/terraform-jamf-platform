@@ -57,7 +57,6 @@ tje_okta_orgdomain = ""
 
 ## (Jamf Pro) General Settings Knobs ##
 include_categories                   = false
-include_computer_management_settings = false
 
 ```
 
