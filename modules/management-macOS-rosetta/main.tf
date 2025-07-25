@@ -10,13 +10,13 @@ terraform {
 
 ## Create Categories
 resource "jamfpro_category" "category_admin_tools" {
-  name     = "Admin Tools ${var.entropy_string}"
+  name     = "Admin Tools"
   priority = 9
 }
 
 ## Create Smart Group
 resource "jamfpro_smart_computer_group" "group_apple_silicon" {
-  name = "Apple Silicon Macs ${var.entropy_string}"
+  name = "Apple Silicon Macs"
   criteria {
     name        = "Apple Silicon"
     search_type = "is"
@@ -28,7 +28,7 @@ resource "jamfpro_smart_computer_group" "group_apple_silicon" {
 
 ## Create Policy
 resource "jamfpro_policy" "policy_rosetta_2" {
-  name            = "Rosetta 2 Install ${var.entropy_string}"
+  name            = "Rosetta 2 Install"
   enabled         = true
   trigger_checkin = true
   frequency       = "Once per computer"

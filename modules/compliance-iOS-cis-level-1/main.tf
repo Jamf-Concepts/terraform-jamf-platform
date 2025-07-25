@@ -10,17 +10,17 @@ terraform {
 
 ## Create categories
 resource "jamfpro_category" "category_ios17_cis_benchmarks" {
-  name     = "iOS 17 - CIS Level 1 Benchmarks ${var.entropy_string}"
+  name     = "iOS 17 - CIS Level 1 Benchmarks"
   priority = 9
 }
 
 resource "jamfpro_category" "category_ios18_cis_benchmarks" {
-  name     = "iOS 18 - CIS Level 1 Benchmarks ${var.entropy_string}"
+  name     = "iOS 18 - CIS Level 1 Benchmarks"
   priority = 9
 }
 
 resource "jamfpro_smart_mobile_device_group" "group_ios17" {
-  name = "iOS 17 - CIS Level 1 ${var.entropy_string}"
+  name = "iOS 17 - CIS Level 1"
 
   criteria {
     name        = "OS Version"
@@ -38,7 +38,7 @@ resource "jamfpro_smart_mobile_device_group" "group_ios17" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "group_ios18" {
-  name = "iOS 18 - CIS Level 1 ${var.entropy_string}"
+  name = "iOS 18 - CIS Level 1"
 
   criteria {
     name        = "OS Version"
@@ -66,7 +66,7 @@ locals {
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "config_ios17" {
   for_each           = local.ios17_cis_lvl1_dict
-  name               = "iOS 17 CIS Level 1 - ${each.key} ${var.entropy_string}"
+  name               = "iOS 17 CIS Level 1 - ${each.key}"
   description        = "To scope this configuration profile, navigate to Smart Device Groups, select the 'iOS 17 - CIS Level 1' Smart Group and remove the placeholder serial number criteria."
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -93,7 +93,7 @@ locals {
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "config_ios18" {
   for_each           = local.ios18_cis_lvl1_dict
-  name               = "iOS 18 CIS Level 1 - ${each.key} ${var.entropy_string}"
+  name               = "iOS 18 CIS Level 1 - ${each.key}"
   description        = "To scope this configuration profile, navigate to Smart Device Groups, select the 'iOS 18 - CIS Level 1' Smart Group and remove the placeholder serial number criteria."
   deployment_method  = "Install Automatically"
   level              = "Device Level"

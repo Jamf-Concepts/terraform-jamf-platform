@@ -20,18 +20,18 @@ terraform {
 
 ## Create Categories
 resource "jamfpro_category" "category_restrictions" {
-  name     = "Restrictions ${var.entropy_string}"
+  name     = "Restrictions"
   priority = 9
 }
 
 resource "jamfpro_category" "category_demo" {
-  name     = "Demo ${var.entropy_string}"
+  name     = "Demo"
   priority = 9
 }
 
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_apple_id_changes" {
-  name               = "Restrict Apple Account Changes ${var.entropy_string}"
+  name               = "Restrict Apple Account Changes"
   description        = "This restricts the ability to modify account settings for Apple ID"
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -45,7 +45,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
 }
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_airdrop" {
-  name               = "Restrict AirDrop ${var.entropy_string}"
+  name               = "Restrict AirDrop"
   description        = "This restricts the ability to use AirDrop"
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -59,7 +59,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
 }
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_passcode_requirements" {
-  name               = "Passcode Requirements ${var.entropy_string}"
+  name               = "Passcode Requirements"
   description        = "Enforces a non complex 6 digit passcode"
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -73,7 +73,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
 }
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_erase_all_content_and_settings" {
-  name               = "Restrict Erase All Content and Settings ${var.entropy_string}"
+  name               = "Restrict Erase All Content and Settings"
   description        = "Restricts Erase All Content and Settings"
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -87,7 +87,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
 }
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_camera" {
-  name               = "Restrict Camera ${var.entropy_string}"
+  name               = "Restrict Camera"
   description        = "Restricts the Camera in all Use and Apps"
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -101,7 +101,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
 }
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_screenshots" {
-  name               = "Restrict Screenshots ${var.entropy_string}"
+  name               = "Restrict Screenshots"
   description        = "Restricts the Ability to take Screenshots"
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -115,7 +115,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
 }
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_user_enrollment_byod_restrictions" {
-  name               = "Demo - User Enrollment / BYOD Restrictions ${var.entropy_string}"
+  name               = "Demo - User Enrollment / BYOD Restrictions"
   description        = "Sets DLP restrictions for User Enrollment / BYOD"
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -148,7 +148,7 @@ resource "jamfpro_mobile_device_extension_attribute" "device_type" {
 ## Smart Groups for Shared Device and Kiosk Mode
 
 resource "jamfpro_smart_mobile_device_group" "device_type_kiosk_mode" {
-  name = "Demo - Kiosk Devices ${var.entropy_string}"
+  name = "Demo - Kiosk Devices"
 
   criteria {
     name        = jamfpro_mobile_device_extension_attribute.device_type.name
@@ -159,7 +159,7 @@ resource "jamfpro_smart_mobile_device_group" "device_type_kiosk_mode" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "device_type_shared_device_mode" {
-  name = "Demo - Shared Devices ${var.entropy_string}"
+  name = "Demo - Shared Devices"
 
   criteria {
     name        = jamfpro_mobile_device_extension_attribute.device_type.name
@@ -172,7 +172,7 @@ resource "jamfpro_smart_mobile_device_group" "device_type_shared_device_mode" {
 ## Configuration Profiles for Shared Device and Kiosk Mode
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_kiosk_mode" {
-  name               = "Demo - Kiosk Mode - Safari (Single App Mode) ${var.entropy_string}"
+  name               = "Demo - Kiosk Mode - Safari (Single App Mode)"
   description        = "Places device in Single App Mode for Safari"
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -187,7 +187,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_conf
 }
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_shared_device_mode" {
-  name               = "Demo - Shared Device Mode - Restrictions ${var.entropy_string}"
+  name               = "Demo - Shared Device Mode - Restrictions"
   description        = "Restricts AirDrop, Apple Account changes, Screenshots, Erase, and Camera"
   deployment_method  = "Install Automatically"
   level              = "Device Level"

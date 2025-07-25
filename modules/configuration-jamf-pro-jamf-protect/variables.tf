@@ -39,7 +39,4 @@ variable "jamfpro_auth_method" {
   default     = "oauth2" #basic or oauth2
 }
 
-variable "entropy_string" {
-  type    = string
-  default = ""
-}
+

@@ -10,13 +10,13 @@ terraform {
 
 ## Create Categories
 resource "jamfpro_category" "category_disk_encrpytion" {
-  name     = "Disk Encryption ${var.entropy_string}"
+  name     = "Disk Encryption"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfpro_script" "script_reissuekey" {
-  name            = "Reissue FileVault 2 Key ${var.entropy_string}"
+  name            = "Reissue FileVault 2 Key"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/reissuekey.sh")
   category_id     = jamfpro_category.category_disk_encrpytion.id
@@ -25,7 +25,7 @@ resource "jamfpro_script" "script_reissuekey" {
 
 ## Create Smart Computer Groups - Scoping
 resource "jamfpro_smart_computer_group" "group_invalid_recovery_key" {
-  name = "Invalid FileVault 2 Recovery Key ${var.entropy_string}"
+  name = "Invalid FileVault 2 Recovery Key"
   criteria {
     name        = "FileVault 2 Partition Encryption State"
     search_type = "is"
@@ -43,7 +43,7 @@ resource "jamfpro_smart_computer_group" "group_invalid_recovery_key" {
 }
 
 resource "jamfpro_smart_computer_group" "group_disk_encrypted" {
-  name = "* FileVault 2 Enabled ${var.entropy_string}"
+  name = "* FileVault 2 Enabled"
   criteria {
     name        = "FileVault 2 Partition Encryption State"
     search_type = "is"
@@ -55,7 +55,7 @@ resource "jamfpro_smart_computer_group" "group_disk_encrypted" {
 
 ## Create policies
 resource "jamfpro_policy" "policy_reissue_recovery_key" {
-  name          = "Reissue FileVault 2 Recovery Key ${var.entropy_string}"
+  name          = "Reissue FileVault 2 Recovery Key"
   enabled       = true
   trigger_other = ""
   frequency     = "Ongoing"
@@ -101,7 +101,7 @@ resource "jamfpro_policy" "policy_reissue_recovery_key" {
 }
 
 resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_profile_enablefv" {
-  name                = "Enable FileVault 2 ${var.entropy_string}"
+  name                = "Enable FileVault 2"
   description         = "This configuration profile enforces FileVault 2 encryption. Prompts at next login"
   level               = "System"
   category_id         = jamfpro_category.category_disk_encrpytion.id

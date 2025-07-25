@@ -8,22 +8,15 @@ terraform {
   }
 }
 
-# Define a resource to use the local-exec provisioner
-resource "null_resource" "run_script" {
+## Create Jamf Protect <> Jamf Pro integration
+resource "jamfpro_jamf_protect" "protect_integration" {
+  protect_url  = var.jamfprotect_url
+  client_id    = var.jamfprotect_clientid
+  password     = var.jamfprotect_client_password
+  auto_install = true
 
-  triggers = {
-    jamfpro_instance_url  = var.jamfpro_instance_url
-    jamfpro_client_id     = var.jamfpro_client_id
-    jamfpro_client_secret = var.jamfpro_client_secret
-  }
-  provisioner "local-exec" {
-    command = "${path.module}/protectintegrationcreate.sh ${var.jamfpro_instance_url} ${var.jamfpro_client_id} ${var.jamfpro_client_secret} ${var.jamfprotect_url} ${var.jamfprotect_clientid} ${var.jamfprotect_client_password}"
-    when    = create
-  }
-
-  provisioner "local-exec" {
-    command = "${path.module}/protectintegrationdelete.sh ${self.triggers.jamfpro_instance_url} ${self.triggers.jamfpro_client_id} ${self.triggers.jamfpro_client_secret}"
-    when    = destroy
+  timeouts {
+    create = "90s"
   }
 }
 
@@ -35,7 +28,7 @@ resource "jamfpro_category" "category_jamfprotect_security" {
 # Create Smart Group and Congfiguration Profile to identify Sequoia Macs and make Jamf Protect a non removable system extension
 
 resource "jamfpro_smart_computer_group" "group_sequoia_computers_jamf_protect" {
-  name = "Macs on MacOS Sequoia (Jamf Protect System Extension Enforcement) ${var.entropy_string}"
+  name = "Macs on MacOS Sequoia (Jamf Protect System Extension Enforcement)"
   criteria {
     name        = "Operating System Version"
     search_type = "like"
@@ -46,7 +39,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_computers_jamf_protect" {
 }
 
 resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_profile_jamf_protect_system_extension" {
-  name                = "Jamf Protect System Extension Enforcement ${var.entropy_string}"
+  name                = "Jamf Protect System Extension Enforcement"
   description         = "This configuration profile prevents users from disabling the Jamf Protect System Extension"
   level               = "System"
   redeploy_on_update  = "Newly Assigned"

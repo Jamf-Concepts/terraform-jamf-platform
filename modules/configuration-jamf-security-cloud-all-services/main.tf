@@ -19,7 +19,7 @@ resource "jsc_oktaidp" "okta_idp_base" {
 }
 
 resource "jsc_ap" "all_services" {
-  name             = "Jamf Connect ZTNA and Protect ${var.entropy_string}"
+  name             = "Jamf Connect ZTNA and Protect"
   idptype          = "OKTA"
   oktaconnectionid = jsc_oktaidp.okta_idp_base.id
   privateaccess    = true
@@ -28,12 +28,12 @@ resource "jsc_ap" "all_services" {
 }
 
 resource "jamfpro_category" "jsc_all_services_profiles" {
-  name     = "Jamf Security Cloud - Activation Profiles ${var.entropy_string}"
+  name     = "Jamf Security Cloud - Activation Profiles"
   priority = 9
 }
 
 resource "jamfpro_smart_computer_group" "all_macs" {
-  name = "All Computers ${var.entropy_string}"
+  name = "All Computers"
 
   criteria {
     name        = "Computer Group"
@@ -50,7 +50,7 @@ resource "jamfpro_smart_computer_group" "all_macs" {
 }
 
 resource "jamfpro_macos_configuration_profile_plist" "all_services_macos" {
-  name                = "Jamf Connect ZTNA + Jamf Protect Threat and Content Control - macOS (Supervised) ${var.entropy_string}"
+  name                = "Jamf Connect ZTNA + Jamf Protect Threat and Content Control - macOS (Supervised)"
   description         = "This configuration profile contains all the pieces you'll need to deploy and enforce ZTNA, Network Security, and Content Control. We have also created a Smart Group called 'All Computers' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'All Computers' group and remove the serial number criteria with the 111222333444555 serial number."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
@@ -71,7 +71,7 @@ resource "jamfpro_macos_configuration_profile_plist" "all_services_macos" {
 }
 
 resource "jamfpro_smart_mobile_device_group" "supervised_devices" {
-  name = "Supervised Mobile Devices ${var.entropy_string}"
+  name = "Supervised Mobile Devices"
 
   criteria {
     name        = "Supervised"
@@ -88,7 +88,7 @@ resource "jamfpro_smart_mobile_device_group" "supervised_devices" {
 }
 
 # resource "jamfpro_smart_mobile_device_group" "unsupervised_devices" {
-#   name = "Unsupervised Mobile Devices ${var.entropy_string}"
+#   name = "Unsupervised Mobile Devices"
 
 #   criteria {
 #     name        = "Supervised"
@@ -105,7 +105,7 @@ resource "jamfpro_smart_mobile_device_group" "supervised_devices" {
 # }
 
 # resource "jamfpro_smart_mobile_device_group" "byod" {
-#   name = "BYOD Mobile Devices ${var.entropy_string}"
+#   name = "BYOD Mobile Devices"
 
 #   criteria {
 #     name        = "Serial Number"
@@ -122,7 +122,7 @@ resource "jamfpro_smart_mobile_device_group" "supervised_devices" {
 # }
 
 resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobile_supervised" {
-  name               = "Jamf Connect ZTNA + Jamf Protect Threat and Content Control - Mobile (Supervised) ${var.entropy_string}"
+  name               = "Jamf Connect ZTNA + Jamf Protect Threat and Content Control - Mobile (Supervised)"
   description        = "This configuration profile contains all the pieces you'll need to deploy and enforce ZTNA, Network Security, and Content Control. We have also created a Smart Group called 'Supervised Mobile Devices' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'Supervised Mobile Devices' group and remove the serial number criteria with the 111222333444555 serial number."
   deployment_method  = "Install Automatically"
   level              = "Device Level"
@@ -144,7 +144,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobil
 }
 
 # resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobile_unsupervised" {
-#   name               = "Jamf Connect ZTNA + Jamf Protect Threat and Content Control - Mobile (Unsupervised) ${var.entropy_string}"
+#   name               = "Jamf Connect ZTNA + Jamf Protect Threat and Content Control - Mobile (Unsupervised)"
 #   description        = "This configuration profile contains all the pieces you'll need to deploy and enforce ZTNA, Network Security, and Content Control. We have also created a Smart Group called 'Unsupervised Mobile Devices' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'Unsupervised Mobile Devices' group and remove the serial number criteria with the 111222333444555 serial number."
 #   deployment_method  = "Install Automatically"
 #   level              = "Device Level"
@@ -165,7 +165,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobil
 # }
 
 # resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobile_byod" {
-#   name               = "Jamf Connect ZTNA + Jamf Protect Threat and Content Control - Mobile (BYOD) ${var.entropy_string}"
+#   name               = "Jamf Connect ZTNA + Jamf Protect Threat and Content Control - Mobile (BYOD)"
 #   description        = "This configuration profile contains all the pieces you'll need to deploy and enforce ZTNA, Network Security, and Content Control. We have also created a Smart Group called 'BYOD Mobile Devices' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'BYOD Mobile Devices' group and remove the serial number criteria with the 111222333444555 serial number."
 #   deployment_method  = "Install Automatically"
 #   level              = "Device Level"

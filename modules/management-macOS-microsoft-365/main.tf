@@ -10,13 +10,13 @@ terraform {
 
 ## Create Microsoft 365 Category
 resource "jamfpro_category" "category_microsoft_365" {
-  name     = "Microsoft 365 ${var.entropy_string}"
+  name     = "Microsoft 365"
   priority = 9
 }
 
 ## Create Microsoft 365 Smart Groups
 resource "jamfpro_smart_computer_group" "group_msft_word" {
-  name = "Auto Update:  Microsoft Word ${var.entropy_string}"
+  name = "Auto Update:  Microsoft Word"
   criteria {
     name        = "Application Title"
     search_type = "like"
@@ -27,7 +27,7 @@ resource "jamfpro_smart_computer_group" "group_msft_word" {
 }
 
 resource "jamfpro_smart_computer_group" "group_msft_excel" {
-  name = "Auto Update: Microsoft Excel ${var.entropy_string}"
+  name = "Auto Update: Microsoft Excel"
   criteria {
     name        = "Application Title"
     search_type = "like"
@@ -38,7 +38,7 @@ resource "jamfpro_smart_computer_group" "group_msft_excel" {
 }
 
 resource "jamfpro_smart_computer_group" "group_msft_onedrive" {
-  name = "Auto Update: Microsoft OneDrive ${var.entropy_string}"
+  name = "Auto Update: Microsoft OneDrive"
   criteria {
     name        = "Application Title"
     search_type = "like"
@@ -49,7 +49,7 @@ resource "jamfpro_smart_computer_group" "group_msft_onedrive" {
 }
 
 resource "jamfpro_smart_computer_group" "group_msft_outlook" {
-  name = "Auto Update: Microsoft Outlook ${var.entropy_string}"
+  name = "Auto Update: Microsoft Outlook"
   criteria {
     name        = "Application Title"
     search_type = "like"
@@ -60,7 +60,7 @@ resource "jamfpro_smart_computer_group" "group_msft_outlook" {
 }
 
 resource "jamfpro_smart_computer_group" "group_msft_powerpoint" {
-  name = "Auto Update:  Microsoft PowerPoint ${var.entropy_string}"
+  name = "Auto Update:  Microsoft PowerPoint"
   criteria {
     name        = "Application Title"
     search_type = "like"
@@ -71,7 +71,7 @@ resource "jamfpro_smart_computer_group" "group_msft_powerpoint" {
 }
 
 # resource "jamfpro_smart_computer_group" "group_msft_edge" {
-#   name = "Auto Update:  Microsoft Edge ${var.entropy_string}"
+#   name = "Auto Update:  Microsoft Edge"
 #   criteria {
 #     name        = "Application Title"
 #     search_type = "like"
@@ -82,7 +82,7 @@ resource "jamfpro_smart_computer_group" "group_msft_powerpoint" {
 # }
 
 resource "jamfpro_smart_computer_group" "group_msft_teams" {
-  name = "Auto Update: Microsoft Teams ${var.entropy_string}"
+  name = "Auto Update: Microsoft Teams"
   criteria {
     name        = "Application Title"
     search_type = "like"

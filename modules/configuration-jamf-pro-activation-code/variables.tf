@@ -46,3 +46,13 @@ variable "random_string" {
   type    = string
   default = ""
 }
+
+variable "organization_name" {
+  type    = string
+  default = ""
+}
+
+variable "jamf_pro_activation_code" {
+  type    = string
+  default = ""
+}

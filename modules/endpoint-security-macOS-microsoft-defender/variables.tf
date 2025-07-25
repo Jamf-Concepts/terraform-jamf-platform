@@ -29,7 +29,4 @@ variable "random_string" {
   default = ""
 }
 
-variable "entropy_string" {
-  type    = string
-  default = ""
-}
+
