@@ -81,7 +81,7 @@ options:
     module_name: module.onboarder-management-macOS
     required_provider: jpro
     category: Management
-    display_name: macOS Foundation
+    display_name: Jamf for Mac
     display_desc: Configure all available management settings in Onboarder for macOS. Includes common configurations, settings, Smart Computer groups, and quality of life settings for macOS management.
 
   - key: include_onboarder_management_mobile
@@ -90,7 +90,7 @@ options:
     module_name: module.onboarder-management-mobile
     required_provider: jpro
     category: Management
-    display_name: iOS/iPadOS Foundation
+    display_name: Jamf for Mobile
     display_desc: Configure all available management settings in Onboarder for iOS and iPadOS. Includes common configurations, settings, Smart Device groups, and quality of life settings for iOS and iPadOS management.
 
   ## Security Onboarder Modules
