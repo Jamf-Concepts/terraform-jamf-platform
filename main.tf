@@ -257,6 +257,23 @@ module "management-macOS-SSOe-Okta" {
   }
 }
 
+module "management-okta_psso" {
+  count                 = var.include_okta_psso == true ? 1 : 0
+  source                = "./modules/management-okta-psso"
+  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_client_id     = var.jamfpro_client_id
+  jamfpro_client_secret = var.jamfpro_client_secret
+  okta_short_url        = var.okta_short_url
+  okta_orgname          = var.okta_orgname
+  okta_scep_url         = var.okta_scep_url
+  okta_psso_client      = var.okta_psso_client
+  okta_scep_username    = var.okta_scep_username
+  okta_scep_password    = var.okta_scep_password
+  providers = {
+    jamfpro.jpro = jamfpro.jpro
+  }
+}
+
 module "endpoint-security-macOS-crowdstrike" {
   count                 = var.include_crowdstrike == true ? 1 : 0
   source                = "./modules/endpoint-security-macOS-crowdstrike"

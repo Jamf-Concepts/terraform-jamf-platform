@@ -121,48 +121,6 @@ variable "tje_okta_orgdomain" {
   default = "sso.tryjamf.com"
 }
 
-variable "okta_short_url" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "okta_orgname" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "okta_scep_url" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "okta_challenge_url" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "okta_psso_client" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "okta_scep_username" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "okta_scep_password" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
 variable "include_mobile_cis_lvl1_benchmark" {
   type    = bool
   default = false
@@ -537,11 +495,6 @@ variable "include_ssoe_okta" {
   default = false
 }
 
-variable "include_okta_psso" {
-  type    = bool
-  default = false
-}
-
 variable "include_jc_privilege_elevation" {
   type    = bool
   default = false
@@ -606,4 +559,46 @@ variable "organization_name" {
 variable "jamf_pro_activation_code" {
   type    = string
   default = ""
+}
+
+variable "okta_short_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_orgname" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_challenge_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_psso_client" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_username" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_password" {
+  type      = string
+  sensitive = true
+  default   = ""
 }
