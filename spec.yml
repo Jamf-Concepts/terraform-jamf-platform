@@ -197,6 +197,15 @@ options:
     display_name: Configure and Apply US CMMC 2.0 Level 1 for macOS
     display_desc: For managed computers, prepares and uploads the necessary components for US CMMC 2.0 Level 1 profile for macOS Sonoma and Sequoia (Smart Card profile is not scoped due to potential login impact). Smart Groups are pre-set to not deploy automatically. Edit the group to enforce compliance, auditing, and remediation by modifying or removing the Serial Number criteria. **Benchmark from macOS Security Compliance Project**
 
+   ### Platform SSO Modules
+  - key: management-okta-psso
+    presence: optional
+    required_provider: jpro
+    content: Sets up the Jamf Pro side of Platform SSO for Okta
+    category: Platform SSO
+    display_name: Okta PSSO
+    display_desc: This will ingest your Okta tenant URL, SCEP URL, Organization Name, and PSSO Client ID. It will then create a Policy to deploy Okta Verify as well as 2 Smart Groups for targeting PSSO and excluding Jamf Connect (if needed). It will then create the 2 Configuration Profiles you need to enable PSSO in your environmnent with Okta. You will still need to follow steps to enable these features and collect the relevant details on the Okta side. Once this module has completed, you will need to enter your SCEP Challenge URL, SCEP Username, and SCEP Password into the Okta Device Access SCEP Configuration Profile before deployment.
+
    ### App Installer Modules
   - key: management-app-installers-google-chrome
     presence: optional
