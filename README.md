@@ -233,5 +233,3 @@ terraform init -upgrade
 ```
 
 Terraform must be formatted correctly to run, which can be done manually after saving changes before each run with `terraform fmt`. If using Visual Studio Code, use [this guide](https://medium.com/nerd-for-tech/how-to-auto-format-hcl-terraform-code-in-visual-studio-code-6fa0e7afbb5e) to never have to run the format command again!
-
-< INSERT INSTRUCTIONS FOR RUNNING TERRAFORM MODULES>
