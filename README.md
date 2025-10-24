@@ -2,7 +2,7 @@
 
 Terraform configuration for the Jamf Platform.
 
-This project utlizes the community Terraform providers for [Jamf Pro](https://registry.terraform.io/providers/deploymenttheory/jamfpro/latest) and [Jamf Security Cloud](https://registry.terraform.io/providers/danjamf/jsctfprovider/latest)
+This project utlizes the community Terraform providers for [Jamf Pro](https://registry.terraform.io/providers/deploymenttheory/jamfpro/latest) and [Jamf Security Cloud](https://registry.terraform.io/providers/Jamf-Concepts/jsctfprovider/latest)
 
 ## Parallelism and API delay
 
