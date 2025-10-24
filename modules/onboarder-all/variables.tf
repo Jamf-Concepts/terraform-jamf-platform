@@ -51,13 +51,13 @@ variable "jsc_password" {
   default   = ""
 }
 
-variable "jsc_applicationid" {
+variable "jsc_application_id" {
   type      = string
   sensitive = true
   default   = ""
 }
 
-variable "jsc_applicationsecret" {
+variable "jsc_application_secret" {
   type      = string
   sensitive = true
   default   = ""
@@ -96,12 +96,12 @@ variable "aws_region" {
 */
 
 ## Define Okta-related variables
-variable "tje_okta_clientid" {
+variable "okta_client_id" {
   type    = string
   default = "0oadb9ke61k2h6JiT1d7"
 }
 
-variable "tje_okta_orgdomain" {
+variable "okta_org_domain" {
   type    = string
   default = "sso.tryjamf.com"
 }
@@ -498,7 +498,7 @@ variable "jamfprotect_url" {
   default     = ""
 }
 
-variable "jamfprotect_clientid" {
+variable "jamfprotect_client_id" {
   description = "Jamf Protect Client ID for authentication."
   type        = string
   default     = ""

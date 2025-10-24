@@ -64,8 +64,8 @@ module "management-macOS-SSOe-Okta" {
 
 module "configuration-jamf-security-cloud-all-services" {
   source                = "../configuration-jamf-security-cloud-all-services"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
@@ -142,7 +142,7 @@ module "configuration-jamf-pro-jamf-protect" {
   jamfpro_client_id           = var.jamfpro_client_id
   jamfpro_client_secret       = var.jamfpro_client_secret
   jamfprotect_url             = var.jamfprotect_url
-  jamfprotect_clientid        = var.jamfprotect_clientid
+  jamfprotect_client_id       = var.jamfprotect_client_id
   jamfprotect_client_password = var.jamfprotect_client_password
   providers = {
     jamfpro.jpro = jamfpro.jpro

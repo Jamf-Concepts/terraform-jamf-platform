@@ -7,7 +7,7 @@
     <key>PayloadType</key>
     <string>Configuration</string>
     <key>PayloadOrganization</key>
-    <string>The Jamf Experience</string>
+    <string>Experience Jamf</string>
     <key>PayloadIdentifier</key>
     <string>FF165609-15A2-4213-9157-6A5A699352DF</string>
     <key>PayloadDisplayName</key>

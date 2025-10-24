@@ -31,7 +31,7 @@
 			<key>PayloadIdentifier</key>
 			<string>c321533a4-00e0-4d35-8d52-dc42ea35374d</string>
 			<key>PayloadOrganization</key>
-			<string>The Jamf Experience</string>
+			<string>Experience Jamf</string>
 			<key>PayloadType</key>
 			<string>com.apple.eas.account</string>
 			<key>PayloadUUID</key>

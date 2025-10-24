@@ -27,7 +27,7 @@ credentials:
     display_name: Jamf Protect Tenant URL
     display_desc: This is the URL you navigate to for Jamf Protect
 
-  - key: jamfprotect_clientid
+  - key: jamfprotect_client_id
     type: <string>
     presence: required
     content: The Client ID created in the Jamf Protect console

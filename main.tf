@@ -17,8 +17,8 @@ provider "jamfpro" {
 provider "jsc" {
   username          = var.jsc_username
   password          = var.jsc_password
-  applicationid     = var.jsc_applicationid
-  applicationsecret = var.jsc_applicationsecret
+  applicationid     = var.jsc_application_id
+  applicationsecret = var.jsc_application_secret
 }
 
 # Onboarder Modules
@@ -29,7 +29,7 @@ module "onboarder-all" {
   jamfpro_client_id           = var.jamfpro_client_id
   jamfpro_client_secret       = var.jamfpro_client_secret
   jamfprotect_url             = var.jamfprotect_url
-  jamfprotect_clientid        = var.jamfprotect_clientid
+  jamfprotect_client_id       = var.jamfprotect_client_id
   jamfprotect_client_password = var.jamfprotect_client_password
   providers = {
     jamfpro.jpro = jamfpro.jpro
@@ -72,7 +72,7 @@ module "configuration-jamf-pro-jamf-protect" {
   jamfpro_client_id           = var.jamfpro_client_id
   jamfpro_client_secret       = var.jamfpro_client_secret
   jamfprotect_url             = var.jamfprotect_url
-  jamfprotect_clientid        = var.jamfprotect_clientid
+  jamfprotect_client_id       = var.jamfprotect_client_id
   jamfprotect_client_password = var.jamfprotect_client_password
   providers = {
     jamfpro.jpro = jamfpro.jpro
@@ -264,7 +264,7 @@ module "management-okta_psso" {
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   okta_short_url        = var.okta_short_url
-  okta_orgname          = var.okta_orgname
+  okta_org_name         = var.okta_org_name
   okta_scep_url         = var.okta_scep_url
   okta_psso_client      = var.okta_psso_client
   okta_scep_username    = var.okta_scep_username
@@ -369,8 +369,8 @@ module "configuration-jamf-security-cloud-block-pages" {
 module "network-security-jamf-pro-content-filtering" {
   count                 = var.include_jsc_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-content-filtering"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -386,8 +386,8 @@ module "network-security-jamf-pro-content-filtering" {
 module "network-security-jamf-pro-network-threat-defense" {
   count                 = var.include_jsc_mtd_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-network-threat-defense"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -403,8 +403,8 @@ module "network-security-jamf-pro-network-threat-defense" {
 module "network-security-jamf-pro-content-filtering-and-network-threat-defense" {
   count                 = var.include_jsc_mtd_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-content-filtering-and-network-threat-defense"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -420,8 +420,8 @@ module "network-security-jamf-pro-content-filtering-and-network-threat-defense" 
 module "network-security-jamf-pro-zero-trust-network-access" {
   count                 = var.include_jsc_ztna == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -437,8 +437,8 @@ module "network-security-jamf-pro-zero-trust-network-access" {
 module "network-security-jamf-pro-zero-trust-network-access-and-content-filtering" {
   count                 = var.include_jsc_ztna_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access-and-content-filtering"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -454,8 +454,8 @@ module "network-security-jamf-pro-zero-trust-network-access-and-content-filterin
 module "network-security-jamf-pro-zero-trust-network-access-and-network-threat-prevention" {
   count                 = var.include_jsc_ztna_mtd_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access-and-network-threat-prevention"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
