@@ -96,12 +96,12 @@ variable "aws_region" {
 */
 
 ## Define Okta-related variables
-variable "tje_okta_client_id" {
+variable "okta_client_id" {
   type    = string
   default = "0oa1qa4x0qj2Jzeco1d8"
 }
 
-variable "tje_okta_org_domain" {
+variable "okta_org_domain" {
   type    = string
   default = "jamf-harbor.okta.com"
 }

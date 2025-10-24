@@ -10,13 +10,13 @@ variable "radar_user" {
   default   = ""
 }
 
-variable "tje_okta_client_id" {
+variable "okta_client_id" {
   type      = string
   sensitive = true
   default   = ""
 }
 
-variable "tje_okta_org_domain" {
+variable "okta_org_domain" {
   type      = string
   sensitive = true
   default   = ""

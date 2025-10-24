@@ -13,9 +13,9 @@ terraform {
 }
 
 resource "jsc_oktaidp" "okta_idp_base" {
-  clientid  = var.tje_okta_client_id
+  clientid  = var.okta_client_id
   name      = "Okta IDP Integration"
-  orgdomain = var.tje_okta_org_domain
+  orgdomain = var.okta_org_domain
 }
 
 resource "jsc_ap" "ztna_mtd_only" {

@@ -369,8 +369,8 @@ module "configuration-jamf-security-cloud-block-pages" {
 module "network-security-jamf-pro-content-filtering" {
   count                 = var.include_jsc_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-content-filtering"
-  tje_okta_client_id    = var.tje_okta_client_id
-  tje_okta_org_domain   = var.tje_okta_org_domain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -386,8 +386,8 @@ module "network-security-jamf-pro-content-filtering" {
 module "network-security-jamf-pro-network-threat-defense" {
   count                 = var.include_jsc_mtd_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-network-threat-defense"
-  tje_okta_client_id    = var.tje_okta_client_id
-  tje_okta_org_domain   = var.tje_okta_org_domain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -403,8 +403,8 @@ module "network-security-jamf-pro-network-threat-defense" {
 module "network-security-jamf-pro-content-filtering-and-network-threat-defense" {
   count                 = var.include_jsc_mtd_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-content-filtering-and-network-threat-defense"
-  tje_okta_client_id    = var.tje_okta_client_id
-  tje_okta_org_domain   = var.tje_okta_org_domain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -420,8 +420,8 @@ module "network-security-jamf-pro-content-filtering-and-network-threat-defense" 
 module "network-security-jamf-pro-zero-trust-network-access" {
   count                 = var.include_jsc_ztna == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access"
-  tje_okta_client_id    = var.tje_okta_client_id
-  tje_okta_org_domain   = var.tje_okta_org_domain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -437,8 +437,8 @@ module "network-security-jamf-pro-zero-trust-network-access" {
 module "network-security-jamf-pro-zero-trust-network-access-and-content-filtering" {
   count                 = var.include_jsc_ztna_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access-and-content-filtering"
-  tje_okta_client_id    = var.tje_okta_client_id
-  tje_okta_org_domain   = var.tje_okta_org_domain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -454,8 +454,8 @@ module "network-security-jamf-pro-zero-trust-network-access-and-content-filterin
 module "network-security-jamf-pro-zero-trust-network-access-and-network-threat-prevention" {
   count                 = var.include_jsc_ztna_mtd_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access-and-network-threat-prevention"
-  tje_okta_client_id    = var.tje_okta_client_id
-  tje_okta_org_domain   = var.tje_okta_org_domain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
   jamfpro_instance_url  = var.jamfpro_instance_url

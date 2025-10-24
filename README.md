@@ -133,8 +133,8 @@ jsc_application_id     = ""
 jsc_application_secret = ""
 
 ## tryjamf Okta Account Details
-tje_okta_client_id  = ""
-tje_okta_org_domain = ""
+okta_client_id  = ""
+okta_org_domain = ""
 
 ##################################
 ##### ONBOARDER MODULE KNOBS #####
