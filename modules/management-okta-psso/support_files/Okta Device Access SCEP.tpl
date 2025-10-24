@@ -58,13 +58,13 @@
 	<key>PayloadDescription</key>
 	<string></string>
 	<key>PayloadDisplayName</key>
-	<string>${okta_orgname}</string>
+	<string>${okta_org_name}</string>
 	<key>PayloadEnabled</key>
 	<true/>
 	<key>PayloadIdentifier</key>
 	<string>F3E59D9B-2502-4723-859F-72E5E9C53441</string>
 	<key>PayloadOrganization</key>
-	<string>${okta_orgname}</string>
+	<string>${okta_org_name}</string>
 	<key>PayloadRemovalDisallowed</key>
 	<true/>
 	<key>PayloadScope</key>
