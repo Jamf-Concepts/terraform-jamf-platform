@@ -29,7 +29,7 @@
 			<key>PayloadIdentifier</key>
 			<string>0f2da2d2-2c29-4c21-8158-b4d28dd1c213</string>
 			<key>PayloadOrganization</key>
-			<string>The Jamf Experience</string>
+			<string>Experience Jamf</string>
 			<key>PayloadType</key>
 			<string>com.apple.mail.managed</string>
 			<key>PayloadUUID</key>
