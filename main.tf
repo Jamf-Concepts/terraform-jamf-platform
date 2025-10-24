@@ -17,8 +17,8 @@ provider "jamfpro" {
 provider "jsc" {
   username          = var.jsc_username
   password          = var.jsc_password
-  applicationid     = var.jsc_applicationid
-  applicationsecret = var.jsc_applicationsecret
+  applicationid     = var.jsc_application_id
+  applicationsecret = var.jsc_application_secret
 }
 
 module "configuration-jamf-pro-categories" {

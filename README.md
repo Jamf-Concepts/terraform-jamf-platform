@@ -38,18 +38,18 @@ jamfpro_password      = ""
 
 ## Jamf Protect Account Details
 jamfprotect_url             = ""
-jamfprotect_clientid        = ""
+jamfprotect_client_id        = ""
 jamfprotect_client_password = ""
 
 ## Jamf Security Cloud (RADAR) Account Details
 jsc_username          = ""
 jsc_password          = ""
-jsc_applicationid     = ""
-jsc_applicationsecret = ""
+jsc_application_id     = ""
+jsc_application_secret = ""
 
 ## tryjamf Okta Account Details
-tje_okta_clientid  = ""
-tje_okta_orgdomain = ""
+tje_okta_client_id  = ""
+tje_okta_org_domain = ""
 
 ##################################
 ##### ONBOARDER MODULE KNOBS #####
