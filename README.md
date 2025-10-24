@@ -132,7 +132,7 @@ jsc_password          = ""
 jsc_application_id     = ""
 jsc_application_secret = ""
 
-## tryjamf Okta Account Details
+## Okta Account Details
 okta_client_id  = ""
 okta_org_domain = ""
 
