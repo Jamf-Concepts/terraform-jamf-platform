@@ -1,5 +1,5 @@
 
-variable "jamfpro_instance_url" {
+variable "jamfpro_instance_fqdn" {
   type      = string
   sensitive = true
   default   = ""

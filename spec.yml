@@ -1,5 +1,5 @@
 credentials:
-  - key: jamfpro_instance_url
+  - key: jamfpro_instance_fqdn
     type: <string>
     presence: required
     content: The URL of the Jamf Pro instance must start with 'https://'
