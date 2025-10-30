@@ -133,8 +133,14 @@ jsc_application_id     = ""
 jsc_application_secret = ""
 
 ## Okta Account Details
-okta_client_id  = ""
-okta_org_domain = ""
+okta_client_id   = ""
+okta_org_domain  = ""  # ex: https://tenant.okta.com
+
+## Okta PSSO Module Variables
+okta_short_url   = ""  # ex: tenant.okta.com
+okta_org_name    = ""
+okta_scep_url    = ""
+okta_psso_client = ""
 
 ##################################
 ##### ONBOARDER MODULE KNOBS #####
