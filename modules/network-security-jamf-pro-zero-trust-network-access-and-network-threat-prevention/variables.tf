@@ -47,12 +47,6 @@ variable "clientsecret" {
   default   = ""
 }
 
-variable "jamfpro_instance_fqdn" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
 variable "auth_method" {
   type      = string
   sensitive = true
