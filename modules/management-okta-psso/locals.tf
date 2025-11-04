@@ -21,7 +21,7 @@ locals {
 }
 
 locals {
-  okta_verify_psso_app_config = templatefile("${path.module}/support_files/Platform SSO - Okta Verify App Configuration.tpl", {
+  okta_verify_psso_app_config = templatefile("${path.module}/support_files/Okta Verify App Configuration.tpl", {
     okta_short_url     = var.okta_short_url
     okta_org_name      = var.okta_org_name
     okta_scep_url      = var.okta_scep_url
