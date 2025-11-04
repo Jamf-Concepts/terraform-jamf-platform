@@ -128,3 +128,22 @@ resource "jamfpro_macos_configuration_profile_plist" "okta_verify_psso" {
   }
 }
 
+resource "jamfpro_macos_configuration_profile_plist" "okta_verify_psso_app_config" {
+  name                = "Okta Verify App Configuration"
+  description         = ""
+  level               = "System"
+  distribution_method = "Install Automatically"
+  redeploy_on_update  = "Newly Assigned"
+  payloads            = local.okta_verify_psso_app_config
+  payload_validate    = true
+  user_removable      = false
+  category_id         = jamfpro_category.okta_psso.id
+
+  scope {
+    all_computers = false
+    all_jss_users = false
+
+    computer_group_ids = [jamfpro_smart_computer_group.okta_psso_target.id]
+  }
+}
+

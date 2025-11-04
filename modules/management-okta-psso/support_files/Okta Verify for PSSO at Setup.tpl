@@ -33,7 +33,7 @@
 			<key>PayloadIdentifier</key>
 			<string>B7F38B23-CDC8-4D19-89D8-B9A01DF67AC0</string>
 			<key>PayloadOrganization</key>
-			<string>Jamf</string>
+			<string>${okta_org_name}</string>
 			<key>PayloadType</key>
 			<string>com.apple.associated-domains</string>
 			<key>PayloadUUID</key>
@@ -71,7 +71,7 @@
 			<key>PayloadIdentifier</key>
 			<string>3137E69F-8E58-40D4-94F6-327F3D4487C0</string>
 			<key>PayloadOrganization</key>
-			<string>JAMF Software</string>
+			<string>${okta_org_name}</string>
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
@@ -105,7 +105,7 @@
 			<key>PayloadIdentifier</key>
 			<string>4851A290-8CA7-4C0B-9AE5-652DF64ACE00</string>
 			<key>PayloadOrganization</key>
-			<string>JAMF Software</string>
+			<string>${okta_org_name}</string>
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
@@ -135,7 +135,7 @@
 			<key>PayloadIdentifier</key>
 			<string>93A6EFEA-72C9-4CD7-9F73-C9D7B88C2219</string>
 			<key>PayloadOrganization</key>
-			<string>JAMF Software</string>
+			<string>${okta_org_name}</string>
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
@@ -155,7 +155,7 @@
 			<key>PayloadIdentifier</key>
 			<string>730365BC-383C-47EC-BEAD-C8BC85741C59</string>
 			<key>PayloadOrganization</key>
-			<string>JAMF Software</string>
+			<string>${okta_org_name}</string>
 			<key>PayloadType</key>
 			<string>com.apple.extensiblesso</string>
 			<key>PayloadUUID</key>
@@ -165,7 +165,7 @@
 			<key>PlatformSSO</key>
 			<dict>
 				<key>AccountDisplayName</key>
-				<string>Jamf IT</string>
+				<string>${okta_org_name} - IT</string>
 				<key>AllowDeviceIdentifiersInAttestation</key>
 				<true/>
 				<key>AuthenticationMethod</key>
@@ -220,7 +220,7 @@
 	<key>PayloadIdentifier</key>
 	<string>471D7AA5-6D37-44F8-9129-7349FB465000</string>
 	<key>PayloadOrganization</key>
-	<string>Jamf</string>
+	<string>${okta_org_name}</string>
 	<key>PayloadRemovalDisallowed</key>
 	<true/>
 	<key>PayloadScope</key>
