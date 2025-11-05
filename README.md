@@ -32,7 +32,7 @@ To run these successfully in your environment, include the following:
 ## Jamf Pro provider root configuration
 provider "jamfpro" {
   alias                                = "jpro"
-  jamfpro_instance_fqdn                = var.jamfpro_instance_url
+  jamfpro_instance_fqdn                = var.jamfpro_instance_fqdn
   auth_method                          = var.jamfpro_auth_method
   basic_auth_username                  = var.jamfpro_username
   basic_auth_password                  = var.jamfpro_password
@@ -58,7 +58,7 @@ provider "jsc" {
 ```
 module "configuration-jamf-security-cloud-jamf-pro" {
   source                = "module/source/file/path"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn  = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   jsc_username          = var.jsc_username
@@ -115,7 +115,7 @@ Copy and paste the following data then customize it with your own credentials an
 ```
 ## Jamf Pro Account Details
 jamfpro_auth_method   = "" ## oauth2 or basic
-jamfpro_instance_url  = ""
+jamfpro_instance_fqdn  = ""
 jamfpro_client_id     = ""
 jamfpro_client_secret = ""
 jamfpro_username      = ""
@@ -133,8 +133,14 @@ jsc_application_id     = ""
 jsc_application_secret = ""
 
 ## Okta Account Details
-okta_client_id  = ""
-okta_org_domain = ""
+okta_client_id   = ""
+okta_org_domain  = ""  # ex: https://tenant.okta.com
+
+## Okta PSSO Module Variables
+okta_short_url   = ""  # ex: tenant.okta.com
+okta_org_name    = ""
+okta_scep_url    = ""
+okta_psso_client = ""
 
 ##################################
 ##### ONBOARDER MODULE KNOBS #####

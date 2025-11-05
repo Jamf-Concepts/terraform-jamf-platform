@@ -1,5 +1,5 @@
 
-variable "jamfpro_instance_url" {
+variable "jamfpro_instance_fqdn" {
   type      = string
   sensitive = true
   default   = ""
@@ -42,12 +42,6 @@ variable "clientid" {
 }
 
 variable "clientsecret" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "jamfpro_instance_fqdn" {
   type      = string
   sensitive = true
   default   = ""

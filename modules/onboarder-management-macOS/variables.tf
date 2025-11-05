@@ -1,5 +1,5 @@
 ## Define Jamf Pro provider variables (populated by .tfvars file)
-variable "jamfpro_instance_url" {
+variable "jamfpro_instance_fqdn" {
   description = "Jamf Pro Instance name."
   type        = string
   default     = ""
