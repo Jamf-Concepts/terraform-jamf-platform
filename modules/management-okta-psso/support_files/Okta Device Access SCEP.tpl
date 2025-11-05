@@ -46,7 +46,7 @@
 			<key>PayloadIdentifier</key>
 			<string>4B58567E-B2D7-4D04-A8A4-19DF4FE2B78D</string>
 			<key>PayloadOrganization</key>
-			<string>Jamf</string>
+			<string>${okta_org_name}</string>
 			<key>PayloadType</key>
 			<string>com.apple.security.scep</string>
 			<key>PayloadUUID</key>

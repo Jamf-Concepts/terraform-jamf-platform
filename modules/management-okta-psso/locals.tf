@@ -19,3 +19,14 @@ locals {
     okta_scep_password = var.okta_scep_password
   })
 }
+
+locals {
+  okta_verify_psso_app_config = templatefile("${path.module}/support_files/Okta Verify App Configuration.tpl", {
+    okta_short_url     = var.okta_short_url
+    okta_org_name      = var.okta_org_name
+    okta_scep_url      = var.okta_scep_url
+    okta_psso_client   = var.okta_psso_client
+    okta_scep_username = var.okta_scep_username
+    okta_scep_password = var.okta_scep_password
+  })
+}
