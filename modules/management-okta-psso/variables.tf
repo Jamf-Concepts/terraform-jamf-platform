@@ -113,12 +113,12 @@ variable "aws_region" {
 ## Define Okta-related variables
 variable "okta_client_id" {
   type    = string
-  default = "0oadb9ke61k2h6JiT1d7"
+  default = ""
 }
 
 variable "okta_org_domain" {
   type    = string
-  default = "sso.tryjamf.com"
+  default = ""
 }
 
 variable "include_mobile_cis_lvl1_benchmark" {
