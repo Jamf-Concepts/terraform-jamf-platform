@@ -18,7 +18,7 @@ resource "jamfpro_smart_computer_group" "okta_psso_target" {
   criteria {
     name        = "Operating System Version"
     search_type = "greater than or equal"
-    value       = "14."
+    value       = "14.0"
     and_or      = "and"
     priority    = 0
   }
