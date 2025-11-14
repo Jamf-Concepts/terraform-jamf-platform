@@ -67,7 +67,7 @@ resource "jamfpro_smart_mobile_device_group" "group_ios26" {
     name        = "OS Version"
     priority    = 0
     search_type = "like"
-    value       = "26."
+    value       = "26.0"
   }
 
   criteria {

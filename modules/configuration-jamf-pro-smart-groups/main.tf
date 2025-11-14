@@ -14,7 +14,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
   criteria {
     name        = "Operating System Version"
     search_type = "like"
-    value       = "14."
+    value       = "14.0"
     and_or      = "and"
     priority    = 0
   }
@@ -25,7 +25,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
   criteria {
     name        = "Operating System Version"
     search_type = "like"
-    value       = "15."
+    value       = "15.0"
     and_or      = "and"
     priority    = 0
   }

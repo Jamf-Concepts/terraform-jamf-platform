@@ -29,7 +29,7 @@ resource "jamfpro_smart_computer_group" "ssoe-okta" {
   criteria {
     name        = "Operating System Version"
     search_type = "like"
-    value       = "15."
+    value       = "15.0"
     and_or      = "and"
     priority    = 0
   }
