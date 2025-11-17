@@ -14,7 +14,8 @@ resource "jamfpro_sso_settings" "adminsso" {
   configuration_type = "OIDC"
 
   oidc_settings {
-    user_mapping = "EMAIL"
+    user_mapping                   = "EMAIL"
+    jamf_id_authentication_enabled = true
   }
 
   enrollment_sso_config {
