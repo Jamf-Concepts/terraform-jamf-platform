@@ -1,5 +1,5 @@
 ## Define Jamf Pro provider variables (populated by .tfvars file)
-variable "jamfpro_instance_url" {
+variable "jamfpro_instance_fqdn" {
   description = "Jamf Pro Instance name."
   type        = string
 }
@@ -40,7 +40,7 @@ variable "jamfprotect_url" {
   default     = ""
 }
 
-variable "jamfprotect_clientid" {
+variable "jamfprotect_client_id" {
   description = "Jamf Protect Client ID for authentication."
   type        = string
   default     = ""
@@ -66,13 +66,13 @@ variable "jsc_password" {
   default   = ""
 }
 
-variable "jsc_applicationid" {
+variable "jsc_application_id" {
   type      = string
   sensitive = true
   default   = ""
 }
 
-variable "jsc_applicationsecret" {
+variable "jsc_application_secret" {
   type      = string
   sensitive = true
   default   = ""
@@ -111,15 +111,58 @@ variable "aws_region" {
 */
 
 ## Define Okta-related variables
-variable "tje_okta_clientid" {
+variable "okta_client_id" {
   type    = string
-  default = "0oadb9ke61k2h6JiT1d7"
+  default = ""
 }
 
-variable "tje_okta_orgdomain" {
+variable "okta_org_domain" {
   type    = string
-  default = "sso.tryjamf.com"
+  default = ""
 }
+
+variable "okta_short_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_org_name" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_challenge_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_psso_client" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_username" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_password" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
 
 variable "include_mobile_cis_lvl1_benchmark" {
   type    = bool
@@ -491,6 +534,11 @@ variable "include_admin_tools" {
 }
 
 variable "include_ssoe_okta" {
+  type    = bool
+  default = false
+}
+
+variable "include_okta_psso" {
   type    = bool
   default = false
 }

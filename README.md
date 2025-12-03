@@ -32,7 +32,7 @@ To run these successfully in your environment, include the following:
 ## Jamf Pro provider root configuration
 provider "jamfpro" {
   alias                                = "jpro"
-  jamfpro_instance_fqdn                = var.jamfpro_instance_url
+  jamfpro_instance_fqdn                = var.jamfpro_instance_fqdn
   auth_method                          = var.jamfpro_auth_method
   basic_auth_username                  = var.jamfpro_username
   basic_auth_password                  = var.jamfpro_password
@@ -58,7 +58,7 @@ provider "jsc" {
 ```
 module "configuration-jamf-security-cloud-jamf-pro" {
   source                = "module/source/file/path"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn  = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   jsc_username          = var.jsc_username
@@ -115,7 +115,7 @@ Copy and paste the following data then customize it with your own credentials an
 ```
 ## Jamf Pro Account Details
 jamfpro_auth_method   = "" ## oauth2 or basic
-jamfpro_instance_url  = ""
+jamfpro_instance_fqdn  = ""
 jamfpro_client_id     = ""
 jamfpro_client_secret = ""
 jamfpro_username      = ""
@@ -123,7 +123,7 @@ jamfpro_password      = ""
 
 ## Jamf Protect Account Details
 jamfprotect_url             = ""
-jamfprotect_clientid        = ""
+jamfprotect_client_id        = ""
 jamfprotect_client_password = ""
 
 ## Jamf Security Cloud (RADAR) Account Details
@@ -133,8 +133,8 @@ jsc_applicationid     = ""
 jsc_applicationsecret = ""
 
 ## tryjamf Okta Account Details
-tje_okta_clientid  = ""
-tje_okta_orgdomain = ""
+okta_client_id  = ""
+okta_org_domain = ""
 
 ##################################
 ##### ONBOARDER MODULE KNOBS #####

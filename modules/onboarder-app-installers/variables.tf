@@ -1,5 +1,5 @@
 ## Define Jamf Pro provider variables (populated by .tfvars file)
-variable "jamfpro_instance_url" {
+variable "jamfpro_instance_fqdn" {
   description = "Jamf Pro Instance name."
   type        = string
   default     = ""
@@ -97,12 +97,12 @@ variable "aws_region" {
 */
 
 ## Define Okta-related variables
-variable "tje_okta_clientid" {
+variable "okta_client_id" {
   type    = string
   default = "0oa1qa4x0qj2Jzeco1d8"
 }
 
-variable "tje_okta_orgdomain" {
+variable "okta_org_domain" {
   type    = string
   default = "jamf-harbor.okta.com"
 }

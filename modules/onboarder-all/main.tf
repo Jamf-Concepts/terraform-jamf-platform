@@ -14,7 +14,7 @@ terraform {
 
 module "onboarder-management-macOS" {
   source                = "../onboarder-management-macOS"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -24,7 +24,7 @@ module "onboarder-management-macOS" {
 
 module "onboarder-management-mobile" {
   source                = "../onboarder-management-mobile"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -34,7 +34,7 @@ module "onboarder-management-mobile" {
 
 module "compliance-macOS-cis-level-1" {
   source                = "../compliance-macOS-cis-level-1"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -44,7 +44,7 @@ module "compliance-macOS-cis-level-1" {
 
 module "compliance-iOS-cis-level-1" {
   source                = "../compliance-iOS-cis-level-1"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -54,7 +54,7 @@ module "compliance-iOS-cis-level-1" {
 
 module "management-macOS-SSOe-Okta" {
   source                = "../management-macOS-SSOe-Okta"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -64,9 +64,9 @@ module "management-macOS-SSOe-Okta" {
 
 module "configuration-jamf-security-cloud-all-services" {
   source                = "../configuration-jamf-security-cloud-all-services"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   jsc_username          = var.jsc_username
@@ -79,7 +79,7 @@ module "configuration-jamf-security-cloud-all-services" {
 
 module "endpoint-security-macOS-filevault" {
   source                = "../endpoint-security-macOS-filevault"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -115,7 +115,7 @@ module "management-app-installers" {
   source                = "../management-app-installers"
   for_each              = toset(var.app_installers)
   app_installer_name    = each.value
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -125,7 +125,7 @@ module "management-app-installers" {
 
 module "configuration-jamf-security-cloud-jamf-pro" {
   source                = "../configuration-jamf-security-cloud-jamf-pro"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   jsc_username          = var.jsc_username
@@ -138,11 +138,11 @@ module "configuration-jamf-security-cloud-jamf-pro" {
 
 module "configuration-jamf-pro-jamf-protect" {
   source                      = "../configuration-jamf-pro-jamf-protect"
-  jamfpro_instance_url        = var.jamfpro_instance_url
+  jamfpro_instance_fqdn       = var.jamfpro_instance_fqdn
   jamfpro_client_id           = var.jamfpro_client_id
   jamfpro_client_secret       = var.jamfpro_client_secret
   jamfprotect_url             = var.jamfprotect_url
-  jamfprotect_clientid        = var.jamfprotect_clientid
+  jamfprotect_client_id       = var.jamfprotect_client_id
   jamfprotect_client_password = var.jamfprotect_client_password
   providers = {
     jamfpro.jpro = jamfpro.jpro

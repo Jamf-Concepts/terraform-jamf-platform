@@ -2,7 +2,6 @@
 variable "jamfpro_instance_fqdn" {
   description = "Jamf Pro Instance name."
   type        = string
-  default     = ""
 }
 
 variable "jamfpro_auth_method" {
@@ -14,14 +13,12 @@ variable "jamfpro_auth_method" {
 variable "jamfpro_client_id" {
   description = "Jamf Pro Client ID for authentication."
   type        = string
-  default     = ""
 }
 
 variable "jamfpro_client_secret" {
   description = "Jamf Pro Client Secret for authentication."
   type        = string
   sensitive   = true
-  default     = ""
 }
 
 variable "jamfpro_username" {
@@ -37,6 +34,24 @@ variable "jamfpro_password" {
   default     = ""
 }
 
+variable "jamfprotect_url" {
+  description = "Jamf Protect URL name."
+  type        = string
+  default     = ""
+}
+
+variable "jamfprotect_client_id" {
+  description = "Jamf Protect Client ID for authentication."
+  type        = string
+  default     = ""
+}
+
+variable "jamfprotect_client_password" {
+  description = "Jamf Protect Client passwrd for authentication."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
 
 ## Define JSC provider variables (populated by .tfvars file)
 variable "jsc_username" {
@@ -51,13 +66,13 @@ variable "jsc_password" {
   default   = ""
 }
 
-variable "jsc_applicationid" {
+variable "jsc_application_id" {
   type      = string
   sensitive = true
   default   = ""
 }
 
-variable "jsc_applicationsecret" {
+variable "jsc_application_secret" {
   type      = string
   sensitive = true
   default   = ""
@@ -98,12 +113,12 @@ variable "aws_region" {
 ## Define Okta-related variables
 variable "okta_client_id" {
   type    = string
-  default = "0oadb9ke61k2h6JiT1d7"
+  default = ""
 }
 
 variable "okta_org_domain" {
   type    = string
-  default = "sso.tryjamf.com"
+  default = ""
 }
 
 variable "include_mobile_cis_lvl1_benchmark" {
@@ -435,12 +450,20 @@ variable "include_computer_management_settings" {
   default = false
 }
 
+variable "include_jamf_pro_admin_sso" {
+  type    = bool
+  default = false
+}
+
+variable "include_jamf_pro_activation_code" {
+  type    = bool
+  default = false
+}
 
 variable "include_mobile_device_kickstart" {
   type    = bool
   default = false
 }
-
 
 variable "include_filevault" {
   type    = bool
@@ -467,7 +490,7 @@ variable "include_admin_tools" {
   default = false
 }
 
-variable "include_passwordless_ssoe" {
+variable "include_ssoe_okta" {
   type    = bool
   default = false
 }
@@ -487,26 +510,95 @@ variable "include_crowdstrike" {
   default = false
 }
 
+variable "include_onboarder_all" {
+  type    = bool
+  default = false
+}
+
+variable "include_onboarder_management_macOS" {
+  type    = bool
+  default = false
+}
+
+variable "include_onboarder_management_mobile" {
+  type    = bool
+  default = false
+}
+
+variable "include_onboarder_app_installers" {
+  type    = bool
+  default = false
+}
+
+variable "app_installers" {
+  description = "Set of selected App Installers"
+  type        = list(string)
+  default     = []
+}
+
+variable "access_policies" {
+  type    = list(string)
+  default = []
+}
+
+variable "random_string_boolean" {
+  type    = bool
+  default = false
+}
+
 variable "random_string" {
   type    = string
   default = ""
 }
 
-variable "jamfprotect_url" {
-  description = "Jamf Protect URL name."
-  type        = string
-  default     = ""
+variable "organization_name" {
+  type    = string
+  default = ""
 }
 
-variable "jamfprotect_client_id" {
-  description = "Jamf Protect Client ID for authentication."
-  type        = string
-  default     = ""
+variable "jamf_pro_activation_code" {
+  type    = string
+  default = ""
 }
 
-variable "jamfprotect_client_password" {
-  description = "Jamf Protect Client passwrd for authentication."
-  type        = string
-  sensitive   = true
-  default     = ""
+variable "okta_short_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_org_name" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_challenge_url" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_psso_client" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_username" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
+variable "okta_scep_password" {
+  type      = string
+  sensitive = true
+  default   = ""
 }
