@@ -11,7 +11,7 @@ terraform {
 ## Create Jamf Protect <> Jamf Pro integration
 resource "jamfpro_jamf_protect" "protect_integration" {
   protect_url  = var.jamfprotect_url
-  client_id    = var.jamfprotect_clientid
+  client_id    = var.jamfprotect_client_id
   password     = var.jamfprotect_client_password
   auto_install = true
 

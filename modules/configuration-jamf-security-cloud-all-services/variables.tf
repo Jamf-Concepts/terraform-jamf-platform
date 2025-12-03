@@ -1,4 +1,4 @@
-variable "jamfpro_instance_url" {
+variable "jamfpro_instance_fqdn" {
   type      = string
   sensitive = true
   default   = ""
@@ -16,13 +16,13 @@ variable "jsc_password" {
   default   = ""
 }
 
-variable "tje_okta_clientid" {
+variable "okta_client_id" {
   type      = string
   sensitive = true
   default   = ""
 }
 
-variable "tje_okta_orgdomain" {
+variable "okta_org_domain" {
   type      = string
   sensitive = true
   default   = ""

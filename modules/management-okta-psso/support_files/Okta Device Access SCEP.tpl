@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadContent</key>
+			<dict>
+				<key>AllowAllAppsAccess</key>
+				<true/>
+				<key>CertificateRenewalTimeInterval</key>
+				<integer>13</integer>
+				<key>Challenge</key>
+				<string>$MSSCEPCHALLENGE</string>
+				<key>Key Type</key>
+				<string>RSA</string>
+				<key>Key Usage</key>
+				<integer>1</integer>
+				<key>KeyIsExtractable</key>
+				<false/>
+				<key>Keysize</key>
+				<integer>2048</integer>
+				<key>Name</key>
+				<string>CA-OKTA</string>
+				<key>ScepProxyOption</key>
+				<string>manual</string>
+				<key>Subject</key>
+				<array>
+					<array>
+						<array>
+							<string>CN</string>
+							<string>$SERIALNUMBER ODA $PROFILE_IDENTIFIER</string>
+						</array>
+					</array>
+				</array>
+				<key>URL</key>
+				<string>${okta_scep_url}</string>
+			</dict>
+			<key>PayloadDescription</key>
+			<string></string>
+			<key>PayloadDisplayName</key>
+			<string>SCEP (CA-OKTA)</string>
+			<key>PayloadEnabled</key>
+			<true/>
+			<key>PayloadIdentifier</key>
+			<string>4B58567E-B2D7-4D04-A8A4-19DF4FE2B78D</string>
+			<key>PayloadOrganization</key>
+			<string>${okta_org_name}</string>
+			<key>PayloadType</key>
+			<string>com.apple.security.scep</string>
+			<key>PayloadUUID</key>
+			<string>4B58567E-B2D7-4D04-A8A4-19DF4FE2B78D</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string></string>
+	<key>PayloadDisplayName</key>
+	<string>${okta_org_name}</string>
+	<key>PayloadEnabled</key>
+	<true/>
+	<key>PayloadIdentifier</key>
+	<string>F3E59D9B-2502-4723-859F-72E5E9C53441</string>
+	<key>PayloadOrganization</key>
+	<string>${okta_org_name}</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>F3E59D9B-2502-4723-859F-72E5E9C53441</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

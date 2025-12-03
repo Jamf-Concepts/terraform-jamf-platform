@@ -84,7 +84,7 @@ variable "jamfpro_client_secret" {
   sensitive = true
 }
 
-variable "jamfpro_instance_url" {
+variable "jamfpro_instance_fqdn" {
   type      = string
   sensitive = true
 }

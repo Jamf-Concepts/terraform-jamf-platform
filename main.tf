@@ -1,6 +1,6 @@
 ## Jamf Pro provider root configuration
 provider "jamfpro" {
-  jamfpro_instance_fqdn                = var.jamfpro_instance_url
+  jamfpro_instance_fqdn                = var.jamfpro_instance_fqdn
   auth_method                          = var.jamfpro_auth_method
   basic_auth_username                  = var.jamfpro_username
   basic_auth_password                  = var.jamfpro_password
@@ -17,19 +17,19 @@ provider "jamfpro" {
 provider "jsc" {
   username          = var.jsc_username
   password          = var.jsc_password
-  applicationid     = var.jsc_applicationid
-  applicationsecret = var.jsc_applicationsecret
+  applicationid     = var.jsc_application_id
+  applicationsecret = var.jsc_application_secret
 }
 
 # Onboarder Modules
 module "onboarder-all" {
   count                       = var.include_onboarder_all == true ? 1 : 0
   source                      = "./modules/onboarder-all"
-  jamfpro_instance_url        = var.jamfpro_instance_url
+  jamfpro_instance_fqdn       = var.jamfpro_instance_fqdn
   jamfpro_client_id           = var.jamfpro_client_id
   jamfpro_client_secret       = var.jamfpro_client_secret
   jamfprotect_url             = var.jamfprotect_url
-  jamfprotect_clientid        = var.jamfprotect_clientid
+  jamfprotect_client_id       = var.jamfprotect_client_id
   jamfprotect_client_password = var.jamfprotect_client_password
   providers = {
     jamfpro.jpro = jamfpro.jpro
@@ -68,11 +68,11 @@ module "onboarder-app-installers" {
 module "configuration-jamf-pro-jamf-protect" {
   count                       = var.include_jamf_protect_trial_kickstart == true ? 1 : 0
   source                      = "./modules/configuration-jamf-pro-jamf-protect"
-  jamfpro_instance_url        = var.jamfpro_instance_url
+  jamfpro_instance_fqdn       = var.jamfpro_instance_fqdn
   jamfpro_client_id           = var.jamfpro_client_id
   jamfpro_client_secret       = var.jamfpro_client_secret
   jamfprotect_url             = var.jamfprotect_url
-  jamfprotect_clientid        = var.jamfprotect_clientid
+  jamfprotect_client_id       = var.jamfprotect_client_id
   jamfprotect_client_password = var.jamfprotect_client_password
   providers = {
     jamfpro.jpro = jamfpro.jpro
@@ -82,7 +82,7 @@ module "configuration-jamf-pro-jamf-protect" {
 module "compliance-macOS-cis-level-1" {
   count                 = var.include_mac_cis_lvl1_benchmark == true ? 1 : 0
   source                = "./modules/compliance-macOS-cis-level-1"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -93,7 +93,7 @@ module "compliance-macOS-cis-level-1" {
 module "compliance-iOS-cis-level-1" {
   count                 = var.include_mobile_cis_lvl1_benchmark == true ? 1 : 0
   source                = "./modules/compliance-iOS-cis-level-1"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -104,7 +104,7 @@ module "compliance-iOS-cis-level-1" {
 module "compliance-macOS-disa-stig" {
   count                 = var.include_mac_stig_benchmark == true ? 1 : 0
   source                = "./modules/compliance-macOS-disa-stig"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -115,7 +115,7 @@ module "compliance-macOS-disa-stig" {
 module "compliance-iOS-disa-stig" {
   count                 = var.include_mobile_stig_benchmark == true ? 1 : 0
   source                = "./modules/compliance-iOS-disa-stig"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -126,7 +126,7 @@ module "compliance-iOS-disa-stig" {
 module "compliance-macOS-nist-800-171" {
   count                 = var.include_mac_800_171_benchmark == true ? 1 : 0
   source                = "./modules/compliance-macOS-nist-800-171"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -137,7 +137,7 @@ module "compliance-macOS-nist-800-171" {
 module "compliance-macOS-cmmc-level-1" {
   count                 = var.include_mac_cmmc_lvl1_benchmark == true ? 1 : 0
   source                = "./modules/compliance-macOS-cmmc-level-1"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -148,7 +148,7 @@ module "compliance-macOS-cmmc-level-1" {
 module "configuration-jamf-pro-admin-sso" {
   count                 = var.include_jamf_pro_admin_sso == true ? 1 : 0
   source                = "./modules/configuration-jamf-pro-admin-sso"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -159,7 +159,7 @@ module "configuration-jamf-pro-admin-sso" {
 module "configuration-jamf-pro-activation-code" {
   count                    = var.include_jamf_pro_activation_code == true ? 1 : 0
   source                   = "./modules/configuration-jamf-pro-activation-code"
-  jamfpro_instance_url     = var.jamfpro_instance_url
+  jamfpro_instance_fqdn    = var.jamfpro_instance_fqdn
   jamfpro_client_id        = var.jamfpro_client_id
   jamfpro_client_secret    = var.jamfpro_client_secret
   organization_name        = var.organization_name
@@ -172,7 +172,7 @@ module "configuration-jamf-pro-activation-code" {
 module "configuration-jamf-pro-smart-groups" {
   count                 = var.include_qol_smart_groups == true ? 1 : 0
   source                = "./modules/configuration-jamf-pro-smart-groups"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -183,7 +183,7 @@ module "configuration-jamf-pro-smart-groups" {
 module "management-macOS-microsoft-365" {
   count                 = var.include_microsoft_365 == true ? 1 : 0
   source                = "./modules/management-macOS-microsoft-365"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -194,7 +194,7 @@ module "management-macOS-microsoft-365" {
 module "configuration-jamf-pro-categories" {
   count                 = var.include_categories == true ? 1 : 0
   source                = "./modules/configuration-jamf-pro-categories"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -205,7 +205,7 @@ module "configuration-jamf-pro-categories" {
 module "management-iOS-configuration-profiles" {
   count                 = var.include_mobile_device_kickstart == true ? 1 : 0
   source                = "./modules/management-iOS-configuration-profiles"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -216,7 +216,7 @@ module "management-iOS-configuration-profiles" {
 module "configuration-jamf-pro-computer-management-settings" {
   count                 = var.include_computer_management_settings == true ? 1 : 0
   source                = "./modules/configuration-jamf-pro-computer-management-settings"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -227,7 +227,7 @@ module "configuration-jamf-pro-computer-management-settings" {
 module "endpoint-security-macOS-filevault" {
   count                 = var.include_filevault == true ? 1 : 0
   source                = "./modules/endpoint-security-macOS-filevault"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -238,7 +238,7 @@ module "endpoint-security-macOS-filevault" {
 module "endpoint-security-macOS-microsoft-defender" {
   count                 = var.include_defender == true ? 1 : 0
   source                = "./modules/endpoint-security-macOS-microsoft-defender"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -249,9 +249,26 @@ module "endpoint-security-macOS-microsoft-defender" {
 module "management-macOS-SSOe-Okta" {
   count                 = var.include_ssoe_okta == true ? 1 : 0
   source                = "./modules/management-macOS-SSOe-Okta"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
+  providers = {
+    jamfpro.jpro = jamfpro.jpro
+  }
+}
+
+module "management-okta_psso" {
+  count                 = var.include_okta_psso == true ? 1 : 0
+  source                = "./modules/management-okta-psso"
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
+  jamfpro_client_id     = var.jamfpro_client_id
+  jamfpro_client_secret = var.jamfpro_client_secret
+  okta_short_url        = var.okta_short_url
+  okta_org_name         = var.okta_org_name
+  okta_scep_url         = var.okta_scep_url
+  okta_psso_client      = var.okta_psso_client
+  okta_scep_username    = var.okta_scep_username
+  okta_scep_password    = var.okta_scep_password
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }
@@ -260,7 +277,7 @@ module "management-macOS-SSOe-Okta" {
 module "endpoint-security-macOS-crowdstrike" {
   count                 = var.include_crowdstrike == true ? 1 : 0
   source                = "./modules/endpoint-security-macOS-crowdstrike"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   falcon_api_client_id  = "placeholderclientID"
@@ -274,7 +291,7 @@ module "endpoint-security-macOS-crowdstrike" {
 module "management-macOS-rosetta" {
   count                 = var.include_rosetta == true ? 1 : 0
   source                = "./modules/management-macOS-rosetta"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -286,7 +303,7 @@ module "management-app-installers" {
   source                = "./modules/management-app-installers"
   for_each              = toset(var.app_installers)
   app_installer_name    = each.value
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -300,7 +317,7 @@ module "management-app-installers" {
 module "configuration-jamf-security-cloud-jamf-pro" {
   count                 = var.include_jsc_uemc == true ? 1 : 0
   source                = "./modules/configuration-jamf-security-cloud-jamf-pro"
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   jsc_username          = var.jsc_username
@@ -317,7 +334,7 @@ module "configuration-jamf-security-cloud-all-services" {
   source                = "./modules/configuration-jamf-security-cloud-all-services"
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -352,11 +369,11 @@ module "configuration-jamf-security-cloud-block-pages" {
 module "network-security-jamf-pro-content-filtering" {
   count                 = var.include_jsc_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-content-filtering"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -369,11 +386,11 @@ module "network-security-jamf-pro-content-filtering" {
 module "network-security-jamf-pro-network-threat-defense" {
   count                 = var.include_jsc_mtd_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-network-threat-defense"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -386,11 +403,11 @@ module "network-security-jamf-pro-network-threat-defense" {
 module "network-security-jamf-pro-content-filtering-and-network-threat-defense" {
   count                 = var.include_jsc_mtd_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-content-filtering-and-network-threat-defense"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -403,11 +420,11 @@ module "network-security-jamf-pro-content-filtering-and-network-threat-defense" 
 module "network-security-jamf-pro-zero-trust-network-access" {
   count                 = var.include_jsc_ztna == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -420,11 +437,11 @@ module "network-security-jamf-pro-zero-trust-network-access" {
 module "network-security-jamf-pro-zero-trust-network-access-and-content-filtering" {
   count                 = var.include_jsc_ztna_dp_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access-and-content-filtering"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {
@@ -437,11 +454,11 @@ module "network-security-jamf-pro-zero-trust-network-access-and-content-filterin
 module "network-security-jamf-pro-zero-trust-network-access-and-network-threat-prevention" {
   count                 = var.include_jsc_ztna_mtd_only == true ? 1 : 0
   source                = "./modules/network-security-jamf-pro-zero-trust-network-access-and-network-threat-prevention"
-  tje_okta_clientid     = var.tje_okta_clientid
-  tje_okta_orgdomain    = var.tje_okta_orgdomain
+  okta_client_id        = var.okta_client_id
+  okta_org_domain       = var.okta_org_domain
   jsc_username          = var.jsc_username
   jsc_password          = var.jsc_password
-  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
   providers = {

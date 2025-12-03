@@ -62,7 +62,7 @@ jobs:
           while IFS= read -r line; do
             # Run terraform apply with the line as a -var and capture errors
             echo "Applying: $line"
-            terraform apply -auto-approve -var "$line" -var "jamfpro_instance_url=${{ secrets.jamfpro_instance_url }}" \
+            terraform apply -auto-approve -var "$line" -var "jamfpro_instance_fqdn=${{ secrets.jamfpro_instance_fqdn }}" \
                           -var "jamfpro_client_id=${{ secrets.jamfpro_client_id }}" \
                           -var "jamfpro_client_secret=${{ secrets.jamfpro_client_secret }}" \
                           -var "jsc_username=${{ secrets.jsc_username }}" \
@@ -70,7 +70,7 @@ jobs:
                           -var "jsc_applicationid=${{ secrets.jsc_applicationid }}" \
                           -var "jsc_applicationsecret=${{ secrets.jsc_applicationsecret }}" \
                           -var "jamfprotect_url=${{ secrets.jamfprotect_url }}" \
-                          -var "jamfprotect_clientid=${{ secrets.jamfprotect_clientid }}" \
+                          -var "jamfprotect_client_id=${{ secrets.jamfprotect_client_id }}" \
                           -var "jamfprotect_client_password=${{ secrets.jamfprotect_client_password }}" \
                           -parallelism=1 \
             || exit_code=$?  # Capture the exit code
@@ -81,7 +81,7 @@ jobs:
               non_zero_exit_code_found="true"  # Set to true if any exit code other than 0 is found
               exit_code=0 #clear exit code
             fi
-            terraform destroy -auto-approve -var "$line" -var "jamfpro_instance_url=${{ secrets.jamfpro_instance_url }}" \
+            terraform destroy -auto-approve -var "$line" -var "jamfpro_instance_fqdn=${{ secrets.jamfpro_instance_fqdn }}" \
                           -var "jamfpro_client_id=${{ secrets.jamfpro_client_id }}" \
                           -var "jamfpro_client_secret=${{ secrets.jamfpro_client_secret }}" \
                           -var "jsc_username=${{ secrets.jsc_username }}" \
@@ -89,7 +89,7 @@ jobs:
                           -var "jsc_applicationid=${{ secrets.jsc_applicationid }}" \
                           -var "jsc_applicationsecret=${{ secrets.jsc_applicationsecret }}" \
                           -var "jamfprotect_url=${{ secrets.jamfprotect_url }}" \
-                          -var "jamfprotect_clientid=${{ secrets.jamfprotect_clientid }}" \
+                          -var "jamfprotect_client_id=${{ secrets.jamfprotect_client_id }}" \
                           -var "jamfprotect_client_password=${{ secrets.jamfprotect_client_password }}" \
                           -parallelism=1 \
                           -refresh=false \
@@ -98,7 +98,7 @@ jobs:
               echo "destroy failed so waiting 120 seconds before trying again" #tomcats please sync
               sleep 121 
               exit_code_destroy=0 #clear error code
-              terraform destroy -auto-approve -var "$line" -var "jamfpro_instance_url=${{ secrets.jamfpro_instance_url }}" \
+              terraform destroy -auto-approve -var "$line" -var "jamfpro_instance_fqdn=${{ secrets.jamfpro_instance_fqdn }}" \
                           -var "jamfpro_client_id=${{ secrets.jamfpro_client_id }}" \
                           -var "jamfpro_client_secret=${{ secrets.jamfpro_client_secret }}" \
                           -var "jsc_username=${{ secrets.jsc_username }}" \
@@ -106,7 +106,7 @@ jobs:
                           -var "jsc_applicationid=${{ secrets.jsc_applicationid }}" \
                           -var "jsc_applicationsecret=${{ secrets.jsc_applicationsecret }}" \
                           -var "jamfprotect_url=${{ secrets.jamfprotect_url }}" \
-                          -var "jamfprotect_clientid=${{ secrets.jamfprotect_clientid }}" \
+                          -var "jamfprotect_client_id=${{ secrets.jamfprotect_client_id }}" \
                           -var "jamfprotect_client_password=${{ secrets.jamfprotect_client_password }}" \
                           -parallelism=1 \
                           -refresh=false
