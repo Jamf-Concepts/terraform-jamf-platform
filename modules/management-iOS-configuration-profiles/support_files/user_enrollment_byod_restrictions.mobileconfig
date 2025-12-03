@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>PayloadDisplayName</key>
+				<string>Restrictions Payload</string>
+				<key>PayloadIdentifier</key>
+				<string>05BF3E8D-2343-4CCE-9E97-F2FCE55E2CE8</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.applicationaccess</string>
+				<key>PayloadUUID</key>
+				<string>05BF3E8D-2343-4CCE-9E97-F2FCE55E2CE8</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>allowManagedToWriteUnmanagedContacts</key>
+				<false/>
+				<key>allowOpenFromManagedToUnmanaged</key>
+				<false/>
+				<key>allowScreenShot</key>
+				<false/>
+				<key>allowUnmanagedToReadManagedContacts</key>
+				<false/>
+				<key>forceAirDropUnmanaged</key>
+				<true/>
+				<key>requireManagedPasteboard</key>
+				<true/>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string/>
+		<key>PayloadDisplayName</key>
+		<string>User Enrollment / BYOD Restrictions</string>
+		<key>PayloadEnabled</key>
+		<true/>
+		<key>PayloadIdentifier</key>
+		<string>0E113A00-9E33-4B76-BBEE-E46056A63584</string>
+		<key>PayloadOrganization</key>
+		<string>JAMF Software</string>
+		<key>PayloadRemovalDisallowed</key>
+		<true/>
+		<key>PayloadScope</key>
+		<string>System</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>0E113A00-9E33-4B76-BBEE-E46056A63584</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>

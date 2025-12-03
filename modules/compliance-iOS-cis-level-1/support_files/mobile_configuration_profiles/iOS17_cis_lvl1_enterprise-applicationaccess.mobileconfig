@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ConsentText</key>
+	<dict>
+		<key>default</key>
+		<string>THE SOFTWARE IS PROVIDED 'AS IS' WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY THAT THE SOFTWARE WILL CONFORM TO SPECIFICATIONS, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND FREEDOM FROM INFRINGEMENT, AND ANY WARRANTY THAT THE DOCUMENTATION WILL CONFORM TO THE SOFTWARE, OR ANY WARRANTY THAT THE SOFTWARE WILL BE ERROR FREE.  IN NO EVENT SHALL NIST BE LIABLE FOR ANY DAMAGES, INCLUDING, BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL OR CONSEQUENTIAL DAMAGES, ARISING OUT OF, RESULTING FROM, OR IN ANY WAY CONNECTED WITH THIS SOFTWARE, WHETHER OR NOT BASED UPON WARRANTY, CONTRACT, TORT, OR OTHERWISE, WHETHER OR NOT INJURY WAS SUSTAINED BY PERSONS OR PROPERTY OR OTHERWISE, AND WHETHER OR NOT LOSS WAS SUSTAINED FROM, OR AROSE OUT OF THE RESULTS OF, OR USE OF, THE SOFTWARE OR SERVICES PROVIDED HEREUNDER.</string>
+	</dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadDisplayName</key>
+			<string>Restrictions Payload</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.applicationaccess.0E950DDF-60C0-4D84-AE48-7423DAA1DE77</string>
+			<key>PayloadOrganization</key>
+			<string>JAMF Software</string>
+			<key>PayloadType</key>
+			<string>com.apple.applicationaccess</string>
+			<key>PayloadUUID</key>
+			<string>0E950DDF-60C0-4D84-AE48-7423DAA1DE77</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>allowApplePersonalizedAdvertising</key>
+			<false/>
+			<key>allowAssistantWhileLocked</key>
+			<false/>
+			<key>allowCloudBackup</key>
+			<false/>
+			<key>allowCloudDocumentSync</key>
+			<false/>
+			<key>allowCloudKeychainSync</key>
+			<false/>
+			<key>allowDiagnosticSubmission</key>
+			<false/>
+			<key>allowEraseContentAndSettings</key>
+			<false/>
+			<key>allowLockScreenControlCenter</key>
+			<false/>
+			<key>allowLockScreenNotificationsView</key>
+			<false/>
+			<key>allowManagedAppsCloudSync</key>
+			<false/>
+			<key>allowOpenFromManagedToUnmanaged</key>
+			<false/>
+			<key>allowOpenFromUnmanagedToManaged</key>
+			<false/>
+			<key>allowPasswordProximityRequests</key>
+			<false/>
+			<key>allowProximitySetupToNewDevice</key>
+			<false/>
+			<key>allowUIConfigurationProfileInstallation</key>
+			<false/>
+			<key>allowUSBRestrictedMode</key>
+			<true/>
+			<key>allowVPNCreation</key>
+			<false/>
+			<key>allowVoiceDialing</key>
+			<false/>
+			<key>forceAirDropUnmanaged</key>
+			<true/>
+			<key>forceAuthenticationBeforeAutoFill</key>
+			<true/>
+			<key>forceAutomaticDateAndTime</key>
+			<true/>
+			<key>forceEncryptedBackup</key>
+			<true/>
+			<key>forceWatchWristDetection</key>
+			<true/>
+			<key>ratingRegion</key>
+			<string>us</string>
+			<key>safariAcceptCookies</key>
+			<real>1</real>
+			<key>safariForceFraudWarning</key>
+			<true/>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Created: 2024-11-07Configuration settings for the com.apple.applicationaccess preference domain.</string>
+	<key>PayloadDisplayName</key>
+	<string>iOS17_cis_lvl1_enterprise-applicationaccess</string>
+	<key>PayloadEnabled</key>
+	<true/>
+	<key>PayloadIdentifier</key>
+	<string>6A7EF5C7-14FC-4A81-B57E-4F43EE8C7512</string>
+	<key>PayloadOrganization</key>
+	<string>macOS Security Compliance Project</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>DF727C19-60CB-488D-92EE-8D3B37CB749E</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

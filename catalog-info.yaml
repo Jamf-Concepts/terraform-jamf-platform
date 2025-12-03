@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: TJE-Terraform
+spec:
+  type: provisioning
+  lifecycle: experimental
+  owner: reports to oliver lindsey
+  system: consulting-engineers

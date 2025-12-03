@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>Defer</key>
+				<true/>
+				<key>DeferDontAskAtUserLogout</key>
+				<true/>
+				<key>DeferForceAtUserLoginMaxBypassAttempts</key>
+				<integer>0</integer>
+				<key>Enable</key>
+				<string>On</string>
+				<key>PayloadDisplayName</key>
+				<string>FileVault</string>
+				<key>PayloadIdentifier</key>
+				<string>F218C6E3-F7F6-40EE-998C-5626669C79EC</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.MCX.FileVault2</string>
+				<key>PayloadUUID</key>
+				<string>F218C6E3-F7F6-40EE-998C-5626669C79EC</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>ShowRecoveryKey</key>
+				<false/>
+				<key>UseRecoveryKey</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>EncryptCertPayloadUUID</key>
+				<string>515851b2-9b26-4739-9801-0675a7584316</string>
+				<key>Location</key>
+				<string>IT</string>
+				<key>PayloadDisplayName</key>
+				<string>FileVault Recovery Key Escrow</string>
+				<key>PayloadIdentifier</key>
+				<string>8D2D38EE-D29E-4AF2-9A2B-386F30FF22DA</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.security.FDERecoveryKeyEscrow</string>
+				<key>PayloadUUID</key>
+				<string>8D2D38EE-D29E-4AF2-9A2B-386F30FF22DA</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+			</dict>
+			<dict>
+				<key>PayloadDisplayName</key>
+				<string>MCX</string>
+				<key>PayloadIdentifier</key>
+				<string>3F3D5276-1983-4578-A5FD-EF4D008BCEB8</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.MCX</string>
+				<key>PayloadUUID</key>
+				<string>3F3D5276-1983-4578-A5FD-EF4D008BCEB8</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>dontAllowFDEDisable</key>
+				<true/>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string/>
+		<key>PayloadDisplayName</key>
+		<string>FileVault 2 Enforcement</string>
+		<key>PayloadEnabled</key>
+		<true/>
+		<key>PayloadIdentifier</key>
+		<string>AC18D96B-C9E5-4BD6-9FF4-4FA9C2F8B783</string>
+		<key>PayloadOrganization</key>
+		<string>Jamf Software</string>
+		<key>PayloadRemovalDisallowed</key>
+		<true/>
+		<key>PayloadScope</key>
+		<string>System</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>AC18D96B-C9E5-4BD6-9FF4-4FA9C2F8B783</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>

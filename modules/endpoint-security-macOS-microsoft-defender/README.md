@@ -1,0 +1,1 @@
+This module sets up necessary items for a Microsoft Defender deployment

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ConsentText</key>
+	<dict>
+		<key>default</key>
+		<string>THE SOFTWARE IS PROVIDED 'AS IS' WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY THAT THE SOFTWARE WILL CONFORM TO SPECIFICATIONS, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND FREEDOM FROM INFRINGEMENT, AND ANY WARRANTY THAT THE DOCUMENTATION WILL CONFORM TO THE SOFTWARE, OR ANY WARRANTY THAT THE SOFTWARE WILL BE ERROR FREE.  IN NO EVENT SHALL NIST BE LIABLE FOR ANY DAMAGES, INCLUDING, BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL OR CONSEQUENTIAL DAMAGES, ARISING OUT OF, RESULTING FROM, OR IN ANY WAY CONNECTED WITH THIS SOFTWARE, WHETHER OR NOT BASED UPON WARRANTY, CONTRACT, TORT, OR OTHERWISE, WHETHER OR NOT INJURY WAS SUSTAINED BY PERSONS OR PROPERTY OR OTHERWISE, AND WHETHER OR NOT LOSS WAS SUSTAINED FROM, OR AROSE OUT OF THE RESULTS OF, OR USE OF, THE SOFTWARE OR SERVICES PROVIDED HEREUNDER.</string>
+	</dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>EmailAccountType</key>
+			<string>EmailTypeIMAP</string>
+			<key>IncomingMailServerAuthentication</key>
+			<string>EmailAuthPassword</string>
+			<key>IncomingMailServerPortNumber</key>
+			<integer>993</integer>
+			<key>OutgoingMailServerAuthentication</key>
+			<string>EmailAuthPassword</string>
+			<key>OutgoingMailServerPortNumber</key>
+			<integer>587</integer>
+			<key>PayloadDescription</key>
+			<string></string>
+			<key>PayloadDisplayName</key>
+			<string>Email</string>
+			<key>PayloadEnabled</key>
+			<true/>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.mail.managed.df906863-10ce-44b5-91fd-5e9e8f6f931a</string>
+			<key>PayloadOrganization</key>
+			<string>Project Mercury</string>
+			<key>PayloadType</key>
+			<string>com.apple.mail.managed</string>
+			<key>PayloadUUID</key>
+			<string>df906863-10ce-44b5-91fd-5e9e8f6f931a</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PreventAppSheet</key>
+			<false/>
+			<key>PreventMove</key>
+			<false/>
+			<key>allowMailDrop</key>
+			<false/>
+			<key>disableMailRecentsSyncing</key>
+			<false/>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Created: 2024-11-07Configuration settings for the com.apple.mail.managed preference domain.</string>
+	<key>PayloadDisplayName</key>
+	<string>iOS18_cis_lvl1_enterprise-mail.managed</string>
+	<key>PayloadEnabled</key>
+	<true/>
+	<key>PayloadIdentifier</key>
+	<string>55126F89-FB4F-4ECD-A4BC-062CD14F4611</string>
+	<key>PayloadOrganization</key>
+	<string>macOS Security Compliance Project</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>0A8EA22A-546D-47A5-AEBF-F9991DBC2DD9</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

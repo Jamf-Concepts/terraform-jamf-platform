@@ -1,0 +1,10 @@
+*.tfstate
+*.tfstate.backup
+.terraform*
+terraform.tfvars
+terraform.*.tfvars
+catalog-info.yaml
+.DS_Store
+plan.json
+plan.out
+*.terraformrc
