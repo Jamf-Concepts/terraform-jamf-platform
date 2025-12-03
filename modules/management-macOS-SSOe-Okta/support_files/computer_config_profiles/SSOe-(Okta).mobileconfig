@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>PayloadUUID</key>
+    <string>FF165609-15A2-4213-9157-6A5A699352DF</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadOrganization</key>
+    <string>The Jamf Experience</string>
+    <key>PayloadIdentifier</key>
+    <string>FF165609-15A2-4213-9157-6A5A699352DF</string>
+    <key>PayloadDisplayName</key>
+    <string>Okta FastPass</string>
+    <key>PayloadDescription</key>
+    <string>Enables Okta FastPass and Apple Single Sign On Extension for phishing resistant app authentication.</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    <key>PayloadEnabled</key>
+    <true/>
+    <key>PayloadRemovalDisallowed</key>
+    <true/>
+    <key>PayloadScope</key>
+    <string>System</string>
+    <key>PayloadContent</key>
+    <array>
+      <dict>
+        <key>PayloadUUID</key>
+        <string>F0C88545-55BC-4ED5-BAB0-C864202F6D59</string>
+        <key>PayloadType</key>
+        <string>com.apple.loginitems.managed</string>
+        <key>PayloadOrganization</key>
+        <string>Insert Org Name</string>
+        <key>PayloadIdentifier</key>
+        <string>F0C88545-55BC-4ED5-BAB0-C864202F6D59</string>
+        <key>PayloadDisplayName</key>
+        <string>Login Items: Managed Items</string>
+        <key>PayloadDescription</key>
+        <string/>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+        <key>PayloadEnabled</key>
+        <true/>
+        <key>AutoLaunchedApplicationDictionary-managed</key>
+        <array>
+          <dict>
+            <key>Hide</key>
+            <false/>
+            <key>Path</key>
+            <string>/Applications/Okta Verify.app</string>
+          </dict>
+          <dict>
+            <key>Hide</key>
+            <false/>
+            <key>Path</key>
+            <string>/Applications/Jamf Trust.app</string>
+          </dict>
+        </array>
+      </dict>
+      <dict>
+        <key>PayloadUUID</key>
+        <string>0DA7212A-22F9-4401-9D77-0FD7B936AB43</string>
+        <key>PayloadType</key>
+        <string>com.apple.loginwindow</string>
+        <key>PayloadOrganization</key>
+        <string>Insert Org Name</string>
+        <key>PayloadIdentifier</key>
+        <string>0DA7212A-22F9-4401-9D77-0FD7B936AB43</string>
+        <key>PayloadDisplayName</key>
+        <string>Login Window</string>
+        <key>PayloadDescription</key>
+        <string/>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+        <key>PayloadEnabled</key>
+        <true/>
+        <key>DisableLoginItemsSuppression</key>
+        <false/>
+      </dict>
+      <dict>
+        <key>PayloadUUID</key>
+        <string>831532EB-835F-460A-BAF8-BB67539D1226</string>
+        <key>PayloadType</key>
+        <string>com.apple.security.scep</string>
+        <key>PayloadOrganization</key>
+        <string>Insert Org Name</string>
+        <key>PayloadIdentifier</key>
+        <string>831532EB-835F-460A-BAF8-BB67539D1226</string>
+        <key>PayloadDisplayName</key>
+        <string>SCEP (Okta Device Management Attestation)</string>
+        <key>PayloadDescription</key>
+        <string/>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+        <key>PayloadEnabled</key>
+        <true/>
+        <key>PayloadContent</key>
+        <dict>
+          <key>Name</key>
+          <string>Okta Device Management Attestation</string>
+          <key>URL</key>
+          <string>https://your-org.okta.com/pki/9CD2C9B157304554ABE2693095021CE0E5F5BBC0/scep/racibq1008DVO5DuK1d7</string>
+          <key>Challenge</key>
+          <string>1b5w100qBp9bo4s5dHcbVUuzs_2xODwKLMqYfzHP9NM</string>
+          <key>Key Type</key>
+          <string>RSA</string>
+          <key>Key Usage</key>
+          <integer>1</integer>
+          <key>Keysize</key>
+          <integer>2048</integer>
+          <key>Subject</key>
+          <array>
+            <array>
+              <array>
+                <string>CN</string>
+                <string>otkaAttest $UDID</string>
+              </array>
+            </array>
+          </array>
+          <key>CertificateRenewalTimeInterval</key>
+          <integer>14</integer>
+          <key>KeyIsExtractable</key>
+          <false/>
+          <key>AllowAllAppsAccess</key>
+          <true/>
+        </dict>
+      </dict>
+      <dict>
+        <key>ExtensionIdentifier</key>
+        <string>com.okta.mobile.auth-service-extension</string>
+        <key>PayloadDisplayName</key>
+        <string>Single Sign-On Extensions Payload</string>
+        <key>PayloadIdentifier</key>
+        <string>F68A8AC7-3F4D-4111-A566-D9322D97FB10</string>
+        <key>PayloadOrganization</key>
+        <string>JAMF Software</string>
+        <key>PayloadType</key>
+        <string>com.apple.extensiblesso</string>
+        <key>PayloadUUID</key>
+        <string>F68A8AC7-3F4D-4111-A566-D9322D97FB10</string>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+        <key>Realm</key>
+        <string>Okta Device</string>
+        <key>TeamIdentifier</key>
+        <string>B7F62B65BN</string>
+        <key>Type</key>
+        <string>Credential</string>
+        <key>Hosts</key>
+        <array>
+          <string>your-org.okta.com</string>
+        </array>
+        <key>URLs</key>
+        <array/>
+      </dict>
+      <dict>
+        <key>PayloadDisplayName</key>
+        <string>Custom Settings</string>
+        <key>PayloadIdentifier</key>
+        <string>D948CCF3-3F77-4B4D-B2E3-3D2684C266CC</string>
+        <key>PayloadOrganization</key>
+        <string>JAMF Software</string>
+        <key>PayloadType</key>
+        <string>com.apple.ManagedClient.preferences</string>
+        <key>PayloadUUID</key>
+        <string>D948CCF3-3F77-4B4D-B2E3-3D2684C266CC</string>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+        <key>PayloadContent</key>
+        <dict>
+          <key>com.okta.mobile</key>
+          <dict>
+            <key>Forced</key>
+            <array>
+              <dict>
+                <key>mcx_preference_settings</key>
+                <dict>
+                  <key>OktaVerify.EnrollmentOptions</key>
+                  <string>SilentEnrollmentDisabled</string>
+                  <key>OktaVerify.LaunchOptions</key>
+                  <string>HideMainWindow</string>
+                  <key>OktaVerify.OrgUrl</key>
+                  <string>your-org.okta.com</string>
+                </dict>
+              </dict>
+            </array>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>PayloadDisplayName</key>
+        <string>Custom Settings</string>
+        <key>PayloadIdentifier</key>
+        <string>BD3D5AF1-6877-4B55-A6B4-D5202380F205</string>
+        <key>PayloadOrganization</key>
+        <string>JAMF Software</string>
+        <key>PayloadType</key>
+        <string>com.apple.ManagedClient.preferences</string>
+        <key>PayloadUUID</key>
+        <string>BD3D5AF1-6877-4B55-A6B4-D5202380F205</string>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+        <key>PayloadContent</key>
+        <dict>
+          <key>com.okta.mobile.auth-service-extension</key>
+          <dict>
+            <key>Forced</key>
+            <array>
+              <dict>
+                <key>mcx_preference_settings</key>
+                <dict>
+                  <key>OktaVerify.EnrollmentOptions</key>
+                  <string>SilentEnrollmentDisabled</string>
+                  <key>OktaVerify.LaunchOptions</key>
+                  <string>HideMainWindow</string>
+                  <key>OktaVerify.OrgUrl</key>
+                  <string>your-org.okta.com</string>
+                </dict>
+              </dict>
+            </array>
+          </dict>
+        </dict>
+      </dict>
+    </array>
+  </dict>
+</plist>

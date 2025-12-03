@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>PayloadContent</key>
+				<dict>
+					<key>com.apple.applicationaccess</key>
+					<dict>
+						<key>Forced</key>
+						<array>
+							<dict>
+								<key>mcx_preference_settings</key>
+								<dict>
+									<key>allowAirDrop</key>
+									<false />
+									<key>allowAirPlayIncomingRequests</key>
+									<false />
+									<key>allowApplePersonalizedAdvertising</key>
+									<false />
+									<key>enforcedSoftwareUpdateDelay</key>
+									<integer>30</integer>
+									<key>forceOnDeviceOnlyDictation</key>
+									<true />
+								</dict>
+							</dict>
+						</array>
+					</dict>
+				</dict>
+				<key>PayloadDisplayName</key>
+				<string>Custom Settings</string>
+				<key>PayloadIdentifier</key>
+				<string>F36AEDD1-4A9B-4023-823C-729608675168</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.ManagedClient.preferences</string>
+				<key>PayloadUUID</key>
+				<string>F36AEDD1-4A9B-4023-823C-729608675168</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string></string>
+		<key>PayloadDisplayName</key>
+		<string>Sonoma_cis_lvl1-applicationaccess</string>
+		<key>PayloadEnabled</key>
+		<true />
+		<key>PayloadIdentifier</key>
+		<string>040a9908-4567-45b9-812b-9af9a41cb4c9</string>
+		<key>PayloadOrganization</key>
+		<string>Jamf Software</string>
+		<key>PayloadRemovalDisallowed</key>
+		<true />
+		<key>PayloadScope</key>
+		<string>System</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>040a9908-4567-45b9-812b-9af9a41cb4c9</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>

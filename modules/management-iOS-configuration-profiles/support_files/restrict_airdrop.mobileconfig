@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>PayloadDisplayName</key>
+				<string>Restrictions Payload</string>
+				<key>PayloadIdentifier</key>
+				<string>BE6ECC3F-7046-41CA-9D95-456F7DBED276</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.applicationaccess</string>
+				<key>PayloadUUID</key>
+				<string>BE6ECC3F-7046-41CA-9D95-456F7DBED276</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>allowAirDrop</key>
+				<false/>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string/>
+		<key>PayloadDisplayName</key>
+		<string>Restrict Airdrop</string>
+		<key>PayloadEnabled</key>
+		<true/>
+		<key>PayloadIdentifier</key>
+		<string>E56C8548-AD60-47EF-9FB0-37B58FF0D774</string>
+		<key>PayloadOrganization</key>
+		<string>JamfSoftware</string>
+		<key>PayloadRemovalDisallowed</key>
+		<true/>
+		<key>PayloadScope</key>
+		<string>System</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>E56C8548-AD60-47EF-9FB0-37B58FF0D774</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>PayloadDisplayName</key>
+				<string>Restrictions Payload</string>
+				<key>PayloadIdentifier</key>
+				<string>D686F232-830C-446D-B04F-AF1C85183F91</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.applicationaccess</string>
+				<key>PayloadUUID</key>
+				<string>D686F232-830C-446D-B04F-AF1C85183F91</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>allowAccountModification</key>
+				<false/>
+				<key>allowAirDrop</key>
+				<false/>
+				<key>allowCamera</key>
+				<false/>
+				<key>allowEraseContentAndSettings</key>
+				<false/>
+				<key>allowScreenShot</key>
+				<false/>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string/>
+		<key>PayloadDisplayName</key>
+		<string>Shared Device Restrictions</string>
+		<key>PayloadEnabled</key>
+		<true/>
+		<key>PayloadIdentifier</key>
+		<string>3E0B3050-D0E8-44A0-8513-BC6CC5A4D603</string>
+		<key>PayloadOrganization</key>
+		<string>JAMF Software</string>
+		<key>PayloadRemovalDisallowed</key>
+		<true/>
+		<key>PayloadScope</key>
+		<string>System</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>3E0B3050-D0E8-44A0-8513-BC6CC5A4D603</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>

@@ -1,0 +1,38 @@
+## Define miscellaneous variables
+variable "jamfpro_instance_url" {
+  description = "Jamf Pro Instance name."
+  type        = string
+}
+
+variable "jamfpro_auth_method" {
+  description = "Jamf Pro Auth Method."
+  type        = string
+  default     = "oauth2" #basic or oauth2
+}
+
+variable "jamfpro_client_id" {
+  description = "Jamf Pro Client ID for authentication."
+  type        = string
+}
+
+variable "jamfpro_client_secret" {
+  description = "Jamf Pro Client Secret for authentication."
+  type        = string
+  sensitive   = true
+}
+
+variable "falcon_api_client_id" {
+  description = "Falcon API Client ID"
+  type        = string
+}
+
+variable "falcon_api_secret" {
+  description = "Falcon API Secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "falcon_customer_id" {
+  description = "Falcon Customer ID"
+  type        = string
+}
