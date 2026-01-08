@@ -15,7 +15,7 @@ terraform {
 ## Jamf Pro provider root configuration
 provider "jamfpro" {
   alias                                = "jpro"
-  jamfpro_instance_fqdn                = var.jamfpro_instance_fqdn
+  jamfpro_instance_fqdn                = var.jamfpro_instance_url
   auth_method                          = var.jamfpro_auth_method
   basic_auth_username                  = var.jamfpro_username
   basic_auth_password                  = var.jamfpro_password

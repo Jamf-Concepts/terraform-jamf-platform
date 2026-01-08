@@ -30,7 +30,7 @@ Copy and paste the following data then customize it with your own credentials an
 ```
 ## Jamf Pro Account Details
 jamfpro_auth_method   = "" ## oauth2 or basic
-jamfpro_instance_fqdn  = ""
+jamfpro_instance_url  = ""
 jamfpro_client_id     = ""
 jamfpro_client_secret = ""
 jamfpro_username      = ""
