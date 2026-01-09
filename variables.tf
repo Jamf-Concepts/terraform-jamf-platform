@@ -558,6 +558,25 @@ variable "include_crowdstrike" {
   default = false
 }
 
+variable "falcon_api_client_id" {
+  description = "Falcon API Client ID"
+  type        = string
+  default     = ""
+}
+
+variable "falcon_api_secret" {
+  description = "Falcon API Secret"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "falcon_customer_id" {
+  description = "Falcon Customer ID"
+  type        = string
+  default     = ""
+}
+
 variable "include_onboarder_all" {
   type    = bool
   default = false

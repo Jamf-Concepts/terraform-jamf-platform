@@ -390,3 +390,34 @@ options:
     category: Browsers
     display_name: Microsoft Edge
     display_desc: Configures Microsoft Edge in Jamf Pro to be deployable to managed computers.
+
+crowdstrike:
+  - key: include_crowdstrike
+    type: <boolean>
+    presence: optional
+    module_name: module.endpoint-security-macOS-crowdstrike
+    required_provider: jpro
+    category: Security
+    display_name: Deploy CrowdStrike Falcon
+    display_desc: Configures CrowdStrike Falcon sensor deployment for macOS endpoint protection. Creates necessary scripts, configuration profiles, and policies for automated Falcon sensor installation and management.
+
+  - key: falcon_api_client_id
+    type: <string>
+    presence: required
+    content: The Client ID from your CrowdStrike API Client
+    display_name: Falcon API Client ID
+    display_desc: Client ID used for CrowdStrike Falcon API access
+
+  - key: falcon_api_secret
+    type: <string>
+    presence: required
+    content: The Client Secret from your CrowdStrike API Client
+    display_name: Falcon API Secret
+    display_desc: Client Secret used for CrowdStrike Falcon API access
+
+  - key: falcon_customer_id
+    type: <string>
+    presence: required
+    content: Your CrowdStrike Customer ID without the checksum
+    display_name: Falcon Customer ID (CID)
+    display_desc: CrowdStrike Customer ID used for Falcon sensor deployment

@@ -280,9 +280,9 @@ module "endpoint-security-macOS-crowdstrike" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
-  falcon_api_client_id  = "placeholderclientID"
-  falcon_api_secret     = "placeholderclientsecret"
-  falcon_customer_id    = "placeholdercustomerID"
+  falcon_api_client_id  = var.falcon_api_client_id
+  falcon_api_secret     = var.falcon_api_secret
+  falcon_customer_id    = var.falcon_customer_id
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }

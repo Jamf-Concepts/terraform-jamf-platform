@@ -23,8 +23,8 @@ resource "jamfpro_script" "scripts_falconpkg" {
   priority        = "AFTER"
   info            = "Source: https://github.com/franton/Crowdstrike-API-Scripts/blob/main/install-csf.sh"
   notes           = ""
-  parameter4      = var.falcon_api_client_id
-  parameter5      = var.falcon_api_secret
+  parameter4      = "FALCON API CLIENT ID"
+  parameter5      = "FALCON API SECRET"
   parameter6      = ""
   parameter7      = ""
 }
@@ -37,7 +37,7 @@ resource "jamfpro_script" "scripts_falconcid" {
   priority        = "AFTER"
   info            = ""
   notes           = ""
-  parameter4      = var.falcon_customer_id
+  parameter4      = "CCID"
   parameter5      = ""
   parameter6      = ""
   parameter7      = ""
@@ -87,15 +87,15 @@ resource "jamfpro_policy" "policy_crowdstrike_api_install" {
   payloads {
     scripts {
       id         = jamfpro_script.scripts_falconpkg.id
-      priority   = "After"
-      parameter4 = ""
-      parameter5 = ""
+      priority   = "Before"
+      parameter4 = var.falcon_api_client_id
+      parameter5 = var.falcon_api_secret
       parameter6 = ""
     }
     scripts {
       id         = jamfpro_script.scripts_falconcid.id
       priority   = "After"
-      parameter4 = ""
+      parameter4 = var.falcon_customer_id
       parameter5 = ""
       parameter6 = ""
     }
