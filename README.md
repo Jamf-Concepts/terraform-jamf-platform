@@ -14,7 +14,7 @@ This project utlizes the community Terraform providers for [Jamf Pro](https://re
 
 Lowering Terraform parallelism from 10 to 1 reduces the chances of API call errors. Run this command before applying your configuration
 
-```
+```sh
 export TF_CLI_ARGS_apply="-parallelism=1"
 ```
 
@@ -22,13 +22,14 @@ We also recommend setting the `mandatory_request_delay_milliseconds`provider key
 
 # Running Included Modules
 
-The modules included here are using aliased calls to the Jamf Pro and Jamf Security Cloud providers that are used. This is done to ensure that you only need credentials for the module you are running. 
+The modules included here are using aliased calls to the Jamf Pro and Jamf Security Cloud providers that are used. This is done to ensure that you only need credentials for the module you are running.
 
 To run these successfully in your environment, include the following:
 
 1. In your root main.tf file, add the required providers
 2. Add the Provider configs for your required provider. Change whatever is needed but make sure to leave the ```alias``` variable. Here's are examples for both included providers:
-```
+
+```terraform
 ## Jamf Pro provider root configuration
 provider "jamfpro" {
   alias                                = "jpro"
@@ -54,8 +55,10 @@ provider "jsc" {
   application_secret = var.jsc_application_secret
 }
 ```
+
 3. Add a ```providers``` block to each sub-module call. Here's an example:
-```
+
+```terraform
 module "configuration-jamf-security-cloud-jamf-pro" {
   source                = "module/source/file/path"
   jamfpro_instance_url  = var.jamfpro_instance_url
@@ -69,9 +72,12 @@ module "configuration-jamf-security-cloud-jamf-pro" {
   }
 }
 ```
-4. Sub-modules will need to call the required provider slightly differently. 
-### Normal method - (also used for your root main.tf):
-```
+
+4. Sub-modules will need to call the required provider slightly differently.
+
+### Normal method - (also used for your root main.tf)
+
+```terraform
 terraform {
   required_providers {
     jamfpro = {
@@ -85,8 +91,10 @@ terraform {
   }
 }
 ```
-### Revised method for sub-modules:
-```
+
+### Revised method for sub-modules
+
+```terraform
 terraform {
   required_providers {
     jamfpro = {
@@ -105,14 +113,14 @@ terraform {
 
 This Terraform project requires Jamf API credentials and other context-specific variables that you'll need to define locally in a terraform.tfvars file.
 
-```
+```sh
 cd /Users/[FIRST.LAST]/PATH
 nano terraform.tfvars
 ```
 
 Copy and paste the following data then customize it with your own credentials and set knobs to enable specific modules contained within this project.
 
-```
+```hcl
 ## Jamf Pro Account Details
 jamfpro_auth_method   = "" ## oauth2 or basic
 jamfpro_instance_url  = ""
@@ -222,16 +230,66 @@ Save and exit.
 
 Ensure that you are in the correct project folder when performing Terraform commands, ie.,
 
-```
+```text
 /Users/[FIRST.LAST]/PATH/
 ```
 
 Before applying any terraform modules you must initialize the providers being called. It's a good idea to run this before the first apply of your session
 
-```
+```sh
 terraform init -upgrade
 ```
 
 Terraform must be formatted correctly to run, which can be done manually after saving changes before each run with `terraform fmt`. If using Visual Studio Code, use [this guide](https://medium.com/nerd-for-tech/how-to-auto-format-hcl-terraform-code-in-visual-studio-code-6fa0e7afbb5e) to never have to run the format command again!
 
-< INSERT INSTRUCTIONS FOR RUNNING TERRAFORM MODULES>
+## Running Terraform modules
+
+This repo uses boolean "include_..." variables to turn modules on/off. Most modules are guarded with `count = var.include_x == true ? 1 : 0` in `main.tf`.
+
+1. Create a local `terraform.tfvars` (see the example above).
+2. Set provider credentials (Jamf Pro and/or Jamf Security Cloud and/or Jamf Protect).
+3. Enable what you want to run by setting the corresponding include variable(s) to `true`.
+4. Initialize providers and format:
+
+  ```sh
+  terraform init -upgrade
+  terraform fmt -recursive
+  ```
+
+5. Plan and apply:
+
+  ```sh
+  terraform plan
+  terraform apply
+  ```
+
+6. If you see API throttling/timeouts, reduce concurrency:
+
+  ```sh
+  export TF_CLI_ARGS_apply="-parallelism=1"
+  ```
+
+7. To run a single module, set only one include toggle to `true` (for example, `include_categories = true`) and keep the other `include_...` values `false`, then run `terraform plan` and `terraform apply`.
+
+  ```sh
+  terraform apply -var 'include_categories=true'
+  ```
+
+8. To remove what you applied:
+
+  ```sh
+  terraform destroy
+  ```
+
+## Contributing
+
+Contributions are welcome - especially new modules, improvements to existing modules, and documentation updates.
+
+- Contribution workflow and expectations: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Terraform + module conventions: [STYLE_GUIDE.md](STYLE_GUIDE.md)
+
+Key repo expectations:
+
+- Run `terraform fmt -check -recursive` (CI enforces formatting).
+- If you add a new module toggle, update `spec.yml` so CI can exercise it.
+- For module changes, include a module `README.md` and an example under `examples/` (see PR template).
