@@ -224,6 +224,33 @@ module "configuration-jamf-pro-computer-management-settings" {
   }
 }
 
+# Workbrew Stage 1: Create API Role and Integration (deploy first, get credentials)
+module "configuration-jamf-pro-api-role-client-workbrew" {
+  count                 = var.include_workbrew_api_role_client == true ? 1 : 0
+  source                = "./modules/configuration-jamf-pro-api-role-client-workbrew"
+  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_auth_method   = var.jamfpro_auth_method
+  jamfpro_client_id     = var.jamfpro_client_id
+  jamfpro_client_secret = var.jamfpro_client_secret
+  providers = {
+    jamfpro.jpro = jamfpro.jpro
+  }
+}
+
+# Workbrew Stage 2: Deploy management resources (after uploading credentials to Workbrew Console)
+module "management-macOS-workbrew" {
+  count                      = var.include_workbrew == true ? 1 : 0
+  source                     = "./modules/management-macOS-workbrew"
+  jamfpro_instance_url       = var.jamfpro_instance_url
+  jamfpro_auth_method        = var.jamfpro_auth_method
+  jamfpro_client_id          = var.jamfpro_client_id
+  jamfpro_client_secret      = var.jamfpro_client_secret
+  workbrew_workspace_api_key = var.workbrew_workspace_api_key
+  providers = {
+    jamfpro.jpro = jamfpro.jpro
+  }
+}
+
 module "endpoint-security-macOS-filevault" {
   count                 = var.include_filevault == true ? 1 : 0
   source                = "./modules/endpoint-security-macOS-filevault"
@@ -236,11 +263,13 @@ module "endpoint-security-macOS-filevault" {
 }
 
 module "endpoint-security-macOS-microsoft-defender" {
-  count                 = var.include_defender == true ? 1 : 0
-  source                = "./modules/endpoint-security-macOS-microsoft-defender"
-  jamfpro_instance_url  = var.jamfpro_instance_url
-  jamfpro_client_id     = var.jamfpro_client_id
-  jamfpro_client_secret = var.jamfpro_client_secret
+  count                          = var.include_defender == true ? 1 : 0
+  source                         = "./modules/endpoint-security-macOS-microsoft-defender"
+  jamfpro_instance_url           = var.jamfpro_instance_url
+  jamfpro_client_id              = var.jamfpro_client_id
+  jamfpro_client_secret          = var.jamfpro_client_secret
+  defender_onboarding_plist_path = var.defender_onboarding_plist_path
+  defender_onboarding_plist      = var.defender_onboarding_plist
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }
@@ -274,15 +303,27 @@ module "management-okta_psso" {
   }
 }
 
+module "management-microsoft_psso" {
+  count                 = var.include_microsoft_psso == true ? 1 : 0
+  source                = "./modules/management-microsoft-psso"
+  jamfpro_instance_url  = var.jamfpro_instance_url
+  jamfpro_client_id     = var.jamfpro_client_id
+  jamfpro_client_secret = var.jamfpro_client_secret
+  providers = {
+    jamfpro.jpro = jamfpro.jpro
+  }
+
+}
+
 module "endpoint-security-macOS-crowdstrike" {
   count                 = var.include_crowdstrike == true ? 1 : 0
   source                = "./modules/endpoint-security-macOS-crowdstrike"
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
-  falcon_api_client_id  = "placeholderclientID"
-  falcon_api_secret     = "placeholderclientsecret"
-  falcon_customer_id    = "placeholdercustomerID"
+  falcon_api_client_id  = var.falcon_api_client_id
+  falcon_api_secret     = var.falcon_api_secret
+  falcon_customer_id    = var.falcon_customer_id
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }
@@ -306,6 +347,20 @@ module "management-app-installers" {
   jamfpro_instance_url  = var.jamfpro_instance_url
   jamfpro_client_id     = var.jamfpro_client_id
   jamfpro_client_secret = var.jamfpro_client_secret
+  providers = {
+    jamfpro.jpro = jamfpro.jpro
+  }
+}
+
+module "management-app-installers-google-chrome-cloud-management" {
+  count                                           = var.include_google_chrome_cloud_management == true ? 1 : 0
+  source                                          = "./modules/management-app-installers-google-chrome-cloud-management"
+  jamfpro_instance_url                            = var.jamfpro_instance_url
+  jamfpro_client_id                               = var.jamfpro_client_id
+  jamfpro_client_secret                           = var.jamfpro_client_secret
+  include_google_chrome                           = var.include_google_chrome
+  app_installers                                  = var.app_installers
+  google_chrome_cloud_management_enrollment_token = var.google_chrome_cloud_management_enrollment_token
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }

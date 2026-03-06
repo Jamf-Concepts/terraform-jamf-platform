@@ -1,8 +1,6 @@
-## Define miscellaneous variables
 variable "jamfpro_instance_url" {
   description = "Jamf Pro Instance name."
   type        = string
-  default     = ""
 }
 
 variable "jamfpro_auth_method" {
@@ -14,29 +12,28 @@ variable "jamfpro_auth_method" {
 variable "jamfpro_client_id" {
   description = "Jamf Pro Client ID for authentication."
   type        = string
-  default     = ""
 }
 
 variable "jamfpro_client_secret" {
   description = "Jamf Pro Client Secret for authentication."
   type        = string
   sensitive   = true
-  default     = ""
 }
 
-variable "random_string" {
-  type    = string
-  default = ""
+variable "include_google_chrome" {
+  description = "Whether to include the Google Chrome App Installer (if true, it is created using the management-app-installers module instead)"
+  type        = bool
+  default     = false
 }
 
-variable "defender_onboarding_plist_path" {
-  description = "Path to the Microsoft Defender ATP onboarding plist file"
+variable "google_chrome_cloud_management_enrollment_token" {
+  description = "The enrollment token for Google Chrome Cloud Management"
   type        = string
-  default     = ""
+  sensitive   = true
 }
 
-variable "defender_onboarding_plist" {
-  description = "Base64-encoded Microsoft Defender ATP onboarding plist content"
-  type        = string
-  default     = ""
+variable "app_installers" {
+  description = "Set of selected App Installers"
+  type        = list(string)
+  default     = []
 }
