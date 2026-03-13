@@ -6,8 +6,8 @@ terraform {
       configuration_aliases = [jamfpro.jpro]
     }
     jsc = {
-      source  = "jsctf"
-      version = "1.0.0"
+      source                = "Jamf-Concepts/jsctfprovider"
+      configuration_aliases = [jsc.jsc]
     }
   }
 }
