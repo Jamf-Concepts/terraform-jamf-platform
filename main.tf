@@ -329,6 +329,22 @@ module "endpoint-security-macOS-crowdstrike" {
   }
 }
 
+module "configuration-remote-remedy" {
+  count                  = var.include_remote_remedy == true ? 1 : 0
+  source                 = "./modules/configuration-remote-remedy"
+  jsc_username           = var.jsc_username
+  jsc_password           = var.jsc_password
+  jsc_application_id     = var.jsc_application_id
+  jsc_application_secret = var.jsc_application_secret
+  jamfpro_instance_url   = var.jamfpro_instance_url
+  jamfpro_client_id      = var.jamfpro_client_id
+  jamfpro_client_secret  = var.jamfpro_client_secret
+  providers = {
+    jamfpro.jpro = jamfpro.jpro
+    jsc.jsc      = jsc.jsc
+  }
+}
+
 module "management-macOS-rosetta" {
   count                 = var.include_rosetta == true ? 1 : 0
   source                = "./modules/management-macOS-rosetta"

@@ -548,6 +548,11 @@ variable "include_okta_psso" {
   default = false
 }
 
+variable "include_remote_remedy" {
+  type    = bool
+  default = false
+}
+
 variable "include_jc_privilege_elevation" {
   type    = bool
   default = false
