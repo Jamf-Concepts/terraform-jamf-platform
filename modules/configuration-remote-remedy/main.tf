@@ -45,11 +45,19 @@ resource "jamfpro_computer_extension_attribute" "remote_remedy_session" {
   inventory_display_type = "EXTENSION_ATTRIBUTES"
 }
 
+output "remote_remedy_extension_attribute" {
+  description = "The ID for the Remote Remedy Session Extension Attribute"
+  value       = jamfpro_computer_extension_attribute.remote_remedy_session.id
+}
+
 resource "jamfpro_script" "remote_remedy" {
   name            = "Remote Remedy Endpoint Client"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/remote_remedy.sh")
   category_id     = jamfpro_category.remote_remedy.id
+
+  parameter4 = "Mode (install, uninstall) - Default 'install'"
+  parameter5 = "Debug (bool) - Default 'false'"
 }
 
 resource "jamfpro_smart_computer_group_v2" "remote_remedy_base_group" {
@@ -77,7 +85,7 @@ resource "jamfpro_smart_computer_group_v2" "remote_remedy_active_sessions" {
   depends_on = [jamfpro_computer_extension_attribute.remote_remedy_session]
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "all_services_macos" {
+resource "jamfpro_macos_configuration_profile_plist" "remote_remedy_network_relay" {
   name                = "Remote Remedy - Network Relay"
   description         = "This is an Activation Profile to enable Network Relay for Remote Remedy. If you are already deploying Network Relay in your organization, you can simply re-deploy with the newly created Jamf Concepts Remote Services Access Policy and you will be good to go."
   distribution_method = "Install Automatically"
@@ -90,11 +98,51 @@ resource "jamfpro_macos_configuration_profile_plist" "all_services_macos" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group_v2.remote_remedy_active_sessions.id]
+    computer_group_ids = [jamfpro_smart_computer_group_v2.remote_remedy_base_group.id]
   }
   lifecycle {
     prevent_destroy = false
     ignore_changes  = all
   }
   depends_on = [jsc_ap.network_relay_profile]
+}
+
+resource "jamfpro_macos_configuration_profile_plist" "remote_remedy_macos" {
+  name                = "Remote Remedy Active Session Configuration"
+  distribution_method = "Install Automatically"
+  redeploy_on_update  = "Newly Assigned"
+  level               = "System"
+  category_id         = jamfpro_category.remote_remedy.id
+
+  payloads         = local.remote_remedy
+  payload_validate = false
+
+  scope {
+    all_computers      = false
+    computer_group_ids = [jamfpro_smart_computer_group_v2.remote_remedy_active_sessions.id]
+  }
+}
+
+resource "jamfpro_policy" "remote_remedy" {
+  name                        = "Remote Remedy Base"
+  enabled                     = true
+  trigger_enrollment_complete = true
+  trigger_other               = "remoteremedy"
+  frequency                   = "Ongoing"
+  category_id                 = jamfpro_category.remote_remedy.id
+
+  scope {
+    all_computers      = false
+    computer_group_ids = [jamfpro_smart_computer_group_v2.remote_remedy_base_group.id]
+  }
+
+  self_service {
+    use_for_self_service = false
+  }
+
+  payloads {
+    scripts {
+      id = jamfpro_script.remote_remedy.id
+    }
+  }
 }
