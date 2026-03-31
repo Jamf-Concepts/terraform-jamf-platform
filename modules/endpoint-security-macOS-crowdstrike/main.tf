@@ -14,13 +14,33 @@ resource "jamfpro_category" "category_crowdstrike" {
   priority = 9
 }
 
+## Create Smart Group for scoping Crowdstrike Falcon Sensor
+resource "jamfpro_smart_computer_group" "crowdstrike_target_group" {
+  name = "Crowdstrike Target Group" 
+  
+  criteria {
+    name        = "Operating System Version"
+    search_type = "greater than or equal"
+    value       = "13.0"
+    and_or      = "and"
+    priority    = 0
+  }
+  criteria {
+    name        = "Serial Number"
+    search_type = "like"
+    value       = "111222333444555"
+    and_or      = "and"
+    priority    = 1
+    }
+}
+
 ## Create Scripts
 resource "jamfpro_script" "scripts_falconpkg" {
   name            = "Falcon Sensor API Install"
   script_contents = file("${path.module}/support_files/scripts/falconinstall.sh")
   category_id     = jamfpro_category.category_crowdstrike.id
-  os_requirements = "0"
-  priority        = "AFTER"
+  os_requirements = ""
+  priority        = "BEFORE"
   info            = "Source: https://github.com/franton/Crowdstrike-API-Scripts/blob/main/install-csf.sh"
   notes           = ""
   parameter4      = "FALCON API CLIENT ID"
@@ -30,10 +50,10 @@ resource "jamfpro_script" "scripts_falconpkg" {
 }
 
 resource "jamfpro_script" "scripts_falconcid" {
-  name            = "Falcon CID"
-  script_contents = file("${path.module}/support_files/scripts/falconcid.sh")
+  name            = "Post Install CrowdStrike Falcon Sensor"
+  script_contents = file("${path.module}/support_files/scripts/PostinstallCrowdStrikeFalconSensor.sh")
   category_id     = jamfpro_category.category_crowdstrike.id
-  os_requirements = "0"
+  os_requirements = ""
   priority        = "AFTER"
   info            = ""
   notes           = ""
@@ -44,7 +64,7 @@ resource "jamfpro_script" "scripts_falconcid" {
 }
 
 
-## Crowdstrke PPPC, Content Filtering, System Extension, 
+## Crowdstrike PPPC, Content Filtering, System Extension, 
 resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_crowdstrike" {
   name                = "Crowdstrike Falcon Settings"
   description         = ""
@@ -72,7 +92,10 @@ resource "jamfpro_policy" "policy_crowdstrike_api_install" {
 
 
   scope {
-    all_computers = true
+    all_computers = false
+    all_jss_users = false
+
+    computer_group_ids = [jamfpro_smart_computer_group.crowdstrike_target_group.id]
   }
 
   self_service {
