@@ -16,8 +16,8 @@ resource "jamfpro_category" "category_crowdstrike" {
 
 ## Create Smart Group for scoping Crowdstrike Falcon Sensor
 resource "jamfpro_smart_computer_group" "crowdstrike_target_group" {
-  name = "Crowdstrike Target Group" 
-  
+  name = "Crowdstrike Target Group"
+
   criteria {
     name        = "Operating System Version"
     search_type = "greater than or equal"
@@ -31,7 +31,7 @@ resource "jamfpro_smart_computer_group" "crowdstrike_target_group" {
     value       = "111222333444555"
     and_or      = "and"
     priority    = 1
-    }
+  }
 }
 
 ## Create Scripts
