@@ -142,7 +142,8 @@ resource "jamfpro_policy" "remote_remedy" {
 
   payloads {
     scripts {
-      id = jamfpro_script.remote_remedy.id
+      id         = jamfpro_script.remote_remedy.id
+      parameter5 = "true"
     }
   }
 }
