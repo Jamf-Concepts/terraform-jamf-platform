@@ -12,13 +12,13 @@
 				<key>PayloadEnabled</key>
 				<true/>
 				<key>PayloadIdentifier</key>
-				<string>com.apple.TCC.configuration-profile-policy.9A10BE5D-5E46-4C22-89C9-20597A04B616</string>
+				<string>9A10BE5D-5E46-4C22-89C9-20597A04B616</string>
 				<key>PayloadOrganization</key>
 				<string>CrowdStrike Inc.</string>
 				<key>PayloadType</key>
 				<string>com.apple.TCC.configuration-profile-policy</string>
 				<key>PayloadUUID</key>
-				<string>com.apple.TCC.configuration-profile-policy.9A10BE5D-5E46-4C22-89C9-20597A04B616</string>
+				<string>9A10BE5D-5E46-4C22-89C9-20597A04B616</string>
 				<key>PayloadVersion</key>
 				<integer>1</integer>
 				<key>Services</key>
@@ -54,7 +54,7 @@
 			</dict>
 			<dict>
 				<key>AllowUserOverrides</key>
-				<true/>
+				<false/>
 				<key>AllowedSystemExtensionTypes</key>
 				<dict>
 					<key>X9E956P446</key>
@@ -84,13 +84,13 @@
 				<key>PayloadEnabled</key>
 				<true/>
 				<key>PayloadIdentifier</key>
-				<string>com.apple.system-extension-policy.20258B06-5866-4424-8893-A3AF1AFAAEDC</string>
+				<string>20258B06-5866-4424-8893-A3AF1AFAAEDC</string>
 				<key>PayloadOrganization</key>
 				<string>CrowdStrike Inc.</string>
 				<key>PayloadType</key>
 				<string>com.apple.system-extension-policy</string>
 				<key>PayloadUUID</key>
-				<string>com.apple.system-extension-policy.20258B06-5866-4424-8893-A3AF1AFAAEDC</string>
+				<string>20258B06-5866-4424-8893-A3AF1AFAAEDC</string>
 				<key>PayloadVersion</key>
 				<integer>1</integer>
 			</dict>
@@ -114,13 +114,13 @@
 				<key>PayloadDisplayName</key>
 				<string>Web Content Filter Payload</string>
 				<key>PayloadIdentifier</key>
-				<string>io.kandji.crowdstrike.2C5CBFD0-7CFE-41CB-95BC-A681F4D293B8</string>
+				<string>2C5CBFD0-7CFE-41CB-95BC-A681F4D293B8</string>
 				<key>PayloadOrganization</key>
-				<string>JAMF Software</string>
+				<string>CrowdStrike Inc.</string>
 				<key>PayloadType</key>
 				<string>com.apple.webcontent-filter</string>
 				<key>PayloadUUID</key>
-				<string>io.kandji.crowdstrike.2C5CBFD0-7CFE-41CB-95BC-A681F4D293B8</string>
+				<string>2C5CBFD0-7CFE-41CB-95BC-A681F4D293B8</string>
 				<key>PayloadVersion</key>
 				<integer>1</integer>
 				<key>PluginBundleID</key>
@@ -134,7 +134,7 @@
 				<key>PayloadIdentifier</key>
 				<string>0717617E-1580-413B-92E6-19F9CDD8EB61</string>
 				<key>PayloadOrganization</key>
-				<string>JAMF Software</string>
+				<string>CrowdStrike Inc.</string>
 				<key>PayloadType</key>
 				<string>com.apple.servicemanagement</string>
 				<key>PayloadUUID</key>
@@ -168,7 +168,7 @@
 				<key>PayloadIdentifier</key>
 				<string>DC74A0E0-1A26-4775-9E73-D15E2460512F</string>
 				<key>PayloadOrganization</key>
-				<string>JAMF Software</string>
+				<string>CrowdStrike Inc.</string>
 				<key>PayloadType</key>
 				<string>com.apple.notificationsettings</string>
 				<key>PayloadUUID</key>
@@ -186,13 +186,15 @@
 				<key>PayloadDisplayName</key>
 				<string>App System Extension Control</string>
 				<key>PayloadIdentifier</key>
-				<string>com.apple.system-extensions.admin.E45B5986-74A6-4B6A-A4CA-E179516A7F52</string>
+				<string>E45B5986-74A6-4B6A-A4CA-E179516A7F52</string>
 				<key>PayloadOrganization</key>
 				<string>CrowdStrike Inc.</string>
 				<key>PayloadType</key>
 				<string>com.apple.system-extensions.admin</string>
 				<key>PayloadUUID</key>
-				<string>com.apple.system-extensions.admin.E45B5986-74A6-4B6A-A4CA-E179516A7F52</string>
+				<string>E45B5986-74A6-4B6A-A4CA-E179516A7F52</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
 			</dict>
 		</array>
 		<key>PayloadDescription</key>
