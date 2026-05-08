@@ -1,4 +1,10 @@
-# terraform-jamf-platform
+# terraform-jamf-platform — `ref-jamfpro` reference layout
+
+> **You are on the `ref-jamfpro` branch.** This is an orphaned reference
+> branch containing a single-module Terraform layout for Jamf Pro and Jamf
+> Platform, intended for admins new to Terraform and for Pro Services
+> technical enablement engagements. Other branches in this repository are
+> unrelated and follow different layouts.
 
 Terraform configuration for managing Jamf Pro and Jamf Platform using the
 [deploymenttheory/jamfpro](https://registry.terraform.io/providers/deploymenttheory/jamfpro/latest)
