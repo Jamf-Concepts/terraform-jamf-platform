@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>AutoJoin</key>
+				<true/>
+				<key>CaptiveBypass</key>
+				<false/>
+				<key>DisableAssociationMACRandomization</key>
+				<true/>
+				<key>EncryptionType</key>
+				<string>Any</string>
+				<key>HIDDEN_NETWORK</key>
+				<false/>
+				<key>Password</key>
+				<string>${ios_wifi_password}</string>
+				<key>PayloadDescription</key>
+				<string></string>
+				<key>PayloadDisplayName</key>
+				<string>WiFi</string>
+				<key>PayloadEnabled</key>
+				<true/>
+				<key>PayloadIdentifier</key>
+				<string>DB534078-04F9-488A-83DC-9EC04CD66286</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.wifi.managed</string>
+				<key>PayloadUUID</key>
+				<string>DB534078-04F9-488A-83DC-9EC04CD66286</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>ProxyType</key>
+				<string>None</string>
+				<key>SSID_STR</key>
+				<string>${ios_wifi_ssid}</string>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string></string>
+		<key>PayloadDisplayName</key>
+		<string>Wi-Fi</string>
+		<key>PayloadEnabled</key>
+		<true/>
+		<key>PayloadIdentifier</key>
+		<string></string>
+		<key>PayloadOrganization</key>
+		<string>JAMF Software</string>
+		<key>PayloadRemovalDisallowed</key>
+		<true/>
+		<key>PayloadScope</key>
+		<string>System</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string></string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>

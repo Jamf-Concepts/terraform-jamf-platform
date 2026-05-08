@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1">
+  <dict>
+    <key>PayloadUUID</key>
+    <string>A514278F-DF50-4C16-9CF4-22753D6BE31A</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadOrganization</key>
+    <string>Jamf Software</string>
+    <key>PayloadIdentifier</key>
+    <string>A514278F-DF50-4C16-9CF4-22753D6BE31A</string>
+    <key>PayloadDisplayName</key>
+    <string>Managed Lock Screen</string>
+    <key>PayloadDescription</key>
+    <string/>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    <key>PayloadEnabled</key>
+    <true/>
+    <key>PayloadRemovalDisallowed</key>
+    <true/>
+    <key>PayloadScope</key>
+    <string>System</string>
+    <key>PayloadContent</key>
+    <array>
+      <dict>
+        <key>AssetTagInformation</key>
+        <string>$SERIALNUMBER</string>
+        <key>PayloadDisplayName</key>
+        <string>Lock Screen Message Payload</string>
+        <key>PayloadIdentifier</key>
+        <string>C8B4BC85-96D9-4CEC-9A9C-2BB859659AD9</string>
+        <key>PayloadOrganization</key>
+        <string>JAMF Software</string>
+        <key>PayloadType</key>
+        <string>com.apple.shareddeviceconfiguration</string>
+        <key>PayloadUUID</key>
+        <string>C8B4BC85-96D9-4CEC-9A9C-2BB859659AD9</string>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+      </dict>
+    </array>
+  </dict>
+</plist>
