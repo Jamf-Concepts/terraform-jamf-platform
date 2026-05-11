@@ -313,7 +313,7 @@ resource "jamfpro_policy" "run_hello_world" {
   payloads {
     scripts {
       id       = jamfpro_script.hello_world.id
-      priority = "AFTER"
+      priority = "After"
     }
     maintenance {
       recon = true
