@@ -189,11 +189,11 @@ resource "jamfpro_category" "operations" {
 Run a plan:
 
 ```bash
-terraform plan -parallelism=1
+terraform plan
 ```
 
-You should see `Plan: 2 to add`. The `-parallelism=1` flag is required for
-all plan and apply commands — the Jamf Pro API rate-limits concurrent requests.
+You should see `Plan: 2 to add`. The `-parallelism=1` flag is required on
+`apply` — the Jamf Pro API rate-limits concurrent requests.
 
 Apply:
 
@@ -240,7 +240,7 @@ resource "jamfpro_script" "hello_world" {
   policy payloads: `"BEFORE"`, `"AFTER"`, or `"AT_REBOOT"`.
 
 ```bash
-terraform plan -parallelism=1
+terraform plan
 terraform apply -parallelism=1
 ```
 
@@ -266,7 +266,7 @@ resource "jamfpro_static_computer_group" "test_machines" {
 ```
 
 ```bash
-terraform plan -parallelism=1
+terraform plan
 terraform apply -parallelism=1
 ```
 
@@ -321,7 +321,7 @@ resource "jamfpro_policy" "run_hello_world" {
   completes.
 
 ```bash
-terraform plan -parallelism=1
+terraform plan
 terraform apply -parallelism=1
 ```
 
@@ -347,7 +347,7 @@ and rename it to something else.
 Run a plan:
 
 ```bash
-terraform plan -parallelism=1
+terraform plan
 ```
 
 Terraform shows a modification:
@@ -372,7 +372,7 @@ create a new category with the same name.
 Run a plan:
 
 ```bash
-terraform plan -parallelism=1
+terraform plan
 ```
 
 Terraform shows:
@@ -444,7 +444,7 @@ import {
 Run plan with config generation:
 
 ```bash
-terraform plan -parallelism=1 -generate-config-out=generated.tf
+terraform plan -generate-config-out=generated.tf
 ```
 
 Terraform reads the live category from the API and writes its full resource
@@ -463,7 +463,7 @@ Copy the resource block into `categories.tf`. Delete the import block from
 Run a final plan to confirm Terraform sees no changes:
 
 ```bash
-terraform plan -parallelism=1
+terraform plan
 ```
 
 A clean plan (`No changes`) means **Finance** is now fully under Terraform
@@ -482,7 +482,7 @@ import {
 ```
 
 ```bash
-terraform plan -parallelism=1 -generate-config-out=generated.tf
+terraform plan -generate-config-out=generated.tf
 ```
 
 Terraform generates the script resource block with `script_contents` inline —
@@ -506,7 +506,7 @@ script_contents = file("${path.root}/support_files/scripts/inventory_update.sh")
 > with proper file references — no manual extraction required.
 
 Copy the block into `scripts.tf`, delete the import block from `imports.tf`
-and delete `generated.tf`, then run `terraform plan -parallelism=1` to verify
+and delete `generated.tf`, then run `terraform plan` to verify
 a clean result.
 
 ---
@@ -536,7 +536,7 @@ your sandbox, and let it generate output into a local directory.
   with `generate-config-out`.
 - **`_import.tf` files** — jamformer generates import blocks alongside each
   resource file. Use these the same way as `imports.tf` in this project: add
-  the block, run `terraform plan -parallelism=1`, verify a clean result, then
+  the block, run `terraform plan`, verify a clean result, then
   remove the import block.
 
 The file naming conventions and `support_files/` layout in this project are
