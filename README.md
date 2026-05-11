@@ -27,9 +27,41 @@ multi-environment structure.
 ## Prerequisites
 
 - A Jamf Pro sandbox instance — **do not use production**
-- [Terraform](https://developer.hashicorp.com/terraform/install) >= 1.11.0
-- VS Code with the [HashiCorp Terraform extension](https://marketplace.visualstudio.com/items?itemName=HashiCorp.terraform) (recommended)
-- An API Role and Client in the sandbox — use **All** privileges while learning, tighten later
+- Terraform >= 1.11.0 (see below)
+- VS Code with the HashiCorp Terraform extension (see below)
+- An API Role and Client in the sandbox (see below)
+
+### Installing Terraform
+
+On macOS, the recommended approach is Homebrew:
+
+```bash
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
+terraform -version
+```
+
+For other platforms, see [developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install).
+
+### Recommended editor
+
+[Visual Studio Code](https://code.visualstudio.com) with the
+[HashiCorp Terraform extension](https://marketplace.visualstudio.com/items?itemName=HashiCorp.terraform)
+gives you syntax highlighting, auto-complete, and inline documentation for
+resource attributes. It is not required but makes editing `.tf` files
+significantly easier.
+
+### Create an API Role and Client in Jamf Pro
+
+Terraform authenticates to Jamf Pro using OAuth2. Before running this project,
+create credentials in your sandbox instance:
+
+1. Go to **Settings → System → API roles and clients → API Roles**.
+2. Create a role. Use **All** privileges while learning — tighten later.
+3. Go to **API roles and clients → API Clients**.
+4. Create a client, attach the role, and click **Generate client secret**.
+5. Copy the **Client ID** and **Client Secret** — you'll need them in the next step.
+   The secret is shown only once.
 
 ---
 
@@ -73,12 +105,23 @@ terraform init
 ```
 
 Terraform downloads the `deploymenttheory/jamfpro` provider from the registry
-into a local `.terraform/` cache. Run this once after cloning, and again if
-provider version constraints change.
+into a local `.terraform/` cache. Run this once after cloning.
+
+To update providers to newer versions within the declared constraints, run:
+
+```bash
+terraform init -upgrade
+```
+
+After each file you add during the session, format your code:
+
+```bash
+terraform fmt
+```
 
 A successful init ends with:
 
-```
+```text
 Terraform has been successfully initialized!
 ```
 
