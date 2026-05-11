@@ -30,6 +30,7 @@ multi-environment structure.
 - Terraform >= 1.11.0 (see below)
 - VS Code with the HashiCorp Terraform extension (see below)
 - An API Role and Client in the sandbox (see below)
+- jamf-cli (see below)
 
 ### Installing Terraform
 
@@ -50,6 +51,16 @@ For other platforms, see [developer.hashicorp.com/terraform/install](https://dev
 gives you syntax highlighting, auto-complete, and inline documentation for
 resource attributes. It is not required but makes editing `.tf` files
 significantly easier.
+
+### Install jamf-cli
+
+[jamf-cli](https://github.com/Jamf-Concepts/jamf-cli) is used during the
+import exercise to look up numeric resource IDs from Jamf Pro. Install it via
+Homebrew:
+
+```bash
+brew install Jamf-Concepts/tap/jamf-cli
+```
 
 ### Create an API Role and Client in Jamf Pro
 
