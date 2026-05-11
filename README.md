@@ -473,14 +473,25 @@ import {
 terraform plan -parallelism=1 -generate-config-out=generated.tf
 ```
 
-Terraform generates the script resource block with `script_contents` inline.
-If you prefer to keep the script body in a separate file (as in Step 2),
-save the content to `support_files/scripts/inventory_update.sh` and replace
-the inline value in `generated.tf` with:
+Terraform generates the script resource block with `script_contents` inline —
+the entire script body embedded as a string directly in the HCL. For anything
+beyond a trivial script this is unreadable and hard to maintain.
+
+This is one of the limitations of `generate-config-out`: it has no awareness
+of which attributes are better expressed as external files. You have to
+extract them manually. Save the script body to
+`support_files/scripts/inventory_update.sh` and replace the inline value in
+`generated.tf` with:
 
 ```hcl
 script_contents = file("${path.root}/support_files/scripts/inventory_update.sh")
 ```
+
+> **This is exactly the problem jamformer solves.** When jamformer generates
+> configuration from an existing Jamf Pro instance, it detects attributes like
+> `script_contents` and `payloads` that contain file bodies and extracts them
+> automatically into `support_files/`. The result is immediately readable HCL
+> with proper file references — no manual extraction required.
 
 Copy the block into `scripts.tf`, delete the import block from `imports.tf`
 and delete `generated.tf`, then run `terraform plan -parallelism=1` to verify
