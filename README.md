@@ -425,6 +425,10 @@ This preserves the existing resource and its ID — anything in Jamf Pro already
 referencing that category stays intact. Deleting the manual copy and
 recreating via Terraform would assign a new ID and break those references.
 
+The full import workflow — how to write the import block, run
+`-generate-config-out`, and verify a clean result — is covered in the next
+section.
+
 ---
 
 ## Importing existing resources
