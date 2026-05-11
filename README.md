@@ -17,7 +17,7 @@ multi-environment structure.
 
 | File | Resource | Teaches |
 | --- | --- | --- |
-| `categories.tf` | Categories | First resource, `for_each` over a local set |
+| `categories.tf` | Categories | First resource, anatomy of a resource block |
 | `scripts.tf` | Script | Reading a file with `file()`, referencing another resource's ID |
 | `static_computer_groups.tf` | Static computer group | Standalone resource, no dependencies |
 | `policies.tf` | Policy | Composing resources — category, group, and script referenced in one block |
@@ -136,27 +136,23 @@ Jamf Pro resources, which makes them the right first thing to declare.
 Open `categories.tf` and replace its contents with:
 
 ```hcl
-locals {
-  categories = toset(["Engineering", "Security"])
+resource "jamfpro_category" "engineering" {
+  name = "Engineering"
 }
 
-resource "jamfpro_category" "this" {
-  for_each = local.categories
-  name     = each.key
+resource "jamfpro_category" "security" {
+  name = "Security"
 }
 ```
 
 **Key points:**
 
-- `locals` defines values scoped to this configuration. `toset()` converts
-  the list into a set — `for_each` requires a set or map, not a list.
-- `for_each = local.categories` tells Terraform to create one
-  `jamfpro_category` resource per entry. Each instance is tracked
-  independently in state, so removing one entry later destroys only that
-  category, not both.
-- `each.key` is the string value from the set (`"Engineering"` or
-  `"Security"`). When referencing one of these categories from another
-  resource, the address is `jamfpro_category.this["Engineering"].id`.
+- Each `resource` block declares one object Terraform will create. The block
+  address is `<type>.<name>` — `jamfpro_category.engineering` and
+  `jamfpro_category.security`. Terraform tracks them independently in state.
+- To reference one of these categories from another resource, use
+  `jamfpro_category.engineering.id`. Terraform substitutes the API-assigned
+  ID at plan time — you never look up or hard-code IDs manually.
 
 Run a plan:
 
@@ -193,7 +189,7 @@ Open `scripts.tf` and replace its contents with:
 resource "jamfpro_script" "hello_world" {
   name            = "Hello World"
   script_contents = file("${path.root}/support_files/scripts/hello_world.sh")
-  category_id     = jamfpro_category.this["Engineering"].id
+  category_id     = jamfpro_category.engineering.id
   priority        = "AFTER"
 }
 ```
@@ -204,10 +200,10 @@ resource "jamfpro_script" "hello_world" {
   script from disk at plan time and passes the contents as a string.
   `${path.root}` resolves to the directory Terraform was invoked from — in
   this project, the repo root.
-- `category_id = jamfpro_category.this["Engineering"].id` is a resource
-  reference. Terraform reads the `id` attribute of the `Engineering` instance
-  and substitutes it here. Because this is a reference, Terraform knows
-  categories must exist before scripts — you never specify ordering manually.
+- `category_id = jamfpro_category.engineering.id` is a resource reference.
+  Terraform reads the `id` attribute of the category and substitutes it here.
+  Because this is a reference, Terraform knows the category must exist before
+  the script — you never specify ordering manually.
 - `priority = "AFTER"` controls when the script runs relative to other
   policy payloads: `"BEFORE"`, `"AFTER"`, or `"AT_REBOOT"`.
 
@@ -263,7 +259,7 @@ resource "jamfpro_policy" "run_hello_world" {
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.this["Engineering"].id
+  category_id     = jamfpro_category.engineering.id
 
   scope {
     all_computers      = false
