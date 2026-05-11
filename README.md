@@ -140,8 +140,8 @@ resource "jamfpro_category" "engineering" {
   name = "Engineering"
 }
 
-resource "jamfpro_category" "security" {
-  name = "Security"
+resource "jamfpro_category" "operations" {
+  name = "Operations"
 }
 ```
 
@@ -149,7 +149,7 @@ resource "jamfpro_category" "security" {
 
 - Each `resource` block declares one object Terraform will create. The block
   address is `<type>.<name>` — `jamfpro_category.engineering` and
-  `jamfpro_category.security`. Terraform tracks them independently in state.
+  `jamfpro_category.operations`. Terraform tracks them independently in state.
 - To reference one of these categories from another resource, use
   `jamfpro_category.engineering.id`. Terraform substitutes the API-assigned
   ID at plan time — you never look up or hard-code IDs manually.
