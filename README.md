@@ -394,13 +394,16 @@ by the delete/recreate scenario above.
 The workflow uses an `import` block alongside `terraform plan -generate-config-out`,
 which reads the live resource from the API and generates the HCL for you.
 
-**Before you start:** create two resources manually in the Jamf Pro UI:
+**Before you start:** create two unmanaged resources using `jamf-cli` — these
+simulate resources that exist in Jamf Pro outside of Terraform:
 
-1. A category named **Finance** — **Settings → Global → Categories → New**
-2. A script named **Inventory Update** — **Settings → Computer Management → Scripts → New**
-   Add any content, e.g. `echo "recon"`.
+```bash
+echo '{"name":"Finance","priority":9}' | jamf-cli pro categories create
 
-Then find their numeric IDs via `jamf-cli`:
+echo '{"name":"Inventory Update","scriptContents":"#!/bin/bash\necho recon","priority":"AFTER"}' | jamf-cli pro scripts create
+```
+
+Then find their numeric IDs:
 
 ```bash
 jamf-cli pro categories list -o table
