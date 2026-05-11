@@ -193,7 +193,7 @@ terraform plan
 ```
 
 You should see `Plan: 2 to add`. The `-parallelism=1` flag is required on
-`apply` — the Jamf Pro API rate-limits concurrent requests.
+`apply` — the Jamf Pro API can be unreliable under concurrent load.
 
 Apply:
 
