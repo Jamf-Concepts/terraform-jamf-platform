@@ -299,6 +299,155 @@ Plan should show `1 to add`. Verify the policy appears in Jamf Pro under
 
 ---
 
+## Drift: when Jamf Pro and Terraform disagree
+
+Terraform's state file records the last-known configuration of every resource
+it manages. If someone edits a resource directly in the Jamf Pro UI, the live
+configuration diverges from state. Running `terraform plan` detects this —
+Terraform reads the current state of each resource from the API and compares
+it against the HCL. The HCL is always the source of truth.
+
+### Change 1: editing a category name
+
+In Jamf Pro, go to **Settings → Global → Categories**, find **Engineering**,
+and rename it to something else.
+
+Run a plan:
+
+```bash
+terraform plan -parallelism=1
+```
+
+Terraform shows a modification:
+
+```text
+~ jamfpro_category.engineering
+    ~ name = "Engineering (Test)" -> "Engineering"
+```
+
+The `~` symbol means an in-place update. Terraform intends to revert the name
+back to `"Engineering"` as declared in `categories.tf`. Running
+`terraform apply` does exactly that.
+
+If you want to keep the new name instead, update `name` in `categories.tf` to
+match, then re-run `terraform plan` — the plan should show no changes.
+
+### Change 2: deleting and recreating a category
+
+This is more damaging. In Jamf Pro, delete **Engineering** entirely, then
+create a new category with the same name.
+
+Run a plan:
+
+```bash
+terraform plan -parallelism=1
+```
+
+Terraform shows:
+
+```text
++ jamfpro_category.engineering
+```
+
+The `+` means Terraform intends to create the resource. What happened:
+Terraform tracks resources by their API-assigned numeric ID, recorded in
+state. That ID no longer exists — the category was deleted. Terraform
+concludes the resource is missing and plans to recreate it.
+
+The new **Engineering** category you created manually has a different ID and
+is invisible to Terraform. If you run `terraform apply`, Terraform creates
+another **Engineering** category alongside the unmanaged one.
+
+**The fix:** run `terraform apply` to let Terraform recreate the resource with
+the correct ID, then delete the manually-created duplicate from the Jamf Pro
+UI. Or import the manually-created resource — see the next section.
+
+---
+
+## Importing existing resources
+
+Import brings a resource that already exists in Jamf Pro under Terraform
+management without recreating it. The workflow uses an `import` block
+alongside `terraform plan -generate-config-out`, which reads the live resource
+from the API and generates the HCL for you.
+
+**Before you start:** you need the numeric Jamf Pro ID of the resource to
+import. Find it via the API — the easiest way is `jamf-cli`:
+
+```bash
+jamf-cli pro get categories
+jamf-cli pro get scripts
+```
+
+Each resource lists its `id` field. Note it — you'll use it in the import block.
+
+### Import 1: a category
+
+Create a temporary file `imports.tf` at the project root:
+
+```hcl
+import {
+  to = jamfpro_category.engineering
+  id = "5"  # replace with the actual numeric ID from Jamf Pro
+}
+```
+
+Run plan with config generation:
+
+```bash
+terraform plan -parallelism=1 -generate-config-out=generated.tf
+```
+
+Terraform reads the live category from the API and writes its full resource
+block to `generated.tf`. Open it and review the output — it will look
+something like:
+
+```hcl
+resource "jamfpro_category" "engineering" {
+  name = "Engineering"
+}
+```
+
+Copy the resource block into `categories.tf`, replacing the existing stub if
+you haven't filled it in yet. Then delete `imports.tf` and `generated.tf`.
+
+Run a final plan to confirm Terraform sees no changes:
+
+```bash
+terraform plan -parallelism=1
+```
+
+A clean plan (`No changes`) means the resource is now fully under Terraform
+management.
+
+### Import 2: a script
+
+The same workflow applies to any resource type. Create `imports.tf`:
+
+```hcl
+import {
+  to = jamfpro_script.hello_world
+  id = "12"  # replace with the actual numeric ID from Jamf Pro
+}
+```
+
+```bash
+terraform plan -parallelism=1 -generate-config-out=generated.tf
+```
+
+Terraform generates the script resource block including `script_contents`
+inline. If you prefer to keep the script in a separate file (as in Step 2),
+replace the inline `script_contents` value in `generated.tf` with:
+
+```hcl
+script_contents = file("${path.root}/support_files/scripts/hello_world.sh")
+```
+
+Copy the block into `scripts.tf`, delete `imports.tf` and `generated.tf`,
+and run `terraform plan -parallelism=1` to verify a clean result.
+
+---
+
 ## Cleaning up
 
 To remove everything Terraform created in your sandbox:
