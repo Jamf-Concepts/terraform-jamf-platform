@@ -1,0 +1,3 @@
+jamfpro_instance_fqdn = "https://yourcompany.jamfcloud.com"
+jamfpro_client_id     = ""
+jamfpro_client_secret = ""
