@@ -52,7 +52,7 @@ gives you syntax highlighting, auto-complete, and inline documentation for
 resource attributes. It is not required but makes editing `.tf` files
 significantly easier.
 
-### Install jamf-cli
+### Install and configure jamf-cli
 
 [jamf-cli](https://github.com/Jamf-Concepts/jamf-cli) is used during the
 import exercise to look up numeric resource IDs from Jamf Pro. Install it via
@@ -61,6 +61,14 @@ Homebrew:
 ```bash
 brew install Jamf-Concepts/tap/jamf-cli
 ```
+
+Then configure it against your sandbox instance:
+
+```bash
+jamf-cli pro setup
+```
+
+Follow the prompts to enter your Jamf Pro URL and API client credentials.
 
 ### Create an API Role and Client in Jamf Pro
 
@@ -383,11 +391,11 @@ alongside `terraform plan -generate-config-out`, which reads the live resource
 from the API and generates the HCL for you.
 
 **Before you start:** you need the numeric Jamf Pro ID of the resource to
-import. Find it via the API — the easiest way is `jamf-cli`:
+import. Find it via `jamf-cli`:
 
 ```bash
-jamf-cli pro get categories
-jamf-cli pro get scripts
+jamf-cli pro categories list -o table
+jamf-cli pro scripts list -o table
 ```
 
 Each resource lists its `id` field. Note it — you'll use it in the import block.
