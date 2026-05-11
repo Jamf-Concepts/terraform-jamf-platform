@@ -31,6 +31,7 @@ multi-environment structure.
 - VS Code with the HashiCorp Terraform extension (see below)
 - An API Role and Client in the sandbox (see below)
 - jamf-cli (see below)
+- jamformer (see below)
 
 ### Installing Terraform
 
@@ -70,6 +71,17 @@ jamf-cli pro setup
 
 Follow the prompts to enter your Jamf Pro URL and local admin credentials.
 jamf-cli creates an API client automatically.
+
+### Install jamformer
+
+[jamformer](https://github.com/Jamf-Concepts/jamformer) reads an existing Jamf
+Pro instance and generates Terraform configuration from it. It is used later
+in this session to demonstrate how to bootstrap a project from existing
+resources at scale.
+
+```bash
+brew install Jamf-Concepts/tap/jamformer
+```
 
 ### Create an API Role and Client in Jamf Pro
 
@@ -496,6 +508,40 @@ script_contents = file("${path.root}/support_files/scripts/inventory_update.sh")
 Copy the block into `scripts.tf`, delete the import block from `imports.tf`
 and delete `generated.tf`, then run `terraform plan -parallelism=1` to verify
 a clean result.
+
+---
+
+## Discovering resources with jamformer
+
+The manual import workflow above works for one or two resources. For a real
+Jamf Pro instance with hundreds of policies, profiles, and groups, it does not
+scale. jamformer solves this — it reads the entire instance and generates
+Terraform configuration in one pass.
+
+Create a handful of additional resources in your sandbox — categories, a
+script, a static group — using the Jamf Pro UI or `jamf-cli`. Then run
+jamformer against the instance.
+
+jamformer is designed to be run interactively. Follow its prompts, point it at
+your sandbox, and let it generate output into a local directory.
+
+**What to look for in the output:**
+
+- **Per-resource-type files** (`categories.tf`, `scripts.tf`, etc.) — same
+  naming convention as this project. The generated files can be copied
+  directly into your `.tf` files.
+- **`support_files/`** — script bodies, profile payloads, and other file
+  content are extracted automatically into separate files with `file()`
+  references in the HCL. Compare this to the inline `script_contents` you saw
+  with `generate-config-out`.
+- **`_import.tf` files** — jamformer generates import blocks alongside each
+  resource file. Use these the same way as `imports.tf` in this project: add
+  the block, run `terraform plan -parallelism=1`, verify a clean result, then
+  remove the import block.
+
+The file naming conventions and `support_files/` layout in this project are
+intentionally aligned with jamformer's output so that moving from a jamformer
+export into a structured project is a copy, not a rewrite.
 
 ---
 
