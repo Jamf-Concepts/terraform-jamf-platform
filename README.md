@@ -566,4 +566,6 @@ when prompted. The state file will be empty when it finishes.
 - **`ref-jamfpro` branch** — the next step up. Uses `environments/` +
   `modules/` structure that scales to multiple Jamf Pro tenants from a single
   set of resource definitions. This is what a jamformer export refactors into.
+  It also covers remote state — when you are ready to collaborate or move
+  beyond a single machine, see its *Graduating to remote state* section.
 - **[Resources for getting started with Terraform and Jamf](https://concepts.jamf.com/guides/infrastructure-as-code/resources-for-getting-started-with-terraform-and-jamf/)** — curated reading for Jamf admins new to IaC.
