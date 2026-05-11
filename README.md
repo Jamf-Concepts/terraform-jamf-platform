@@ -13,6 +13,18 @@ multi-environment structure.
 
 ---
 
+## Learning outcomes
+
+By the end of this session you will be able to:
+
+- Configure the Jamf Pro Terraform provider with OAuth2 credentials
+- Declare resources, understand state, and run `init`, `plan`, `apply`, and `destroy`
+- Reference resource IDs across files and let Terraform resolve dependency ordering automatically
+- Read external file content into a resource attribute using `file()`
+- Detect and respond to configuration drift using `terraform plan`
+- Import existing Jamf Pro resources into Terraform management using `import` blocks
+- Use jamformer to generate Terraform configuration from an existing instance at scale
+
 ## What you'll build
 
 | File | Resource | Teaches |
@@ -301,7 +313,7 @@ resource "jamfpro_policy" "run_hello_world" {
   payloads {
     scripts {
       id       = jamfpro_script.hello_world.id
-      priority = "After"
+      priority = "AFTER"
     }
     maintenance {
       recon = true
@@ -359,7 +371,7 @@ Terraform shows a modification:
 
 The `~` symbol means an in-place update. Terraform intends to revert the name
 back to `"Engineering"` as declared in `categories.tf`. Running
-`terraform apply` does exactly that.
+`terraform apply -parallelism=1` does exactly that.
 
 If you want to keep the new name instead, update `name` in `categories.tf` to
 match, then re-run `terraform plan` — the plan should show no changes.
@@ -390,9 +402,10 @@ The new **Engineering** category you created manually has a different ID and
 is invisible to Terraform. If you run `terraform apply`, Terraform creates
 another **Engineering** category alongside the unmanaged one.
 
-**The fix:** run `terraform apply` to let Terraform recreate the resource with
-the correct ID, then delete the manually-created duplicate from the Jamf Pro
-UI. Or import the manually-created resource — see the next section.
+**The fix:** run `terraform apply -parallelism=1` to let Terraform recreate
+the resource with the correct ID, then delete the manually-created duplicate
+from the Jamf Pro UI. Or import the manually-created resource — see the next
+section.
 
 ---
 
@@ -560,9 +573,6 @@ when prompted. The state file will be empty when it finishes.
 
 ## What's next
 
-- **jamformer** — run `jamformer` against your sandbox instance. Compare the
-  output structure to this project: the file naming conventions and
-  `support_files/` layout are intentionally aligned.
 - **`ref-jamfpro` branch** — the next step up. Uses `environments/` +
   `modules/` structure that scales to multiple Jamf Pro tenants from a single
   set of resource definitions. This is what a jamformer export refactors into.
