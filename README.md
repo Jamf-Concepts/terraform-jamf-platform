@@ -68,7 +68,8 @@ Then configure it against your sandbox instance:
 jamf-cli pro setup
 ```
 
-Follow the prompts to enter your Jamf Pro URL and API client credentials.
+Follow the prompts to enter your Jamf Pro URL and local admin credentials.
+jamf-cli creates an API client automatically.
 
 ### Create an API Role and Client in Jamf Pro
 
