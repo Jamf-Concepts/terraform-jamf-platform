@@ -407,10 +407,23 @@ This is why splitting control between Terraform and the UI breaks things.
 Terraform owns state; the UI owns the live instance; they are now out of sync
 and neither can fully reconcile without manual intervention.
 
-**The fix:** delete the manually-created **Engineering** category from the
-Jamf Pro UI, then run `terraform apply -parallelism=1` — Terraform recreates
-it cleanly with the correct ID. Or import the manually-created resource first
-— see the next section.
+**The fix:** remove the stale state entry, then import the manually-created
+resource at its current ID:
+
+```bash
+terraform state rm jamfpro_category.engineering
+```
+
+Then add an import block in `imports.tf` pointing to the new ID (find it with
+`jamf-cli pro categories list -o table`), and apply:
+
+```bash
+terraform apply -parallelism=1
+```
+
+This preserves the existing resource and its ID — anything in Jamf Pro already
+referencing that category stays intact. Deleting the manual copy and
+recreating via Terraform would assign a new ID and break those references.
 
 ---
 
