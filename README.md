@@ -387,28 +387,36 @@ UI. Or import the manually-created resource — see the next section.
 ## Importing existing resources
 
 Import brings a resource that already exists in Jamf Pro under Terraform
-management without recreating it. The workflow uses an `import` block
-alongside `terraform plan -generate-config-out`, which reads the live resource
-from the API and generates the HCL for you.
+management without recreating it. This is the path for resources created
+manually in the UI before Terraform was involved — or for resources orphaned
+by the delete/recreate scenario above.
 
-**Before you start:** you need the numeric Jamf Pro ID of the resource to
-import. Find it via `jamf-cli`:
+The workflow uses an `import` block alongside `terraform plan -generate-config-out`,
+which reads the live resource from the API and generates the HCL for you.
+
+**Before you start:** create two resources manually in the Jamf Pro UI:
+
+1. A category named **Finance** — **Settings → Global → Categories → New**
+2. A script named **Inventory Update** — **Settings → Computer Management → Scripts → New**
+   Add any content, e.g. `echo "recon"`.
+
+Then find their numeric IDs via `jamf-cli`:
 
 ```bash
 jamf-cli pro categories list -o table
 jamf-cli pro scripts list -o table
 ```
 
-Each resource lists its `id` field. Note it — you'll use it in the import block.
+Note the `id` value for each — you'll use them in the import blocks.
 
 ### Import 1: a category
 
-Create a temporary file `imports.tf` at the project root:
+Open `imports.tf` and uncomment the category block, filling in the ID:
 
 ```hcl
 import {
-  to = jamfpro_category.engineering
-  id = "5"  # replace with the actual numeric ID from Jamf Pro
+  to = jamfpro_category.finance
+  id = "42"  # replace with the actual numeric ID from Jamf Pro
 }
 ```
 
@@ -423,13 +431,13 @@ block to `generated.tf`. Open it and review the output — it will look
 something like:
 
 ```hcl
-resource "jamfpro_category" "engineering" {
-  name = "Engineering"
+resource "jamfpro_category" "finance" {
+  name = "Finance"
 }
 ```
 
-Copy the resource block into `categories.tf`, replacing the existing stub if
-you haven't filled it in yet. Then delete `imports.tf` and `generated.tf`.
+Copy the resource block into `categories.tf`. Delete the import block from
+`imports.tf` and delete `generated.tf`.
 
 Run a final plan to confirm Terraform sees no changes:
 
@@ -437,17 +445,18 @@ Run a final plan to confirm Terraform sees no changes:
 terraform plan -parallelism=1
 ```
 
-A clean plan (`No changes`) means the resource is now fully under Terraform
-management.
+A clean plan (`No changes`) means **Finance** is now fully under Terraform
+management. Any future changes must go through HCL — edits in the UI will
+show as drift on the next plan.
 
 ### Import 2: a script
 
-The same workflow applies to any resource type. Create `imports.tf`:
+Uncomment the script block in `imports.tf`, filling in the ID:
 
 ```hcl
 import {
-  to = jamfpro_script.hello_world
-  id = "12"  # replace with the actual numeric ID from Jamf Pro
+  to = jamfpro_script.inventory_update
+  id = "17"  # replace with the actual numeric ID from Jamf Pro
 }
 ```
 
@@ -455,16 +464,18 @@ import {
 terraform plan -parallelism=1 -generate-config-out=generated.tf
 ```
 
-Terraform generates the script resource block including `script_contents`
-inline. If you prefer to keep the script in a separate file (as in Step 2),
-replace the inline `script_contents` value in `generated.tf` with:
+Terraform generates the script resource block with `script_contents` inline.
+If you prefer to keep the script body in a separate file (as in Step 2),
+save the content to `support_files/scripts/inventory_update.sh` and replace
+the inline value in `generated.tf` with:
 
 ```hcl
-script_contents = file("${path.root}/support_files/scripts/hello_world.sh")
+script_contents = file("${path.root}/support_files/scripts/inventory_update.sh")
 ```
 
-Copy the block into `scripts.tf`, delete `imports.tf` and `generated.tf`,
-and run `terraform plan -parallelism=1` to verify a clean result.
+Copy the block into `scripts.tf`, delete the import block from `imports.tf`
+and delete `generated.tf`, then run `terraform plan -parallelism=1` to verify
+a clean result.
 
 ---
 
