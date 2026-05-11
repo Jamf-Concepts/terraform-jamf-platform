@@ -399,13 +399,18 @@ state. That ID no longer exists — the category was deleted. Terraform
 concludes the resource is missing and plans to recreate it.
 
 The new **Engineering** category you created manually has a different ID and
-is invisible to Terraform. If you run `terraform apply`, Terraform creates
-another **Engineering** category alongside the unmanaged one.
+is invisible to Terraform. If you run `terraform apply -parallelism=1`,
+Terraform attempts to create a new **Engineering** category via the API —
+and Jamf Pro rejects it with a duplicate name error. The apply fails.
 
-**The fix:** run `terraform apply -parallelism=1` to let Terraform recreate
-the resource with the correct ID, then delete the manually-created duplicate
-from the Jamf Pro UI. Or import the manually-created resource — see the next
-section.
+This is why splitting control between Terraform and the UI breaks things.
+Terraform owns state; the UI owns the live instance; they are now out of sync
+and neither can fully reconcile without manual intervention.
+
+**The fix:** delete the manually-created **Engineering** category from the
+Jamf Pro UI, then run `terraform apply -parallelism=1` — Terraform recreates
+it cleanly with the correct ID. Or import the manually-created resource first
+— see the next section.
 
 ---
 
