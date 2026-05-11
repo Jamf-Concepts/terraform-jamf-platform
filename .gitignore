@@ -6,3 +6,4 @@ terraform.tfvars
 *.p7m
 *.vpptoken
 generated.tf
+CLAUDE.md
