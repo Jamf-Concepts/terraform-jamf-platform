@@ -1,13 +1,4 @@
-# Create an API Role and Client in Jamf Pro before running this project:
-#   Settings → System → API roles and clients → API Roles
-#   Create a role. Use "All" privileges while learning — tighten later.
-#
-#   Settings → System → API roles and clients → API Clients
-#   Create a client, attach the role, generate a secret.
-#
-# Supply credentials in terraform.tfvars (gitignored) or via environment variables:
-#   export TF_VAR_jamfpro_client_id="..."
-#   export TF_VAR_jamfpro_client_secret="..."
+# Credentials are supplied via terraform.tfvars — see Prerequisites in README.md
 
 provider "jamfpro" {
   jamfpro_instance_fqdn = var.jamfpro_instance_fqdn

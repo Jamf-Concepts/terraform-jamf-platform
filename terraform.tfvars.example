@@ -1,3 +1,6 @@
-jamfpro_instance_fqdn = "https://yourcompany.jamfcloud.com"
+# Full URL including https://, e.g. https://yourcompany.jamfcloud.com
+jamfpro_instance_fqdn = ""
+
+# OAuth2 API client credentials — see Prerequisites in README.md for setup steps
 jamfpro_client_id     = ""
 jamfpro_client_secret = ""
