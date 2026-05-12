@@ -41,9 +41,9 @@ By the end of this session you will be able to:
 - A Jamf Pro sandbox instance — **do not use production**
 - Terraform >= 1.11.0 (see below)
 - VS Code with the HashiCorp Terraform extension (see below)
-- An API Role and Client in the sandbox (see below)
 - jamf-cli (see below)
 - jamformer (see below)
+- An API Role and Client in the sandbox (see below)
 
 ### Installing Terraform
 
@@ -133,20 +133,21 @@ step.
 
 ## Setup
 
-### 1. Clone
+### Clone
 
 ```bash
 git clone --branch ref-jamfpro-starter --single-branch https://github.com/Jamf-Concepts/terraform-jamf-platform.git
 cd terraform-jamf-platform
 ```
 
-### 2. Configure credentials
+### Configure credentials
 
 ```bash
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Open `terraform.tfvars` and fill in your sandbox URL and API client credentials:
+Open `terraform.tfvars` and fill in your sandbox URL with the `clientId` and
+`clientSecret` from the previous step:
 
 ```hcl
 jamfpro_instance_fqdn = "https://yourcompany.jamfcloud.com"
@@ -164,7 +165,7 @@ export TF_VAR_jamfpro_client_id="..."
 export TF_VAR_jamfpro_client_secret="..."
 ```
 
-### 3. Initialise Terraform
+### Initialise Terraform
 
 ```bash
 terraform init
