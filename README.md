@@ -57,11 +57,21 @@ By the end of this session you will be able to:
 ## Prerequisites
 
 - A Jamf Pro sandbox instance — **do not use production**
+- Git (see below)
 - Terraform >= 1.11.0 (see below)
 - VS Code with the HashiCorp Terraform extension (see below)
 - jamf-cli (see below)
 - jamformer (see below)
 - An API Role and Client in the sandbox (see below)
+
+### Installing git
+
+macOS does not always ship git out of the box. Check with `git --version`. If
+missing, install via Homebrew:
+
+```bash
+brew install git
+```
 
 ### Installing Terraform
 
