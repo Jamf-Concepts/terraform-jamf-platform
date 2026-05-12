@@ -100,17 +100,25 @@ brew install Jamf-Concepts/tap/jamformer
 Terraform authenticates to Jamf Pro using OAuth2. Use jamf-cli to create the
 credentials from the command line:
 
+Create a role with all privileges — appropriate for learning, tighten for
+production:
+
 ```bash
-# 1. Create a role with all privileges — appropriate for learning, tighten for production
 jamf-cli pro api-roles-privileges api-role-privileges -o json | \
   jq '{displayName: "terraform-starter", privileges: .privileges}' | \
   jamf-cli pro api-roles create
+```
 
-# 2. Create a client and attach the role
+Create a client and attach the role:
+
+```bash
 echo '{"displayName":"terraform-starter","enabled":true,"accessTokenLifetimeSeconds":300,"authorizationScopes":["terraform-starter"]}' | \
   jamf-cli pro api-integrations create
+```
 
-# 3. Retrieve credentials — copy immediately, the secret is shown only once
+Retrieve credentials — copy immediately, the secret is shown only once:
+
+```bash
 jamf-cli pro api-integrations client-credentials --name "terraform-starter"
 ```
 
