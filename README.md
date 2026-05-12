@@ -95,17 +95,31 @@ resources at scale.
 brew install Jamf-Concepts/tap/jamformer
 ```
 
-### Create an API Role and Client in Jamf Pro
+### Create an API Role and Client
 
-Terraform authenticates to Jamf Pro using OAuth2. Before running this project,
-create credentials in your sandbox instance:
+Terraform authenticates to Jamf Pro using OAuth2. Use jamf-cli to create the
+credentials from the command line:
 
-1. Go to **Settings → System → API roles and clients → API Roles**.
-2. Create a role. Use **All** privileges while learning — tighten later.
-3. Go to **API roles and clients → API Clients**.
-4. Create a client, attach the role, and click **Generate client secret**.
-5. Copy the **Client ID** and **Client Secret** — you'll need them in the next step.
-   The secret is shown only once.
+```bash
+# 1. Create a role with all privileges — appropriate for learning, tighten for production
+jamf-cli pro api-roles-privileges api-role-privileges -o json | \
+  jq '{displayName: "terraform-starter", privileges: .privileges}' | \
+  jamf-cli pro api-roles create
+
+# 2. Create a client and attach the role
+echo '{"displayName":"terraform-starter","enabled":true,"accessTokenLifetimeSeconds":300,"authorizationScopes":["terraform-starter"]}' | \
+  jamf-cli pro api-integrations create
+
+# 3. Retrieve credentials — copy immediately, the secret is shown only once
+jamf-cli pro api-integrations client-credentials --name "terraform-starter"
+```
+
+If you have multiple jamf-cli profiles, add `-p <profile-name>` to each
+command. `client-credentials` rotates the secret — running it again invalidates
+the previous one.
+
+Copy the `clientId` and `clientSecret` values — you'll need them in the next
+step.
 
 ---
 
@@ -590,6 +604,13 @@ terraform destroy -parallelism=1
 
 Terraform reads state and deletes each resource from Jamf Pro. Type `yes`
 when prompted. The state file will be empty when it finishes.
+
+Then delete the API client and role created during setup:
+
+```bash
+jamf-cli pro api-integrations delete --name "terraform-starter" --yes
+jamf-cli pro api-roles delete --name "terraform-starter" --yes
+```
 
 ---
 
