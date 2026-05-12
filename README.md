@@ -13,6 +13,24 @@ multi-environment structure.
 
 ---
 
+## Contents
+
+- [Learning outcomes](#learning-outcomes)
+- [What you'll build](#what-youll-build)
+- [Prerequisites](#prerequisites)
+- [Setup](#setup)
+- [Step 1: Categories](#step-1-categories)
+- [Step 2: Scripts](#step-2-scripts)
+- [Step 3: Static Computer Groups](#step-3-static-computer-groups)
+- [Step 4: Policies](#step-4-policies)
+- [Drift: when Jamf Pro and Terraform disagree](#drift-when-jamf-pro-and-terraform-disagree)
+- [Importing existing resources](#importing-existing-resources)
+- [Discovering resources with jamformer](#discovering-resources-with-jamformer)
+- [Cleaning up](#cleaning-up)
+- [What's next](#whats-next)
+
+---
+
 ## Learning outcomes
 
 By the end of this session you will be able to:
