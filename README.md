@@ -754,16 +754,6 @@ Platform resources, it uses a different mechanism: it runs `terraform query`
 against your tenant, which uses the provider's built-in list resources
 capability. This is why Terraform 1.14+ is required.
 
-jamformer uses its own set of environment variables for credentials — separate
-from the `TF_VAR_*` variables you use for Terraform operations:
-
-```bash
-export JAMF_URL="https://us.apigw.jamf.com"
-export JAMF_CLIENT_ID="your-client-id"
-export JAMF_CLIENT_SECRET="your-client-secret"
-export JAMF_TENANT_ID="your-tenant-uuid"
-```
-
 ### Running jamformer
 
 Create a handful of additional resources in your sandbox — device groups, a
