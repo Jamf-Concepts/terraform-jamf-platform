@@ -126,9 +126,7 @@ created in **Jamf Account** at [account.jamf.com](https://account.jamf.com).
 
 **Finding your tenant ID:** In the Integration details panel, the scoped
 tenants are shown as pills. Click any tenant pill to copy its UUID to your
-clipboard. This UUID is the `tenant_id` value for the Terraform provider — it
-appears in every API URL path:
-`https://us.apigw.jamf.com/api/.../tenant/{tenant_id}/...`
+clipboard — that is the `tenant_id` value for the Terraform provider.
 
 **Base URL** — the regional API gateway:
 
