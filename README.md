@@ -445,7 +445,7 @@ data "jamfplatform_cbengine_rules" "cis_lvl1" {
 output "cis_lvl1_rules" {
   value = [
     for r in data.jamfplatform_cbengine_rules.cis_lvl1.rules :
-    "${r.id}: ${r.title}"
+    r.odv_hint != "" ? "${r.id}: ${r.title} [ODV: ${r.odv_hint}]" : "${r.id}: ${r.title}"
   ]
 }
 ```
@@ -455,8 +455,11 @@ output "cis_lvl1_rules" {
 - `data "jamfplatform_cbengine_rules"` fetches the rule set from the Jamf
   Platform API at plan time. The `data.` prefix distinguishes it from a managed
   resource — Terraform reads it but never creates, updates, or deletes it.
-- `output` blocks print values after apply. Here the `for` expression projects
-  each rule into a `"id: title"` string, giving a human-readable list.
+- `output` blocks print values after apply. The `for` expression projects each
+  rule into a readable string. Rules tagged with `[ODV: ...]` require an
+  **organisation-defined value** — a parameter you supply (e.g. a password
+  length, a timeout in days). You'll set these via `odv_value` on individual
+  rules in the benchmark resource.
 
 ```bash
 terraform plan
