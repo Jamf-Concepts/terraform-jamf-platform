@@ -15,5 +15,5 @@ variable "jamfplatform_client_secret" {
 
 variable "jamfplatform_tenant_id" {
   type        = string
-  description = "Tenant UUID — found in the Jamf admin console under your tenant details"
+  description = "Tenant UUID — click the tenant pill in the Integration details panel at account.jamf.com"
 }

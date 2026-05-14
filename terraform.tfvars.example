@@ -8,5 +8,5 @@ jamfplatform_base_url = ""
 jamfplatform_client_id     = ""
 jamfplatform_client_secret = ""
 
-# Your tenant UUID — found in the Jamf admin console under your tenant details
+# Your tenant UUID — click the tenant pill in the Integration details panel at account.jamf.com
 jamfplatform_tenant_id = ""
