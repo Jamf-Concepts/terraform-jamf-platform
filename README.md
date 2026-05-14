@@ -250,8 +250,6 @@ resource "jamfplatform_device_group" "test_machines" {
   `jamfplatform_device_group.test_machines.id`. Terraform substitutes the
   API-assigned UUID at plan time — you never look up or hard-code UUIDs
   manually.
-- Blueprints and compliance benchmarks require smart groups — static groups
-  cannot be used as targets.
 - `criteria` is a list of evaluation rules. Each entry after the first needs
   `and_or` set to `"and"` or `"or"` to define how it joins the previous rule.
   The first entry omits `and_or`.
