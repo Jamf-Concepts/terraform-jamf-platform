@@ -322,7 +322,7 @@ resource "jamfplatform_blueprints_blueprint" "software_update" {
   on a blueprint. Each maps to a specific DDM component. Only include blocks
   you need — omitted blocks do not appear in the deployed blueprint.
 - The valid values for `automatic_*` attributes are `"AlwaysOn"`, `"AlwaysOff"`,
-  and `"Allowed"`. The Jamf admin console displays `"AlwaysOff"` as **Never** —
+  and `"Allowed"`. The Jamf UI displays `"AlwaysOff"` as **Never** —
   use the API values in HCL, not the UI labels.
 
 ```bash
@@ -331,7 +331,7 @@ terraform apply
 ```
 
 Plan should show `1 to add`. Verify the **Software Update Settings** blueprint
-appears in the Jamf admin console scoped to **Test Machines**.
+appears in the Jamf UI scoped to **Test Machines**.
 
 ---
 
@@ -382,7 +382,7 @@ terraform apply
 ```
 
 Plan should show `1 to add`. Verify the **Safari Restrictions** blueprint
-appears in the Jamf admin console scoped to **Test Machines**.
+appears in the Jamf UI scoped to **Test Machines**.
 
 ---
 
@@ -535,7 +535,7 @@ terraform plan
 terraform apply
 ```
 
-Confirm the benchmark appears in the Jamf admin console under Compliance
+Confirm the benchmark appears in the Jamf UI under Compliance
 Benchmarks.
 
 ---
@@ -543,7 +543,7 @@ Benchmarks.
 ## Drift: when the Platform API and Terraform disagree
 
 Terraform's state file records the last-known configuration. If someone
-modifies a resource directly in the Jamf admin console or via the Platform API,
+modifies a resource directly in the Jamf UI or via the Platform API,
 the live configuration diverges from state. Running `terraform plan` detects
 this — Terraform reads the current state of each resource from the API and
 compares it against the HCL. The HCL is always the source of truth.
@@ -583,7 +583,7 @@ back to `"AlwaysOn"` and apply — the plan will show the reverse diff.
 
 ### Change 2: modifying a payload setting
 
-In the Jamf admin console, edit the **Safari Restrictions** blueprint and
+In the Jamf UI, edit the **Safari Restrictions** blueprint and
 re-enable private browsing.
 
 Run a plan:
@@ -607,7 +607,7 @@ The workflow uses an `import` block alongside
 `terraform plan -generate-config-out`, which reads the live resource from the
 API and generates the HCL for you.
 
-**Before you start:** create two unmanaged resources in the Jamf admin console
+**Before you start:** create two unmanaged resources in the Jamf UI
 to simulate configuration that exists outside Terraform:
 
 - A smart computer device group named **Terraform Managed**
@@ -739,7 +739,7 @@ export JAMF_TENANT_ID="your-tenant-uuid"
 ### Running jamformer
 
 Create a handful of additional resources in your sandbox — device groups, a
-blueprint, a compliance benchmark — using the Jamf admin console. Then run
+blueprint, a compliance benchmark — using the Jamf UI. Then run
 jamformer against the tenant:
 
 ```bash
