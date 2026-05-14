@@ -631,13 +631,33 @@ API and generates the HCL for you.
 **Before you start:** create two unmanaged resources to simulate configuration
 that exists outside Terraform.
 
-**Device group** — create via jamf-cli:
+> If you ran `jamf-cli platform setup` during prerequisites, the profile it
+> created is already the default — no `-p` flag needed below.
+
+**Device group** — criteria-based smart groups require JSON input for the
+`criteria` array. Write the payload to a temp file then create:
 
 ```bash
-jamf-cli -p <profile> pro platform-device-groups create \
-  --set name="Terraform Managed" \
-  --set groupType="SMART" \
-  --set deviceType="COMPUTER"
+cat > /tmp/import_group.json << 'EOF'
+{
+  "name": "Terraform Managed",
+  "description": "Created outside Terraform",
+  "groupType": "SMART",
+  "deviceType": "COMPUTER",
+  "criteria": [
+    {
+      "attributeName": "Serial Number",
+      "attributeValue": "C02IMPORT0001",
+      "operator": "IS",
+      "joinType": "AND",
+      "order": 0,
+      "hasOpeningParenthesis": false,
+      "hasClosingParenthesis": false
+    }
+  ]
+}
+EOF
+jamf-cli pro platform-device-groups create --file /tmp/import_group.json
 ```
 
 **Blueprint** — create via the Jamf UI: add a new blueprint named
@@ -646,8 +666,8 @@ jamf-cli -p <profile> pro platform-device-groups create \
 Then find their UUIDs:
 
 ```bash
-jamf-cli -p <profile> pro platform-device-groups list -o table
-jamf-cli -p <profile> pro blueprints list -o table
+jamf-cli pro platform-device-groups list -o table
+jamf-cli pro blueprints list -o table
 ```
 
 Note the `ID` value for each — you'll use them in the import blocks.
