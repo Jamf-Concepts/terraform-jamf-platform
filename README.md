@@ -321,6 +321,9 @@ resource "jamfplatform_blueprints_blueprint" "software_update" {
 - `software_update_settings` is one of many optional payload blocks available
   on a blueprint. Each maps to a specific DDM component. Only include blocks
   you need — omitted blocks do not appear in the deployed blueprint.
+- The valid values for `automatic_*` attributes are `"AlwaysOn"`, `"AlwaysOff"`,
+  and `"Allowed"`. The Jamf admin console displays `"AlwaysOff"` as **Never** —
+  use the API values in HCL, not the UI labels.
 
 ```bash
 terraform plan
@@ -471,11 +474,11 @@ compares it against the HCL. The HCL is always the source of truth.
 ### Change 1: modifying a software update setting
 
 In `blueprints.tf`, change `automatic_install_security_updates` from
-`"AlwaysOn"` to `"Never"` to simulate a setting that was changed outside
+`"AlwaysOn"` to `"AlwaysOff"` to simulate a setting that was changed outside
 Terraform:
 
 ```hcl
-automatic_install_security_updates = "Never"
+automatic_install_security_updates = "AlwaysOff"
 ```
 
 Run a plan:
@@ -489,7 +492,7 @@ Terraform shows a modification:
 ```text
 ~ jamfplatform_blueprints_blueprint.software_update
     ~ software_update_settings = {
-        ~ automatic_install_security_updates = "AlwaysOn" -> "Never"
+        ~ automatic_install_security_updates = "AlwaysOn" -> "AlwaysOff"
       }
 ```
 
