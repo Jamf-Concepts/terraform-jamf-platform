@@ -1,0 +1,16 @@
+# Regional API gateway URL — pick the one matching your tenant's region
+# US:   https://us.apigw.jamf.com
+# EU:   https://eu.apigw.jamf.com
+# APAC: https://apac.apigw.jamf.com
+jamfplatform_base_url = ""
+
+# OAuth2 credentials — see Prerequisites in README.md for setup steps
+jamfplatform_client_id     = ""
+jamfplatform_client_secret = ""
+
+# Your tenant UUID — found in the Jamf admin console under your tenant details
+jamfplatform_tenant_id = ""
+
+# Platform UUID of the device group to scope blueprints and benchmarks to
+# See "Find a device group Platform ID" in README.md
+device_group_platform_id = ""
