@@ -103,8 +103,7 @@ easier.
 ### Create Platform API credentials
 
 The Jamf Platform provider authenticates via OAuth2 using an **integration**
-created in **Jamf Account** — not in the Jamf Pro admin console. Jamf Account
-is a separate portal at [account.jamf.com](https://account.jamf.com).
+created in **Jamf Account** at [account.jamf.com](https://account.jamf.com).
 
 > **Beta requirement:** The Platform API Gateway is currently in beta. You must
 > first enroll in the **Platform API Gateway Beta** via
