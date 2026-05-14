@@ -105,27 +105,40 @@ easier.
 
 ### Create Platform API credentials
 
-The Jamf Platform provider authenticates via OAuth2 using credentials created
-in the Jamf admin console. These are **separate** from Jamf Pro API Roles and
-Clients — the Platform API is a distinct API surface with its own credential
-management.
+The Jamf Platform provider authenticates via OAuth2 using an **integration**
+created in **Jamf Account** — not in the Jamf Pro admin console. Jamf Account
+is a separate portal at [account.jamf.com](https://account.jamf.com).
 
-1. Sign in to the Jamf admin console for your sandbox tenant
-2. Navigate to **Settings → API Integrations**
-3. Create a new OAuth2 client with scopes for Blueprints, Compliance
-   Benchmarks, and Device Group Inventory APIs
-4. Copy the `client_id` and `client_secret` — the secret is shown only once
+> **Beta requirement:** The Platform API Gateway is currently in beta. You must
+> first enroll in the **Platform API Gateway Beta** via
+> **Feedback Program → Other** in Jamf Account before the Integrations section
+> becomes available.
 
-You also need two additional values:
+1. Sign in to [account.jamf.com](https://account.jamf.com)
+2. Enroll in the Platform API Gateway Beta under **Feedback Program → Other**
+   (if not already enrolled)
+3. Navigate to **Integrations** in the left navigation
+4. Click **Create integration**
+5. Enter a name and description, select the **Region** matching your tenant,
+   select your sandbox instance under **Tenants**, and grant permissions for
+   Blueprints, Compliance Benchmarks, and Device Group Inventory
+6. Click **Create integration** — the Integration details panel shows your
+   `client_id` and `client_secret`
 
-- **Tenant UUID** — found in the admin console under your tenant details
-- **Base URL** — the regional API gateway:
-  - `https://us.apigw.jamf.com` (US)
-  - `https://eu.apigw.jamf.com` (EU)
-  - `https://apac.apigw.jamf.com` (APAC)
+> **Copy the client secret immediately.** It is not shown again after you close
+> the panel.
 
-For full credential setup guidance, see the
-[Platform API getting started documentation](https://developer.jamf.com/platform-api/reference/getting-started-with-platform-api).
+**Finding your tenant ID:** In the Integration details panel, the scoped
+tenants are shown as pills. Click any tenant pill to copy its UUID to your
+clipboard. This UUID is the `tenant_id` value for the Terraform provider — it
+appears in every API URL path:
+`https://us.apigw.jamf.com/api/.../tenant/{tenant_id}/...`
+
+**Base URL** — the regional API gateway:
+
+- `https://us.apigw.jamf.com` (US)
+- `https://eu.apigw.jamf.com` (EU)
+- `https://apac.apigw.jamf.com` (APAC)
 
 ### Install jamformer
 
@@ -689,7 +702,7 @@ terraform destroy
 Terraform reads state and deletes each resource from Jamf Platform. Type `yes`
 when prompted. The state file will be empty when it finishes.
 
-Then revoke the OAuth2 client in the Jamf admin console to clean up credentials.
+Then delete the integration in [account.jamf.com](https://account.jamf.com) under **Integrations** to clean up credentials.
 
 ---
 
