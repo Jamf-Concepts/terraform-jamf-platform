@@ -224,8 +224,16 @@ Open `device_groups.tf` and replace its contents with:
 resource "jamfplatform_device_group" "test_machines" {
   name        = "Test Machines"
   description = "Managed by Terraform"
-  group_type  = "static"
+  group_type  = "smart"
   device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "greater than or equal"
+      value    = "14.0"
+    }
+  ]
 }
 ```
 
@@ -236,11 +244,13 @@ resource "jamfplatform_device_group" "test_machines" {
   `jamfplatform_device_group.test_machines.id`. Terraform substitutes the
   API-assigned UUID at plan time — you never look up or hard-code UUIDs
   manually.
-- `group_type = "static"` creates a static group. Members are managed manually
-  in Jamf (or via the `members` attribute). Use `"smart"` with a `criteria`
-  block for a dynamic smart group.
+- Blueprints and compliance benchmarks can only target smart groups. Smart
+  groups use `criteria` to evaluate device inventory and populate membership
+  dynamically.
 - `device_type` must be `"computer"` or `"mobile"` and cannot be changed after
   creation without replacing the resource.
+- Adjust the `value` to match the OS versions in your sandbox — `"14.0"` targets
+  macOS Sonoma and later.
 
 Run a plan:
 
@@ -255,9 +265,9 @@ terraform apply
 ```
 
 Type `yes` when prompted. Terraform creates the group in Jamf and records its
-API-assigned UUID in `terraform.tfstate`. After apply, add your test
-machine(s) to the group manually in the Jamf admin console — Terraform manages
-the group definition, not its membership.
+API-assigned UUID in `terraform.tfstate`. Membership is determined automatically
+by the criteria — any enrolled Mac running macOS 14.0 or later will appear in
+the group.
 
 ---
 
@@ -506,7 +516,7 @@ API and generates the HCL for you.
 **Before you start:** create two unmanaged resources in the Jamf admin console
 to simulate configuration that exists outside Terraform:
 
-- A device group named **Terraform Managed** (static, computer)
+- A smart computer device group named **Terraform Managed**
 - A blueprint named **Passcode Policy** with a passcode requirement enabled
 
 ### Finding resource UUIDs
