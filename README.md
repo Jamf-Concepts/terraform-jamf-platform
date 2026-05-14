@@ -551,8 +551,7 @@ compares it against the HCL. The HCL is always the source of truth.
 ### Change 1: modifying a software update setting
 
 In `blueprints.tf`, change `automatic_install_security_updates` from
-`"AlwaysOn"` to `"AlwaysOff"` to simulate a setting that was changed outside
-Terraform:
+`"AlwaysOn"` to `"AlwaysOff"`:
 
 ```hcl
 automatic_install_security_updates = "AlwaysOff"
