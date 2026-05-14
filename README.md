@@ -4,10 +4,12 @@
 > companion for the Jamf IaC Enablement session. Other branches in this
 > repository are unrelated.
 
-A flat Terraform project that manages two Jamf Platform resource types against
+A flat Terraform project that manages three Jamf Platform resource types against
 a sandbox tenant. Flat means all `.tf` files sit at the root — no
-`environments/` folders, no modules. This is the right starting point before
-adding multi-environment structure.
+`environments/` folders, no modules. This is the same layout that
+[jamformer](https://github.com/Jamf-Concepts/jamformer) produces when it reads
+an existing tenant, and the right starting point before adding multi-environment
+structure.
 
 ---
 
@@ -17,12 +19,13 @@ adding multi-environment structure.
 - [What you'll build](#what-youll-build)
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
-- [Step 1: Software Update Blueprint](#step-1-software-update-blueprint)
-- [Step 2: Safari Restrictions Blueprint](#step-2-safari-restrictions-blueprint)
-- [Step 3: Compliance Benchmark](#step-3-compliance-benchmark)
+- [Step 1: Device Groups](#step-1-device-groups)
+- [Step 2: Software Update Blueprint](#step-2-software-update-blueprint)
+- [Step 3: Safari Restrictions Blueprint](#step-3-safari-restrictions-blueprint)
+- [Step 4: Compliance Benchmark](#step-4-compliance-benchmark)
 - [Drift: when Jamf Platform and Terraform disagree](#drift-when-jamf-platform-and-terraform-disagree)
 - [Importing existing resources](#importing-existing-resources)
-- [Discovering resources with data sources](#discovering-resources-with-data-sources)
+- [Discovering resources with jamformer](#discovering-resources-with-jamformer)
 - [Cleaning up](#cleaning-up)
 - [What's next](#whats-next)
 
@@ -35,6 +38,8 @@ By the end of this session you will be able to:
 - Configure the Jamf Platform Terraform provider with OAuth2 credentials
 - Declare resources, understand state, and run `init`, `plan`, `apply`, and
   `destroy`
+- Reference resource IDs across files and let Terraform resolve dependency
+  ordering automatically
 - Use data sources to read existing infrastructure and feed results into
   resources
 - Build a compliance benchmark dynamically from a data source using `for`
@@ -42,13 +47,16 @@ By the end of this session you will be able to:
 - Detect and respond to configuration drift using `terraform plan`
 - Import existing Jamf Platform resources into Terraform management using
   `import` blocks
+- Use jamformer to generate Terraform configuration from an existing tenant at
+  scale
 
 ## What you'll build
 
 | File | Resource | Teaches |
 | --- | --- | --- |
-| `blueprints.tf` | Blueprint (software update settings) | First resource, anatomy of a resource block, the `deployed` flag |
-| `blueprints.tf` | Blueprint (Safari restrictions via legacy payload) | Inline JSON payloads with `legacy_payloads` |
+| `device_groups.tf` | Device group | Standalone resource, no dependencies |
+| `blueprints.tf` | Blueprint (software update settings) | Resource references, the `deployed` flag, DDM overview |
+| `blueprints.tf` | Blueprint (Safari restrictions) | `legacy_payloads`, inline MDM payload syntax |
 | `compliance_benchmarks.tf` | Compliance Benchmark | Data sources, `for` expressions, async resource creation |
 
 ---
@@ -57,10 +65,10 @@ By the end of this session you will be able to:
 
 - A Jamf sandbox tenant — **do not use production**
 - Git (see below)
-- Terraform >= 1.11.0 (see below)
+- Terraform >= 1.14.0 (see below)
 - VS Code with the HashiCorp Terraform extension (see below)
 - Platform API OAuth2 credentials (see below)
-- A device group Platform ID to target (see below)
+- jamformer (see below)
 
 ### Installing git
 
@@ -84,25 +92,28 @@ terraform -version
 For other platforms, see
 [developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install).
 
+> **Why >= 1.14.0?** jamformer uses `terraform query` to discover existing
+> resources from your tenant. This command was introduced in Terraform 1.14.
+
 ### Recommended editor
 
 [Visual Studio Code](https://code.visualstudio.com) with the
 [HashiCorp Terraform extension](https://marketplace.visualstudio.com/items?itemName=HashiCorp.terraform)
 gives you syntax highlighting, auto-complete, and inline documentation for
-resource attributes. It is not required but makes editing `.tf` files
-significantly easier.
+resource attributes. Not required but makes editing `.tf` files significantly
+easier.
 
 ### Create Platform API credentials
 
 The Jamf Platform provider authenticates via OAuth2 using credentials created
 in the Jamf admin console. These are **separate** from Jamf Pro API Roles and
-Clients — the Platform API is a different API surface with its own credential
+Clients — the Platform API is a distinct API surface with its own credential
 management.
 
 1. Sign in to the Jamf admin console for your sandbox tenant
 2. Navigate to **Settings → API Integrations**
-3. Create a new OAuth2 client with scopes for Blueprints and Compliance
-   Benchmarks APIs
+3. Create a new OAuth2 client with scopes for Blueprints, Compliance
+   Benchmarks, and Device Group Inventory APIs
 4. Copy the `client_id` and `client_secret` — the secret is shown only once
 
 You also need two additional values:
@@ -116,45 +127,15 @@ You also need two additional values:
 For full credential setup guidance, see the
 [Platform API getting started documentation](https://developer.jamf.com/platform-api/reference/getting-started-with-platform-api).
 
-### Find a device group Platform ID
+### Install jamformer
 
-Blueprints and compliance benchmarks target device groups using a **Platform
-API UUID** — not the numeric ID used by Jamf Pro. These UUIDs are assigned by
-the Platform API and are distinct from Jamf Pro group IDs even for the same
-group.
+[jamformer](https://github.com/Jamf-Concepts/jamformer) reads an existing Jamf
+tenant and generates Terraform configuration from it. For the Platform provider,
+it supports Blueprints, Compliance Benchmarks, and Device Groups. Install via
+Homebrew:
 
-The simplest Terraform-native approach to find one: add this to any `.tf` file
-temporarily after completing the initial setup below, then run
-`terraform apply`:
-
-```hcl
-data "jamfplatform_device_groups" "all" {}
-
-output "device_groups" {
-  value = data.jamfplatform_device_groups.all.device_groups
-}
-```
-
-The output lists every group with its Platform UUID. Copy the `id` of the group
-you want to target, set it as `device_group_platform_id` in `terraform.tfvars`,
-and remove the data source and output blocks before continuing.
-
-You can also filter to a specific group type:
-
-```hcl
-data "jamfplatform_device_groups" "computers" {
-  filter = [
-    {
-      selector = "deviceType"
-      argument = "COMPUTER"
-    },
-    {
-      join_with = "and"
-      selector  = "groupType"
-      argument  = "STATIC"
-    }
-  ]
-}
+```bash
+brew install Jamf-Concepts/tap/jamformer
 ```
 
 ---
@@ -181,19 +162,17 @@ jamfplatform_base_url      = "https://us.apigw.jamf.com"
 jamfplatform_client_id     = "your-client-id"
 jamfplatform_client_secret = "your-client-secret"
 jamfplatform_tenant_id     = "your-tenant-uuid"
-device_group_platform_id   = "your-device-group-uuid"
 ```
 
 `terraform.tfvars` is gitignored — it will never be committed.
 
-Alternatively, export credentials as environment variables:
+Alternatively, export as environment variables:
 
 ```bash
 export TF_VAR_jamfplatform_base_url="https://us.apigw.jamf.com"
 export TF_VAR_jamfplatform_client_id="..."
 export TF_VAR_jamfplatform_client_secret="..."
 export TF_VAR_jamfplatform_tenant_id="..."
-export TF_VAR_device_group_platform_id="..."
 ```
 
 ### Initialise Terraform
@@ -225,48 +204,36 @@ Terraform has been successfully initialized!
 
 ---
 
-## Step 1: Software Update Blueprint
+## Step 1: Device Groups
 
-Blueprints are the primary resource type in the Jamf Platform API. A blueprint
-declares a desired configuration state and deploys it to a set of device groups
-using Apple's Declarative Device Management (DDM) framework. Unlike classic MDM
-profiles, DDM blueprints are stateful — the device maintains the configuration
-and reports compliance back to Jamf.
+Device groups are the targeting mechanism for both blueprints and compliance
+benchmarks — every Platform resource that scopes to devices does so through a
+device group. They are the right first thing to declare because they have no
+dependencies on other Platform resources.
 
-Open `blueprints.tf` and replace its contents with:
+Open `device_groups.tf` and replace its contents with:
 
 ```hcl
-resource "jamfplatform_blueprints_blueprint" "software_update" {
-  name        = "Software Update Settings"
+resource "jamfplatform_device_group" "test_machines" {
+  name        = "Test Machines"
   description = "Managed by Terraform"
-  deployed    = true
-
-  device_groups = [var.device_group_platform_id]
-
-  software_update_settings = {
-    automatic_download                 = "AlwaysOn"
-    automatic_install_os_updates       = "AlwaysOn"
-    automatic_install_security_updates = "AlwaysOn"
-    notifications_enabled              = true
-    rapid_security_response_enabled    = true
-  }
+  group_type  = "static"
+  device_type = "computer"
 }
 ```
 
 **Key points:**
 
-- Each `resource` block declares one object Terraform will create. The block
-  address is `<type>.<name>` — `jamfplatform_blueprints_blueprint.software_update`.
-  Terraform tracks it in state by this address.
-- `deployed = true` tells the provider to deploy the blueprint immediately after
-  creation. Setting `deployed = false` creates the blueprint without pushing it
-  to devices — useful for drafting configuration before it goes live.
-- `device_groups` takes a set of Platform UUID strings. Here it references
-  the variable you configured in `terraform.tfvars`. Wrap the reference in
-  `[...]` because the attribute expects a set, even with a single group.
-- `software_update_settings` is one of many optional payload blocks. Each block
-  maps to a specific DDM component. Only include the blocks you need — omitted
-  blocks do not appear in the deployed blueprint.
+- The block address is `jamfplatform_device_group.test_machines`. To reference
+  this group's Platform UUID from another resource, use
+  `jamfplatform_device_group.test_machines.id`. Terraform substitutes the
+  API-assigned UUID at plan time — you never look up or hard-code UUIDs
+  manually.
+- `group_type = "static"` creates a static group. Members are managed manually
+  in Jamf (or via the `members` attribute). Use `"smart"` with a `criteria`
+  block for a dynamic smart group.
+- `device_type` must be `"computer"` or `"mobile"` and cannot be changed after
+  creation without replacing the resource.
 
 Run a plan:
 
@@ -280,14 +247,68 @@ You should see `Plan: 1 to add`. Apply:
 terraform apply
 ```
 
-Type `yes` when prompted. Terraform creates the blueprint in Jamf Platform and
-deploys it to the target device group. Open the Jamf admin console and confirm
-the **Software Update Settings** blueprint appears in the Blueprints list with
-a deployed status.
+Type `yes` when prompted. Terraform creates the group in Jamf and records its
+API-assigned UUID in `terraform.tfstate`. After apply, add your test
+machine(s) to the group manually in the Jamf admin console — Terraform manages
+the group definition, not its membership.
 
 ---
 
-## Step 2: Safari Restrictions Blueprint
+## Step 2: Software Update Blueprint
+
+Blueprints are the primary configuration resource in the Jamf Platform API.
+A blueprint declares a desired state and deploys it to device groups using
+Apple's Declarative Device Management (DDM) framework. Unlike classic MDM
+profiles, DDM is stateful — the device maintains the configuration and reports
+compliance continuously.
+
+Open `blueprints.tf` and replace its contents with:
+
+```hcl
+resource "jamfplatform_blueprints_blueprint" "software_update" {
+  name        = "Software Update Settings"
+  description = "Managed by Terraform"
+  deployed    = true
+
+  device_groups = [jamfplatform_device_group.test_machines.id]
+
+  software_update_settings = {
+    automatic_download                 = "AlwaysOn"
+    automatic_install_os_updates       = "AlwaysOn"
+    automatic_install_security_updates = "AlwaysOn"
+    notifications_enabled              = true
+    rapid_security_response_enabled    = true
+  }
+}
+```
+
+**Key points:**
+
+- `device_groups = [jamfplatform_device_group.test_machines.id]` is a resource
+  reference. Terraform reads the `id` attribute from the device group you just
+  created and substitutes it here. Because this is a reference, Terraform knows
+  the group must exist before the blueprint — you never specify ordering
+  manually.
+- `device_groups` takes a set of UUID strings. Even when targeting one group,
+  wrap the reference in `[...]`.
+- `deployed = true` tells the provider to deploy the blueprint immediately after
+  creation. Set to `false` to create the blueprint without pushing it to
+  devices — useful for drafting configuration before it goes live.
+- `software_update_settings` is one of many optional payload blocks available
+  on a blueprint. Each maps to a specific DDM component. Only include blocks
+  you need — omitted blocks do not appear in the deployed blueprint.
+
+```bash
+terraform plan
+terraform apply
+```
+
+Plan should show `1 to add`. Verify the **Software Update Settings** blueprint
+appears in the Jamf admin console scoped to **Test Machines**.
+
+---
+
+## Step 3: Safari Restrictions Blueprint
 
 This step introduces `legacy_payloads` — the mechanism for delivering classic
 MDM configuration profile payloads via a blueprint. Any Apple-defined payload
@@ -303,7 +324,7 @@ resource "jamfplatform_blueprints_blueprint" "safari_restrictions" {
   description = "Managed by Terraform"
   deployed    = true
 
-  device_groups = [var.device_group_platform_id]
+  device_groups = [jamfplatform_device_group.test_machines.id]
 
   legacy_payloads = [
     {
@@ -321,14 +342,12 @@ resource "jamfplatform_blueprints_blueprint" "safari_restrictions" {
 
 - `legacy_payloads` takes a list of objects. Each object requires a
   `payload_type` (the Apple reverse-domain identifier for the MDM payload) and
-  an optional `settings` map of key-value pairs. The keys and values match
-  Apple's MDM protocol specification for that payload type.
+  an optional `settings` map. The keys and values match Apple's MDM protocol
+  specification for that payload type.
+- Boolean values are HCL booleans (`true`/`false`), not strings.
 - You can combine `legacy_payloads` with first-class DDM blocks like
-  `software_update_settings` in a single blueprint. Each blueprint represents
-  one coherent configuration boundary — grouping related settings together
-  keeps the deployment unit meaningful.
-- The `settings` map is passed through to the MDM payload as-is. Boolean
-  values are expressed as HCL booleans (`true`/`false`), not strings.
+  `software_update_settings` in a single blueprint. Group related settings
+  together — one blueprint per configuration boundary.
 
 ```bash
 terraform plan
@@ -336,27 +355,26 @@ terraform apply
 ```
 
 Plan should show `1 to add`. Verify the **Safari Restrictions** blueprint
-appears in the Jamf admin console.
+appears in the Jamf admin console scoped to **Test Machines**.
 
 ---
 
-## Step 3: Compliance Benchmark
+## Step 4: Compliance Benchmark
 
-A compliance benchmark applies CIS or STIG security rules to a device group
-and monitors — or optionally enforces — compliance. Unlike blueprints, a
-benchmark is built from a list of rules sourced from a versioned baseline that
-changes between releases. Rather than hard-coding rule IDs, you use a data
-source to read the current baseline and pass all rules to the resource
-dynamically using a `for` expression.
+A compliance benchmark applies security rules from a CIS or STIG baseline to
+a device group and monitors — or optionally enforces — compliance. The set of
+rules in a baseline changes between releases. Rather than hard-coding rule IDs,
+you use a data source to read the current baseline and pass all rules to the
+resource dynamically using a `for` expression.
 
 This step introduces two new concepts:
 
 - **Data sources** — read existing infrastructure or external data without
   managing it. Terraform fetches the data at plan time; it never creates,
   updates, or deletes a data source.
-- **`for` expressions** — transform a list from one shape into another. Here
-  they convert the raw rule list from the data source into the structure the
-  benchmark resource expects.
+- **`for` expressions** — transform a list from one shape into another, here
+  converting the rule list from the data source into the structure the resource
+  expects.
 
 Open `compliance_benchmarks.tf` and replace its contents with:
 
@@ -384,7 +402,7 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
     }
   ]
 
-  target_device_group = var.device_group_platform_id
+  target_device_group = jamfplatform_device_group.test_machines.id
   enforcement_mode    = "MONITOR"
 }
 ```
@@ -392,21 +410,20 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
 **Key points:**
 
 - `data "jamfplatform_cbengine_rules" "cis_lvl1"` fetches the current rule set
-  for the `cis_lvl1` baseline from the Jamf Platform API at plan time. The
-  prefix `data.` distinguishes it from a managed resource. Terraform reads it
-  but never manages its lifecycle.
-- The `for` expressions in `sources` and `rules` iterate over the lists
-  returned by the data source and project each element into the shape the
-  resource attribute expects. This means the benchmark always tracks the
-  current baseline — if Jamf updates the baseline with new rules, your next
-  `terraform plan` will show the diff.
+  from the Jamf Platform API at plan time. The `data.` prefix distinguishes it
+  from a managed resource. Terraform reads it but never manages its lifecycle.
+- The `for` expressions in `sources` and `rules` iterate over the lists returned
+  by the data source and project each element into the expected shape. If Jamf
+  updates the baseline with new rules, your next `terraform plan` will show the
+  diff automatically.
+- `target_device_group = jamfplatform_device_group.test_machines.id` references
+  the same device group as the blueprints. Terraform resolves all dependencies
+  from the reference graph — no manual ordering required.
 - `enforcement_mode = "MONITOR"` reports compliance without enforcing
   remediation. Change to `"MONITOR_AND_ENFORCE"` to also apply corrective
-  configuration to non-compliant devices.
-- Benchmark creation is asynchronous — the Jamf Platform API accepts the
-  request and deploys associated MDM artifacts in the background. The provider
-  polls until the benchmark reaches `SYNCED` state, so `terraform apply` may
-  take longer than previous steps.
+  configuration.
+- Benchmark creation is asynchronous. The provider polls until the benchmark
+  reaches `SYNCED` state, so this apply may take longer than previous steps.
 
 ```bash
 terraform plan
@@ -414,19 +431,18 @@ terraform apply
 ```
 
 The plan shows `1 to read` (the data source, fetched during planning) and
-`1 to add` (the benchmark resource). Confirm the benchmark appears in the
-Jamf admin console under Compliance Benchmarks.
+`1 to add` (the benchmark). Confirm the benchmark appears in the Jamf admin
+console under Compliance Benchmarks.
 
 ---
 
 ## Drift: when Jamf Platform and Terraform disagree
 
-Terraform's state file records the last-known configuration of every resource
-it manages. If someone modifies a resource directly in the Jamf admin console
-or via the Platform API, the live configuration diverges from state. Running
-`terraform plan` detects this — Terraform reads the current state of each
-resource from the API and compares it against the HCL. The HCL is always the
-source of truth.
+Terraform's state file records the last-known configuration. If someone
+modifies a resource directly in the Jamf admin console or via the Platform API,
+the live configuration diverges from state. Running `terraform plan` detects
+this — Terraform reads the current state of each resource from the API and
+compares it against the HCL. The HCL is always the source of truth.
 
 ### Change 1: toggling deployed
 
@@ -456,7 +472,7 @@ changes.
 ### Change 2: modifying a payload setting
 
 In the Jamf admin console, edit the **Safari Restrictions** blueprint and
-re-enable private browsing (`allowSafariPrivateBrowsing = true`).
+re-enable private browsing.
 
 Run a plan:
 
@@ -464,31 +480,32 @@ Run a plan:
 terraform plan
 ```
 
-Terraform shows the `legacy_payloads` diff and intends to revert the setting
-back to `false` as declared in `blueprints.tf`. This is the core value of IaC:
-the HCL is always the source of truth. Drift is detected and corrected, not
-silently accepted. Running `terraform apply` restores the declared state.
+Terraform shows the `legacy_payloads` diff and intends to revert to the
+HCL-declared values. This is the core value of IaC: the HCL is always the
+source of truth. Drift is detected and corrected, not silently accepted.
 
 ---
 
 ## Importing existing resources
 
 Import brings a resource that already exists in Jamf Platform under Terraform
-management without recreating it. This is the path for blueprints or benchmarks
-created in the UI before Terraform was involved.
+management without recreating it. This is the path for device groups, blueprints,
+or benchmarks created in the UI before Terraform was involved.
 
 The workflow uses an `import` block alongside
 `terraform plan -generate-config-out`, which reads the live resource from the
 API and generates the HCL for you.
 
-**Before you start:** create an unmanaged blueprint in the Jamf admin console
-to simulate one that exists outside Terraform. Create a blueprint named
-**Passcode Policy** with a passcode requirement enabled.
+**Before you start:** create two unmanaged resources in the Jamf admin console
+to simulate configuration that exists outside Terraform:
 
-### Finding the resource UUID
+- A device group named **Terraform Managed** (static, computer)
+- A blueprint named **Passcode Policy** with a passcode requirement enabled
 
-Platform resources are identified by UUID, not a numeric ID. Use a data source
-to look it up by name. Add this temporarily to any `.tf` file:
+### Finding resource UUIDs
+
+Platform resources are identified by UUID. Use a data source to look one up
+by name. Add this temporarily to any `.tf` file:
 
 ```hcl
 data "jamfplatform_blueprints_blueprint" "passcode_policy" {
@@ -500,16 +517,29 @@ output "passcode_policy_id" {
 }
 ```
 
-Run `terraform apply` and note the UUID printed in the output. Remove the data
-source and output blocks.
+Run `terraform apply` and note the UUID in the output. Remove the data source
+and output blocks.
 
-### Write the import block
+For the device group, use `jamfplatform_device_groups` (plural — the list data
+source):
 
-Open `imports.tf` and uncomment the blueprint block, filling in the UUID:
+```hcl
+data "jamfplatform_device_groups" "find_terraform_managed" {
+  filter = [{ selector = "name", argument = "Terraform Managed" }]
+}
+
+output "terraform_managed_id" {
+  value = data.jamfplatform_device_groups.find_terraform_managed.device_groups[0].id
+}
+```
+
+### Import 1: a device group
+
+Open `imports.tf` and uncomment the device group block, filling in the UUID:
 
 ```hcl
 import {
-  to = jamfplatform_blueprints_blueprint.passcode_policy
+  to = jamfplatform_device_group.terraform_managed
   id = "12345678-abcd-ef01-2345-67890abcdef0"  # replace with actual UUID
 }
 ```
@@ -520,89 +550,131 @@ Run plan with config generation:
 terraform plan -generate-config-out=generated.tf
 ```
 
-Terraform reads the live blueprint from the API and writes its full resource
-block to `generated.tf`. Open it and review the output — it will look something
-like:
+Terraform reads the live device group from the API and writes its full resource
+block to `generated.tf`. Review the output and copy the resource block into
+`device_groups.tf`. Delete the import block from `imports.tf` and delete
+`generated.tf`.
 
-```hcl
-resource "jamfplatform_blueprints_blueprint" "passcode_policy" {
-  name        = "Passcode Policy"
-  deployed    = true
-  device_groups = ["..."]
-
-  passcode_policy = {
-    require_passcode = true
-    minimum_length   = 6
-  }
-}
-```
-
-Copy the resource block into `blueprints.tf`. Delete the import block from
-`imports.tf` and delete `generated.tf`.
-
-Run a final plan to confirm Terraform sees no changes:
+Run a final plan to confirm no changes:
 
 ```bash
 terraform plan
 ```
 
-A clean plan (`No changes`) means **Passcode Policy** is now fully under
-Terraform management. Any future changes must go through HCL — edits in the
-admin console will show as drift on the next plan.
+A clean plan means the device group is now fully under Terraform management.
+
+### Import 2: a blueprint
+
+Uncomment the blueprint block in `imports.tf`, filling in the UUID:
+
+```hcl
+import {
+  to = jamfplatform_blueprints_blueprint.passcode_policy
+  id = "your-uuid-here"
+}
+```
+
+```bash
+terraform plan -generate-config-out=generated.tf
+```
+
+Terraform generates the blueprint resource block. Copy it into `blueprints.tf`,
+delete the import block from `imports.tf` and `generated.tf`, then run
+`terraform plan` to verify a clean result.
+
+If the blueprint targets a device group that is now managed by Terraform, update
+the `device_groups` attribute in the generated block to use the resource
+reference rather than the hardcoded UUID:
+
+```hcl
+# Replace this:
+device_groups = ["12345678-abcd-ef01-2345-67890abcdef0"]
+
+# With this:
+device_groups = [jamfplatform_device_group.test_machines.id]
+```
+
+> **This is exactly the problem jamformer solves.** When jamformer generates
+> configuration from an existing tenant, it detects UUID references between
+> resources and replaces them with Terraform symbolic references automatically.
+> The result is immediately correct HCL — no manual UUID replacement required.
 
 ---
 
-## Discovering resources with data sources
+## Discovering resources with jamformer
 
-The import workflow above handles one resource at a time. For understanding
-what already exists in your tenant, data sources give you a live, filterable
-view. Unlike `generate-config-out`, they return structured data you can query
-and feed directly into other resources.
+The manual import workflow above handles one or two resources. For a real
+tenant with dozens of blueprints and device groups, it does not scale.
+jamformer solves this — it reads the entire tenant and generates Terraform
+configuration in one pass.
 
-### List all device groups
+### How jamformer works with the Platform provider
 
-Add this temporarily to discover groups and their Platform IDs:
+For Jamf Pro resources, jamformer calls the Jamf Pro API directly. For Jamf
+Platform resources, it uses a different mechanism: it runs `terraform query`
+against your tenant, which uses the provider's built-in list resources
+capability. This is why Terraform 1.14+ is required.
 
-```hcl
-data "jamfplatform_device_groups" "all_computers" {
-  filter = [
-    {
-      selector = "deviceType"
-      argument = "COMPUTER"
-    }
-  ]
-}
+jamformer uses its own set of environment variables for credentials — separate
+from the `TF_VAR_*` variables you use for Terraform operations:
 
-output "computer_groups" {
-  value = data.jamfplatform_device_groups.all_computers.device_groups
-}
+```bash
+export JAMF_URL="https://us.apigw.jamf.com"
+export JAMF_CLIENT_ID="your-client-id"
+export JAMF_CLIENT_SECRET="your-client-secret"
+export JAMF_TENANT_ID="your-tenant-uuid"
 ```
 
-### List available compliance baselines
+### Running jamformer
 
-To see what baselines are available for benchmarks:
+Create a handful of additional resources in your sandbox — device groups, a
+blueprint, a compliance benchmark — using the Jamf admin console. Then run
+jamformer against the tenant:
 
-```hcl
-data "jamfplatform_cbengine_baselines" "all" {}
-
-output "baselines" {
-  value = [
-    for b in data.jamfplatform_cbengine_baselines.all.baselines :
-    "${b.baseline_id}: ${b.title} (${b.rule_count} rules)"
-  ]
-}
+```bash
+jamformer -provider jamfplatform
 ```
 
-Run `terraform apply` with either data source in place, note the output, then
-remove the block before continuing.
+jamformer is designed to be run interactively. Follow its prompts to select
+which resource types to discover and where to write the output.
 
-> **Note on jamformer:** [jamformer](https://github.com/Jamf-Concepts/jamformer)
-> reads an existing Jamf Pro instance and generates Terraform configuration for
-> the `deploymenttheory/jamfpro` provider — policies, profiles, scripts, and
-> groups. It does not cover the Jamf Platform API. For Platform resources,
-> the native Terraform data sources above are the discovery path, and
-> `terraform plan -generate-config-out` generates the HCL for individual
-> resources you want to import.
+To see available resource types for the Platform provider:
+
+```bash
+jamformer -list-resources -provider jamfplatform
+```
+
+### What to look for in the output
+
+- **Per-resource-type files** (`device_groups.tf`, `blueprints.tf`,
+  `compliance_benchmarks.tf`) — same naming convention as this project.
+- **`_import.tf` files** (`blueprints_import.tf`, `device_groups_import.tf`,
+  etc.) — jamformer generates import blocks alongside each resource file. Use
+  them the same way as `imports.tf` in this project: run `terraform plan`,
+  verify a clean result, then remove the import blocks.
+- **Resolved UUID references** — this is the key difference from
+  `generate-config-out`. When jamformer sees a blueprint's `device_groups`
+  attribute containing a UUID that matches a discovered device group, it
+  replaces the UUID with a symbolic resource reference:
+
+  ```hcl
+  # generate-config-out produces:
+  device_groups = ["fce3d9a5-8660-42ff-a95e-625e7b53b48a"]
+
+  # jamformer produces:
+  device_groups = [jamfplatform_device_group.staff_macs.id]
+  ```
+
+  The same resolution applies to `target_device_group` in compliance
+  benchmarks. The dependency graph you built manually in this session is what
+  jamformer generates automatically.
+
+- **`provider.tf` and `variables.tf`** — jamformer writes full provider
+  configuration in the same format as this project, ready to use.
+
+The file naming conventions in this project are intentionally aligned with
+jamformer's output so that moving from a jamformer export into a structured
+project is a copy, not a rewrite.
 
 ---
 
@@ -625,12 +697,11 @@ Then revoke the OAuth2 client in the Jamf admin console to clean up credentials.
 
 - **`ref-jamfpro-starter` branch** — the companion starter for the
   `deploymenttheory/jamfpro` provider. Covers categories, scripts, computer
-  groups, and policies with the same flat layout. A good starting point if you
-  also manage Jamf Pro resources.
+  groups, and policies with the same flat layout.
 - **`ref-jamfpro` branch** — the next step up. Uses `environments/` +
   `modules/` structure with both `jamfpro` and `jamfplatform` providers working
-  together. Shows how Jamf Pro groups are bridged to Platform blueprints using
-  the cross-provider data pattern. Also covers remote state for team
-  collaboration.
+  together. Shows the cross-provider data pattern: Jamf Pro groups are bridged
+  to Platform blueprints via a data source that translates numeric Jamf Pro IDs
+  to Platform UUIDs. Also covers remote state for team collaboration.
 - **[Resources for getting started with Terraform and Jamf](https://concepts.jamf.com/guides/infrastructure-as-code/resources-for-getting-started-with-terraform-and-jamf/)** —
   curated reading for Jamf admins new to IaC.

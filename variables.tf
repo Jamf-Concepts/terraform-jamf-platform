@@ -17,8 +17,3 @@ variable "jamfplatform_tenant_id" {
   type        = string
   description = "Tenant UUID — found in the Jamf admin console under your tenant details"
 }
-
-variable "device_group_platform_id" {
-  type        = string
-  description = "Platform API UUID of the device group to target. See Prerequisites in README.md for how to find it."
-}
