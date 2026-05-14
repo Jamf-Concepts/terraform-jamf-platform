@@ -388,8 +388,9 @@ appears in the Jamf admin console scoped to **Test Machines**.
 
 ## Step 4: Compliance Benchmark
 
-A compliance benchmark applies security rules from a CIS or STIG baseline to
-a device group and monitors — or optionally enforces — compliance. This step
+A compliance benchmark applies security rules from a baseline to a device
+group and monitors — or optionally enforces — compliance. Jamf provides a
+variety of baselines to choose from. This step
 introduces **data sources**: a way to read existing data from an API without
 Terraform managing the result. The compliance rules live in Jamf — Terraform
 reads them, never owns them.
