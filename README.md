@@ -42,8 +42,8 @@ By the end of this session you will be able to:
   ordering automatically
 - Use data sources to read existing infrastructure and feed results into
   resources
-- Build a compliance benchmark dynamically from a data source using `for`
-  expressions
+- Build a compliance benchmark from a data source and hand-picked rules with
+  custom ODV values
 - Detect and respond to configuration drift using `terraform plan`
 - Import existing Jamf Platform resources into Terraform management using
   `import` blocks
@@ -57,7 +57,7 @@ By the end of this session you will be able to:
 | `device_groups.tf` | Device group | Standalone resource, no dependencies |
 | `blueprints.tf` | Blueprint (software update settings) | Resource references, the `deployed` flag, DDM overview |
 | `blueprints.tf` | Blueprint (Safari restrictions) | `legacy_payloads`, inline MDM payload syntax |
-| `compliance_benchmarks.tf` | Compliance Benchmark | Data sources, `for` expressions, async resource creation |
+| `compliance_benchmarks.tf` | Compliance Benchmark | Data sources, hand-picked rules, ODV values, async resource creation |
 
 ---
 
@@ -479,13 +479,9 @@ the next step.
 
 ### Create the benchmark
 
-The set of rules in a baseline changes between releases. Rather than
-hard-coding rule IDs from the list you just inspected, feed the data source
-directly into the benchmark resource using a `for` expression — Terraform
-keeps it current automatically.
-
-Add the benchmark resource to `compliance_benchmarks.tf` (keeping the data
-source block):
+From the list you just inspected, pick the rules relevant to your organisation.
+Remove the `output` block from `compliance_benchmarks.tf`, then add the
+benchmark resource below the data source:
 
 ```hcl
 resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
@@ -501,10 +497,11 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
   ]
 
   rules = [
-    for r in data.jamfplatform_cbengine_rules.cis_lvl1.rules : {
-      id      = r.id
-      enabled = r.enabled
-    }
+    { id = "os_firewall_log_enable",                      enabled = true },
+    { id = "os_gatekeeper_enable",                        enabled = true },
+    { id = "system_settings_filevault_enforce",           enabled = true },
+    { id = "pwpolicy_minimum_length_enforce",             enabled = true, odv_value = "15" },
+    { id = "system_settings_screensaver_timeout_enforce", enabled = true, odv_value = "300" },
   ]
 
   target_device_group = jamfplatform_device_group.test_machines.id
@@ -514,10 +511,14 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
 
 **Key points:**
 
-- The `for` expressions in `sources` and `rules` iterate over the lists
-  returned by the data source and project each element into the shape the
-  resource expects. If Jamf updates the baseline, your next `terraform plan`
-  will show the diff automatically — no manual rule list maintenance required.
+- Rule IDs come directly from the output you inspected in the previous step.
+  Include only the rules your organisation wants to track.
+- Rules that appeared with `[ODV: ...]` in the output accept an `odv_value` —
+  a parameter like a password length or a timeout in seconds. Rules without
+  an ODV hint don't need one.
+- `sources` still uses the data source: it reads content branch and revision
+  from the API at plan time so Terraform always pins the correct baseline
+  version.
 - `target_device_group = jamfplatform_device_group.test_machines.id` references
   the same device group as the blueprints. Terraform resolves all dependencies
   from the reference graph — no manual ordering required.
