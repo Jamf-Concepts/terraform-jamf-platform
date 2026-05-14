@@ -92,9 +92,6 @@ terraform -version
 For other platforms, see
 [developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install).
 
-> **Why >= 1.14.0?** jamformer uses `terraform query` to discover existing
-> resources from your tenant. This command was introduced in Terraform 1.14.
-
 ### Recommended editor
 
 [Visual Studio Code](https://code.visualstudio.com) with the
