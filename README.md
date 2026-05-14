@@ -232,6 +232,12 @@ resource "jamfplatform_device_group" "test_machines" {
       criteria = "Operating System Version"
       operator = "greater than or equal"
       value    = "14.0"
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "is"
+      value    = "C02XY1ZTEST"
     }
   ]
 }
