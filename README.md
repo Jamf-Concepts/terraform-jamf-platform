@@ -516,9 +516,13 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
 - Rules that appeared with `[ODV: ...]` in the output accept an `odv_value` —
   a parameter like a password length or a timeout in seconds. Rules without
   an ODV hint don't need one.
-- `sources` still uses the data source: it reads content branch and revision
-  from the API at plan time so Terraform always pins the correct baseline
-  version.
+- `sources` still uses the data source because it pins a specific commit of
+  the [macOS Security Compliance Project (mSCP)](https://github.com/usnistgov/macos_security)
+  — the open-source NIST project the CIS and STIG baselines are built on. The
+  `branch` is the macOS version branch (e.g. `sequoia`) and `revision` is the
+  exact mSCP git commit SHA Jamf has ingested. Pulling these from the data
+  source means Terraform always references the revision Jamf currently serves,
+  rather than a SHA you hard-coded that may no longer match.
 - `target_device_group = jamfplatform_device_group.test_machines.id` references
   the same device group as the blueprints. Terraform resolves all dependencies
   from the reference graph — no manual ordering required.
