@@ -529,6 +529,7 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
 - `enforcement_mode = "MONITOR"` reports compliance without enforcing
   remediation. Change to `"MONITOR_AND_ENFORCE"` to also apply corrective
   configuration.
+
 ```bash
 terraform plan
 terraform apply
