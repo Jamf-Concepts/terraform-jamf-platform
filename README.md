@@ -68,6 +68,7 @@ By the end of this session you will be able to:
 - Terraform >= 1.14.0 (see below)
 - VS Code with the HashiCorp Terraform extension (see below)
 - Platform API OAuth2 credentials (see below)
+- jamf-cli (see below)
 - jamformer (see below)
 
 ### Installing git
@@ -133,6 +134,27 @@ clipboard — that is the `tenant_id` value for the Terraform provider.
 - `https://us.apigw.jamf.com` (US)
 - `https://eu.apigw.jamf.com` (EU)
 - `https://apac.apigw.jamf.com` (APAC)
+
+### Install and configure jamf-cli
+
+[jamf-cli](https://github.com/Jamf-Concepts/jamf-cli) is used during the
+import exercise to create unmanaged resources and look up their UUIDs. Install
+via Homebrew:
+
+```bash
+brew install Jamf-Concepts/tap/jamf-cli
+```
+
+Configure a platform profile pointing at the same gateway and tenant you
+configured for Terraform:
+
+```bash
+jamf-cli platform setup
+```
+
+Follow the prompts to enter your gateway URL, tenant ID, and OAuth2 credentials.
+When asked for a profile name, choose something memorable — you'll pass it to
+every jamf-cli command with `-p <profile>`.
 
 ### Install jamformer
 
@@ -606,42 +628,29 @@ The workflow uses an `import` block alongside
 `terraform plan -generate-config-out`, which reads the live resource from the
 API and generates the HCL for you.
 
-**Before you start:** create two unmanaged resources in the Jamf UI
-to simulate configuration that exists outside Terraform:
+**Before you start:** create two unmanaged resources to simulate configuration
+that exists outside Terraform.
 
-- A smart computer device group named **Terraform Managed**
-- A blueprint named **Passcode Policy** with a passcode requirement enabled
+**Device group** — create via jamf-cli:
 
-### Finding resource UUIDs
-
-Platform resources are identified by UUID. Use a data source to look one up
-by name. Add this temporarily to any `.tf` file:
-
-```hcl
-data "jamfplatform_blueprints_blueprint" "passcode_policy" {
-  name = "Passcode Policy"
-}
-
-output "passcode_policy_id" {
-  value = data.jamfplatform_blueprints_blueprint.passcode_policy.id
-}
+```bash
+jamf-cli -p <profile> pro platform-device-groups create \
+  --set name="Terraform Managed" \
+  --set groupType="SMART" \
+  --set deviceType="COMPUTER"
 ```
 
-Run `terraform apply` and note the UUID in the output. Remove the data source
-and output blocks.
+**Blueprint** — create via the Jamf UI: add a new blueprint named
+**Passcode Policy**.
 
-For the device group, use `jamfplatform_device_groups` (plural — the list data
-source):
+Then find their UUIDs:
 
-```hcl
-data "jamfplatform_device_groups" "find_terraform_managed" {
-  filter = [{ selector = "name", argument = "Terraform Managed" }]
-}
-
-output "terraform_managed_id" {
-  value = data.jamfplatform_device_groups.find_terraform_managed.device_groups[0].id
-}
+```bash
+jamf-cli -p <profile> pro platform-device-groups list -o table
+jamf-cli -p <profile> pro blueprints list -o table
 ```
+
+Note the `ID` value for each — you'll use them in the import blocks.
 
 ### Import 1: a device group
 
