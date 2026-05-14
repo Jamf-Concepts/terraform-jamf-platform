@@ -564,13 +564,13 @@ Benchmarks.
 
 ## Drift: when the Platform API and Terraform disagree
 
-Terraform's state file records the last-known configuration. If someone
-modifies a resource directly in the Jamf UI or via the Platform API,
-the live configuration diverges from state. Running `terraform plan` detects
-this — Terraform reads the current state of each resource from the API and
-compares it against the HCL. The HCL is always the source of truth.
+Running `terraform plan` compares the HCL against the live state of every
+resource. Two situations surface diffs: you update the HCL to reflect a new
+desired state, or someone modifies a resource directly in the Jamf UI or via
+the Platform API without going through Terraform. In both cases, Terraform shows
+exactly what will change — the HCL is always the source of truth.
 
-### Change 1: modifying a software update setting
+### Change 1: updating desired state in HCL
 
 In `blueprints.tf`, change `automatic_install_security_updates` from
 `"AlwaysOn"` to `"AlwaysOff"`:
@@ -661,7 +661,8 @@ jamf-cli pro platform-device-groups create --file /tmp/import_group.json
 ```
 
 **Blueprint** — create via the Jamf UI: add a new blueprint named
-**Passcode Policy**.
+**Passcode Policy**, scoped to the **Terraform Managed** device group you just
+created.
 
 Then find their UUIDs:
 
@@ -730,7 +731,7 @@ reference rather than the hardcoded UUID:
 device_groups = ["12345678-abcd-ef01-2345-67890abcdef0"]
 
 # With this:
-device_groups = [jamfplatform_device_group.test_machines.id]
+device_groups = [jamfplatform_device_group.terraform_managed.id]
 ```
 
 > **This is exactly the problem jamformer solves.** When jamformer generates
