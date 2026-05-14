@@ -394,11 +394,47 @@ introduces **data sources**: a way to read existing data from an API without
 Terraform managing the result. The compliance rules live in Jamf — Terraform
 reads them, never owns them.
 
+### Discover available baselines
+
+Benchmarks are built from a named baseline — but how do you know what baselines
+exist? Use the `jamfplatform_cbengine_baselines` data source to list them.
+Open `compliance_benchmarks.tf` and replace its contents with:
+
+```hcl
+data "jamfplatform_cbengine_baselines" "all" {}
+
+output "available_baselines" {
+  value = [
+    for b in data.jamfplatform_cbengine_baselines.all.baselines :
+    "${b.baseline_id}: ${b.title} (${b.rule_count} rules)"
+  ]
+}
+```
+
+```bash
+terraform plan
+terraform apply
+```
+
+The output lists every available baseline with its ID, title, and rule count —
+for example:
+
+```text
+available_baselines = [
+  "cis_lvl1: CIS Level 1 (130 rules)",
+  "cis_lvl2: CIS Level 2 (180 rules)",
+  ...
+]
+```
+
+Note the `baseline_id` values — you'll use one in the next section. Remove
+the data source and output block from `compliance_benchmarks.tf` before
+continuing.
+
 ### Inspect the baseline
 
-Before creating the benchmark, use a data source and an `output` block to
-inspect what rules are available. Open `compliance_benchmarks.tf` and replace
-its contents with:
+With a baseline ID in hand, inspect its rules before creating the benchmark.
+Replace the contents of `compliance_benchmarks.tf` with:
 
 ```hcl
 data "jamfplatform_cbengine_rules" "cis_lvl1" {
