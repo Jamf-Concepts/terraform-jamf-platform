@@ -493,13 +493,16 @@ Terraform shows a modification:
 ~ jamfplatform_blueprints_blueprint.software_update
     ~ software_update_settings = {
         ~ automatic_install_security_updates = "AlwaysOn" -> "AlwaysOff"
+          # (4 unchanged attributes hidden)
       }
 ```
 
-The `~` symbol means an in-place update. To see Terraform revert it, change
-the value back to `"AlwaysOn"` and apply — the plan will show the reverse diff.
-This is the core value of IaC: the HCL is the source of truth. Any deviation
-is visible and correctable with a single apply.
+The `~` symbol means an in-place update. The plan will also show computed
+fields like `created`, `updated`, and `deployment_state` changing to
+`(known after apply)` — these are read-only attributes Terraform refreshes on
+every apply and are not configuration drift. Focus on the
+`software_update_settings` diff. To see Terraform revert it, change the value
+back to `"AlwaysOn"` and apply — the plan will show the reverse diff.
 
 ### Change 2: modifying a payload setting
 
