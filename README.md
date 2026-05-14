@@ -424,19 +424,7 @@ for example:
 available_baselines = [
   "cis_lvl1: CIS Benchmark - Level 1 (107 rules)",
   "cis_lvl2: CIS Benchmark - Level 2 (130 rules)",
-  "cisv8: CIS v8 (187 rules)",
-  "800-53r5_low: NIST 800-53 Rev 5 - Low (174 rules)",
-  "800-53r5_moderate: NIST 800-53 Rev 5 - Moderate (222 rules)",
-  "800-53r5_high: NIST 800-53 Rev 5 - High (231 rules)",
-  "800-171: NIST 800-171 (186 rules)",
-  "cmmc_lvl1: US CMMC 2.0 Level 1 (92 rules)",
-  "cmmc_lvl2: US CMMC 2.0 Level 2 (222 rules)",
-  "cnssi-1253_low: CNSSI 1253 - Low (255 rules)",
-  "cnssi-1253_moderate: CNSSI 1253 - Moderate (269 rules)",
-  "cnssi-1253_high: CNSSI 1253 - High (274 rules)",
-  "DISA-STIG: DISA STIG (198 rules)",
-  "nlmapgov_base: NLMAPGOV Base (46 rules)",
-  "nlmapgov_plus: NLMAPGOV Plus (97 rules)",
+  ...
 ]
 ```
 
