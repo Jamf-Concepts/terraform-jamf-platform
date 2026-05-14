@@ -389,27 +389,65 @@ appears in the Jamf admin console scoped to **Test Machines**.
 ## Step 4: Compliance Benchmark
 
 A compliance benchmark applies security rules from a CIS or STIG baseline to
-a device group and monitors — or optionally enforces — compliance. The set of
-rules in a baseline changes between releases. Rather than hard-coding rule IDs,
-you use a data source to read the current baseline and pass all rules to the
-resource dynamically using a `for` expression.
+a device group and monitors — or optionally enforces — compliance. This step
+introduces **data sources**: a way to read existing data from an API without
+Terraform managing the result. The compliance rules live in Jamf — Terraform
+reads them, never owns them.
 
-This step introduces two new concepts:
+### Inspect the baseline
 
-- **Data sources** — read existing infrastructure or external data without
-  managing it. Terraform fetches the data at plan time; it never creates,
-  updates, or deletes a data source.
-- **`for` expressions** — transform a list from one shape into another, here
-  converting the rule list from the data source into the structure the resource
-  expects.
-
-Open `compliance_benchmarks.tf` and replace its contents with:
+Before creating the benchmark, use a data source and an `output` block to
+inspect what rules are available. Open `compliance_benchmarks.tf` and replace
+its contents with:
 
 ```hcl
 data "jamfplatform_cbengine_rules" "cis_lvl1" {
   baseline_id = "cis_lvl1"
 }
 
+output "cis_lvl1_rules" {
+  value = [
+    for r in data.jamfplatform_cbengine_rules.cis_lvl1.rules :
+    "${r.id}: ${r.title}"
+  ]
+}
+```
+
+**Key points:**
+
+- `data "jamfplatform_cbengine_rules"` fetches the rule set from the Jamf
+  Platform API at plan time. The `data.` prefix distinguishes it from a managed
+  resource — Terraform reads it but never creates, updates, or deletes it.
+- `output` blocks print values after apply. Here the `for` expression projects
+  each rule into a `"id: title"` string, giving a human-readable list.
+
+```bash
+terraform plan
+terraform apply
+```
+
+The plan shows `1 to read` and `1 to add` (the output). After apply, the
+terminal prints every rule in the `cis_lvl1` baseline. To save it as a file:
+
+```bash
+terraform output -json cis_lvl1_rules | jq -r '.[]' > cis_lvl1_rules.txt
+```
+
+Review the list — this is the full set of rules the benchmark will manage.
+When done, remove the `output` block from `compliance_benchmarks.tf` before
+the next step.
+
+### Create the benchmark
+
+The set of rules in a baseline changes between releases. Rather than
+hard-coding rule IDs from the list you just inspected, feed the data source
+directly into the benchmark resource using a `for` expression — Terraform
+keeps it current automatically.
+
+Add the benchmark resource to `compliance_benchmarks.tf` (keeping the data
+source block):
+
+```hcl
 resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
   title              = "CIS Level 1"
   description        = "Managed by Terraform"
@@ -436,13 +474,10 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
 
 **Key points:**
 
-- `data "jamfplatform_cbengine_rules" "cis_lvl1"` fetches the current rule set
-  from the Jamf Platform API at plan time. The `data.` prefix distinguishes it
-  from a managed resource. Terraform reads it but never manages its lifecycle.
-- The `for` expressions in `sources` and `rules` iterate over the lists returned
-  by the data source and project each element into the expected shape. If Jamf
-  updates the baseline with new rules, your next `terraform plan` will show the
-  diff automatically.
+- The `for` expressions in `sources` and `rules` iterate over the lists
+  returned by the data source and project each element into the shape the
+  resource expects. If Jamf updates the baseline, your next `terraform plan`
+  will show the diff automatically — no manual rule list maintenance required.
 - `target_device_group = jamfplatform_device_group.test_machines.id` references
   the same device group as the blueprints. Terraform resolves all dependencies
   from the reference graph — no manual ordering required.
@@ -457,9 +492,8 @@ terraform plan
 terraform apply
 ```
 
-The plan shows `1 to read` (the data source, fetched during planning) and
-`1 to add` (the benchmark). Confirm the benchmark appears in the Jamf admin
-console under Compliance Benchmarks.
+Confirm the benchmark appears in the Jamf admin console under Compliance
+Benchmarks.
 
 ---
 
