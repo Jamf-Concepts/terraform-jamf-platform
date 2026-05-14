@@ -1,10 +1,10 @@
-# Getting started with Terraform and Jamf Platform
+# Getting started with Terraform and the Jamf Platform API
 
 > **You are on the `ref-jamfplatform-starter` branch.** This is a sandbox
 > companion for the Jamf IaC Enablement session. Other branches in this
 > repository are unrelated.
 
-A flat Terraform project that manages three Jamf Platform resource types against
+A flat Terraform project that manages three Platform API resource types against
 a sandbox tenant. Flat means all `.tf` files sit at the root — no
 `environments/` folders, no modules. This is the same layout that
 [jamformer](https://github.com/Jamf-Concepts/jamformer) produces when it reads
@@ -23,7 +23,7 @@ structure.
 - [Step 2: Software Update Blueprint](#step-2-software-update-blueprint)
 - [Step 3: Safari Restrictions Blueprint](#step-3-safari-restrictions-blueprint)
 - [Step 4: Compliance Benchmark](#step-4-compliance-benchmark)
-- [Drift: when Jamf Platform and Terraform disagree](#drift-when-jamf-platform-and-terraform-disagree)
+- [Drift: when the Platform API and Terraform disagree](#drift-when-the-platform-api-and-terraform-disagree)
 - [Importing existing resources](#importing-existing-resources)
 - [Discovering resources with jamformer](#discovering-resources-with-jamformer)
 - [Cleaning up](#cleaning-up)
@@ -35,7 +35,7 @@ structure.
 
 By the end of this session you will be able to:
 
-- Configure the Jamf Platform Terraform provider with OAuth2 credentials
+- Configure the Platform API Terraform provider with OAuth2 credentials
 - Declare resources, understand state, and run `init`, `plan`, `apply`, and
   `destroy`
 - Reference resource IDs across files and let Terraform resolve dependency
@@ -45,7 +45,7 @@ By the end of this session you will be able to:
 - Build a compliance benchmark from a data source and hand-picked rules with
   custom ODV values
 - Detect and respond to configuration drift using `terraform plan`
-- Import existing Jamf Platform resources into Terraform management using
+- Import existing Platform API resources into Terraform management using
   `import` blocks
 - Use jamformer to generate Terraform configuration from an existing tenant at
   scale
@@ -102,7 +102,7 @@ easier.
 
 ### Create Platform API credentials
 
-The Jamf Platform provider authenticates via OAuth2 using an **integration**
+The Platform API provider authenticates via OAuth2 using an **integration**
 created in **Jamf Account** at [account.jamf.com](https://account.jamf.com).
 
 > **Beta requirement:** The Platform API Gateway is currently in beta. You must
@@ -188,7 +188,7 @@ export TF_VAR_jamfplatform_tenant_id="..."
 terraform init
 ```
 
-Terraform downloads the `Jamf-Concepts/jamfplatform` provider from the registry
+Terraform downloads the `Jamf-Concepts/jamfplatform` Platform API provider from the registry
 into a local `.terraform/` cache. Run this once after cloning.
 
 To update providers to newer versions within the declared constraints, run:
@@ -452,8 +452,8 @@ output "cis_lvl1_rules" {
 
 **Key points:**
 
-- `data "jamfplatform_cbengine_rules"` fetches the rule set from the Jamf
-  Platform API at plan time. The `data.` prefix distinguishes it from a managed
+- `data "jamfplatform_cbengine_rules"` fetches the rule set from the Platform
+  API at plan time. The `data.` prefix distinguishes it from a managed
   resource — Terraform reads it but never creates, updates, or deletes it.
 - `output` blocks print values after apply. The `for` expression projects each
   rule into a readable string. Rules tagged with `[ODV: ...]` require an
@@ -538,7 +538,7 @@ Benchmarks.
 
 ---
 
-## Drift: when Jamf Platform and Terraform disagree
+## Drift: when the Platform API and Terraform disagree
 
 Terraform's state file records the last-known configuration. If someone
 modifies a resource directly in the Jamf admin console or via the Platform API,
@@ -597,7 +597,7 @@ HCL-declared values. Drift is detected and corrected, not silently accepted.
 
 ## Importing existing resources
 
-Import brings a resource that already exists in Jamf Platform under Terraform
+Import brings a resource that already exists in the Platform API under Terraform
 management without recreating it. This is the path for device groups, blueprints,
 or benchmarks created in the UI before Terraform was involved.
 
@@ -795,7 +795,7 @@ To remove everything Terraform created in your sandbox:
 terraform destroy
 ```
 
-Terraform reads state and deletes each resource from Jamf Platform. Type `yes`
+Terraform reads state and deletes each resource from the Platform API. Type `yes`
 when prompted. The state file will be empty when it finishes.
 
 Then delete the integration in [account.jamf.com](https://account.jamf.com) under **Integrations** to clean up credentials.
