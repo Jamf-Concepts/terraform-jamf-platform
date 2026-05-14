@@ -468,10 +468,15 @@ the live configuration diverges from state. Running `terraform plan` detects
 this — Terraform reads the current state of each resource from the API and
 compares it against the HCL. The HCL is always the source of truth.
 
-### Change 1: toggling deployed
+### Change 1: modifying a software update setting
 
-In the Jamf admin console, find the **Software Update Settings** blueprint and
-undeploy it manually.
+In `blueprints.tf`, change `automatic_install_security_updates` from
+`"AlwaysOn"` to `"Never"` to simulate a setting that was changed outside
+Terraform:
+
+```hcl
+automatic_install_security_updates = "Never"
+```
 
 Run a plan:
 
@@ -483,15 +488,15 @@ Terraform shows a modification:
 
 ```text
 ~ jamfplatform_blueprints_blueprint.software_update
-    ~ deployed = false -> true
+    ~ software_update_settings = {
+        ~ automatic_install_security_updates = "AlwaysOn" -> "Never"
+      }
 ```
 
-The `~` symbol means an in-place update. Terraform intends to redeploy the
-blueprint. Running `terraform apply` does exactly that.
-
-If you want the blueprint to remain undeployed, update `deployed = false` in
-`blueprints.tf`, then re-run `terraform plan` — the plan should show no
-changes.
+The `~` symbol means an in-place update. To see Terraform revert it, change
+the value back to `"AlwaysOn"` and apply — the plan will show the reverse diff.
+This is the core value of IaC: the HCL is the source of truth. Any deviation
+is visible and correctable with a single apply.
 
 ### Change 2: modifying a payload setting
 
@@ -505,8 +510,7 @@ terraform plan
 ```
 
 Terraform shows the `legacy_payloads` diff and intends to revert to the
-HCL-declared values. This is the core value of IaC: the HCL is always the
-source of truth. Drift is detected and corrected, not silently accepted.
+HCL-declared values. Drift is detected and corrected, not silently accepted.
 
 ---
 
