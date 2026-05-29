@@ -6,8 +6,8 @@ audience in mind when proposing changes.
 
 ## What this project is and is not
 
-**It is** a worked example of managing Jamf Pro and Jamf Platform with
-Terraform, structured so a Jamf admin new to Terraform can read it
+**It is** a worked example of managing Jamf Pro with Terraform,
+structured so a Jamf admin new to Terraform can read it
 top-to-bottom and recognise the resources being created.
 
 **It is not** a Terraform module published for direct consumption, nor a
@@ -29,8 +29,8 @@ Open a GitHub issue with:
   redacted)
 - A minimal HCL snippet that reproduces the issue
 
-Provider bugs in `deploymenttheory/jamfpro` or `Jamf-Concepts/jamfplatform`
-should be reported on those provider repositories directly.
+Provider bugs in `deploymenttheory/jamfpro` should be reported on that
+provider repository directly.
 
 ## Proposing changes
 
@@ -81,7 +81,6 @@ sandbox tenant and note what feature or fix motivated the bump.
 In scope:
 
 - Jamf Pro resources via `deploymenttheory/jamfpro`
-- Jamf Platform resources via `Jamf-Concepts/jamfplatform`
 
 Out of scope:
 

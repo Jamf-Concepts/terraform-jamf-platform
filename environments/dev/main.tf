@@ -1,8 +1,8 @@
 # Root module for the dev environment.
 #
 # This file is intentionally thin. The bulk of the configuration -
-# settings, smart groups, profiles, policies, prestages, blueprints, and
-# so on - lives in modules/jamfpro/. This root composes the providers
+# settings, smart groups, profiles, policies, prestages, and so on -
+# lives in modules/jamfpro/. This root composes the provider
 # (see provider.tf), declares its own input variables (see variables.tf),
 # reads any environment-specific token files into memory, and calls the
 # shared module with this environment's specific values.

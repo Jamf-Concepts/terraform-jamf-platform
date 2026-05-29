@@ -10,16 +10,6 @@ jamfpro_instance_fqdn = "https://yourcompany-dev.jamfcloud.com"
 jamfpro_client_id     = "00000000-0000-0000-0000-000000000000"
 jamfpro_client_secret = "replace-with-your-jamf-pro-client-secret"
 
-# ----- Jamf Platform -----
-# base_url options:
-#   https://us.apigw.jamf.com
-#   https://eu.apigw.jamf.com
-#   https://apac.apigw.jamf.com
-jamfplatform_base_url      = "https://eu.apigw.jamf.com"
-jamfplatform_tenant_id     = "00000000-0000-0000-0000-000000000000"
-jamfplatform_client_id     = "00000000-0000-0000-0000-000000000000"
-jamfplatform_client_secret = "replace-with-your-jamf-platform-client-secret"
-
 # ----- Apple-issued tokens -----
 # Place token files in:
 #   support_files/device_enrollment_tokens/your-ade-token.p7m

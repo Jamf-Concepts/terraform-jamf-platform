@@ -1,15 +1,14 @@
 # terraform-jamf-platform — `ref-jamfpro` reference layout
 
 > **You are on the `ref-jamfpro` branch.** This is an orphaned reference
-> branch containing a single-module Terraform layout for Jamf Pro and Jamf
-> Platform, intended for admins new to Terraform and for Pro Services
-> technical enablement engagements. Other branches in this repository are
+> branch containing a single-module Terraform layout for Jamf Pro,
+> intended for admins new to Terraform and for Pro Services technical
+> enablement engagements. Other branches in this repository are
 > unrelated and follow different layouts.
 
-Terraform configuration for managing Jamf Pro and Jamf Platform using the
+Terraform configuration for managing Jamf Pro using the
 [deploymenttheory/jamfpro](https://registry.terraform.io/providers/deploymenttheory/jamfpro/latest)
-and [Jamf-Concepts/jamfplatform](https://registry.terraform.io/providers/Jamf-Concepts/jamfplatform/latest)
-providers.
+provider.
 
 This repository is aimed at Jamf administrators who are new to Terraform. It
 assumes strong familiarity with Jamf Pro — policies, smart groups, configuration
@@ -27,7 +26,6 @@ and learning resource; it is not a deliverable.
 - Jamf Pro: categories, departments, buildings, smart groups, configuration
   profiles, packages, policies, app installers, Mac and iOS applications,
   ADE device enrollments, VPP, computer and mobile device prestages
-- Jamf Platform: Blueprints, Compliance Benchmarks
 
 ---
 
@@ -35,9 +33,7 @@ and learning resource; it is not a deliverable.
 
 - A Jamf Pro sandbox tenant — **do not use a production instance while learning**
 - [Terraform](https://developer.hashicorp.com/terraform/install) >= 1.11.0
-- A Jamf Platform integration (optional — Platform resources are skipped if
-  credentials are not supplied)
-- OAuth2 API client credentials for each provider (see setup steps below)
+- OAuth2 API client credentials for the Jamf Pro provider (see setup steps below)
 
 ### Installing Terraform
 
@@ -66,21 +62,6 @@ significantly easier.
    tighten later.
 3. Create an API Client, attach the role, and generate a secret.
 4. Note the **Client ID** and **Client Secret** — these go in `terraform.tfvars`.
-
-### Jamf Platform: create an integration
-
-See [Getting started with the Platform API](https://developer.jamf.com/platform-api/reference/getting-started-with-platform-api)
-for full instructions. In short:
-
-1. Sign in to [account.jamf.com](https://account.jamf.com), enroll in the
-   Platform API Gateway Beta via **Feedback Program**.
-2. Go to **Integrations** and create a new integration. Select your region and
-   the Jamf Pro tenant(s) to scope, and assign the required permissions.
-3. Copy the **client ID**, **client secret**, and **tenant ID** from the
-   Integration details panel. The secret is shown only once.
-4. Your `base_url` is the regional API gateway endpoint:
-   `https://us.apigw.jamf.com`, `https://eu.apigw.jamf.com`, or
-   `https://apac.apigw.jamf.com`.
 
 ---
 
@@ -118,8 +99,6 @@ terraform-jamf-platform/
         ├── app_installers.tf
         ├── mac_applications.tf
         ├── mobile_device_applications.tf
-        ├── blueprints.tf
-        ├── compliance_benchmarks.tf
         └── support_files/
             ├── macos_configuration_profiles/
             ├── mobile_device_configuration_profiles/
@@ -329,12 +308,6 @@ payloads = file("${path.module}/support_files/macos_configuration_profiles/your-
 `${path.module}` always resolves to the `modules/jamfpro/` directory, regardless
 of where Terraform is invoked from.
 
-**Blueprints and `deployed = false`:** Blueprints in `blueprints.tf` are
-created with `deployed = false`, which means Jamf Platform creates the
-Blueprint record but does not push its settings to devices. This is intentional
-for a reference configuration — review the Blueprint in the UI and set
-`deployed = true` when ready to enforce the settings in your environment.
-
 **Changing scope or behaviour per environment:** if a resource needs different
 values in dev vs production (a different smart group scope, a different policy
 frequency), expose it as a module variable in `modules/jamfpro/variables.tf`,
@@ -481,14 +454,13 @@ the find-and-replace step and let Terraform manage the state rewrite.
 | Provider | Source | Minimum version |
 |---|---|---|
 | jamfpro | `deploymenttheory/jamfpro` | 0.37.0 |
-| jamfplatform | `Jamf-Concepts/jamfplatform` | 0.16.3 |
 | time | `hashicorp/time` | 0.13.0 |
 | itunessearchapi | `neilmartin83/itunessearchapi` | 0.1.0 |
 
 The `itunessearchapi` provider is a community-maintained provider, not a Jamf
 product. It is used to fetch app metadata (name, version, bundle ID, icon URL)
 from the iTunes Search API at plan time, removing the need to pin those values
-manually. It is not required for any Jamf Pro or Jamf Platform functionality
+manually. It is not required for any Jamf Pro functionality
 and can be removed along with `mac_applications.tf` and
 `mobile_device_applications.tf` if preferred.
 
@@ -539,5 +511,4 @@ on the latest version that satisfies the constraints in `terraform.tf`.
 
 - [Resources for getting started with Terraform and Jamf](https://concepts.jamf.com/guides/infrastructure-as-code/resources-for-getting-started-with-terraform-and-jamf/) — curated learning resources for Jamf admins new to IaC
 - [Managing Jamf configuration with Terraform: an introduction](https://concepts.jamf.com/guides/infrastructure-as-code/managing-jamf-configuration-with-terraform-an-introduction/) — hands-on walkthrough using the Jamf Pro provider
-- [Managing the Jamf Platform with Terraform](https://concepts.jamf.com/guides/infrastructure-as-code/managing-the-jamf-platform-with-terraform-the-jamf-platform-provider/) — Jamf Platform provider deep-dive
 - [Adopting Terraform for Jamf with jamformer](https://concepts.jamf.com/guides/infrastructure-as-code/adopting-terraform-for-jamf-with-jamformer/) — using jamformer to bootstrap from an existing tenant

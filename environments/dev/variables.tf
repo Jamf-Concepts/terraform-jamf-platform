@@ -20,32 +20,6 @@ variable "jamfpro_client_secret" {
 }
 
 # --------------------------------------------------------------------
-# Jamf Platform
-# --------------------------------------------------------------------
-
-variable "jamfplatform_base_url" {
-  description = "Jamf Platform API base URL for your region. One of: https://us.apigw.jamf.com, https://eu.apigw.jamf.com, https://apac.apigw.jamf.com."
-  type        = string
-}
-
-variable "jamfplatform_tenant_id" {
-  description = "Tenant UUID used to scope all Jamf Platform API requests."
-  type        = string
-}
-
-variable "jamfplatform_client_id" {
-  description = "OAuth2 Client ID for the Jamf Platform API."
-  type        = string
-  sensitive   = true
-}
-
-variable "jamfplatform_client_secret" {
-  description = "OAuth2 Client Secret for the Jamf Platform API."
-  type        = string
-  sensitive   = true
-}
-
-# --------------------------------------------------------------------
 # Apple-issued token paths
 #
 # These match the convention used by the jamformer tool: the variable

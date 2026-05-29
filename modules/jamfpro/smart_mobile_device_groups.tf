@@ -1,6 +1,6 @@
 # https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-current/page/Smart_Groups.html
 #
-# Model-based groups used to scope blueprints and mobile device profiles.
+# Model-based groups used to scope mobile device profiles.
 # all_managed has no criteria, which Jamf Pro treats as matching all managed
 # mobile devices.
 

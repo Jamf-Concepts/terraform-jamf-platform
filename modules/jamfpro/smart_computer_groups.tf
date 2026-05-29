@@ -1,7 +1,7 @@
 # https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-current/page/Smart_Groups.html
 #
-# Smart groups used for scoping profiles, policies, app installers, and
-# blueprints throughout this module. Jamf Pro populates membership dynamically
+# Smart groups used for scoping profiles, policies, and app installers
+# throughout this module. Jamf Pro populates membership dynamically
 # as devices check in and match criteria — Terraform only manages the group
 # definition, not membership.
 #

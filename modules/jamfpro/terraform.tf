@@ -14,10 +14,6 @@ terraform {
       source  = "deploymenttheory/jamfpro"
       version = ">= 0.37.0"
     }
-    jamfplatform = {
-      source  = "Jamf-Concepts/jamfplatform"
-      version = ">= 0.16.3"
-    }
     time = {
       source  = "hashicorp/time"
       version = ">= 0.13.0"
