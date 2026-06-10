@@ -179,7 +179,7 @@ resource "jamfpro_script" "sentinelone_install" {
   os_requirements = ""
   priority        = "AFTER"
   info            = "This script will install and license SentinelOne silently."
-  notes           = "Managed by Terraform. Token is passed via policy parameter 4."
+  notes           = "Token is passed via policy parameter 4."
   parameter4      = "SentinelOne Organization Token"
   parameter5      = "SentinelOne Package Filename"
 }
