@@ -421,3 +421,48 @@ crowdstrike:
     content: Your CrowdStrike Customer ID without the checksum
     display_name: Falcon Customer ID (CID)
     display_desc: CrowdStrike Customer ID used for Falcon sensor deployment
+
+sentinelone:
+  - key: include_sentinelone
+    type: <boolean>
+    presence: optional
+    module_name: module.endpoint-security-macOS-sentinelone
+    required_provider: jpro
+    category: Security
+    display_name: Deploy SentinelOne Agent
+    display_desc: Configures SentinelOne agent deployment for macOS endpoint protection. Creates the necessary configuration profiles (Service Management, Network Filter, Network Extension, Privacy Control), package upload, install script, smart groups, and deployment policy.
+
+  - key: sentinelone_org_token
+    type: <string>
+    presence: required
+    content: The organization/site token from the SentinelOne console
+    display_name: SentinelOne Organization Token
+    display_desc: Token used to register the SentinelOne agent to your organization
+
+  - key: sentinelone_pkg_path
+    type: <string>
+    presence: optional
+    content: Local file path to the SentinelOne .pkg installer
+    display_name: SentinelOne Package Path
+    display_desc: "Provide one of: pkg_path (local file), pkg_base64 (base64-encoded content), or pkg_url (S3 HTTPS URL)"
+
+  - key: sentinelone_pkg_base64
+    type: <string>
+    presence: optional
+    content: Base64-encoded SentinelOne .pkg installer content
+    display_name: SentinelOne Package (Base64)
+    display_desc: Base64-encoded content of the SentinelOne .pkg installer
+
+  - key: sentinelone_pkg_url
+    type: <string>
+    presence: optional
+    content: HTTPS URL to the SentinelOne .pkg in S3
+    display_name: SentinelOne Package S3 URL
+    display_desc: Virtual-hosted S3 HTTPS URL — downloaded at apply time via aws s3 cp
+
+  - key: sentinelone_pkg_filename
+    type: <string>
+    presence: optional
+    content: Display name for the package in Jamf Pro (default SentinelOne.pkg)
+    display_name: SentinelOne Package Filename
+    display_desc: Required when using pkg_base64 or pkg_url; auto-derived from pkg_path if that is used
