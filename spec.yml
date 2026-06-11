@@ -444,14 +444,7 @@ sentinelone:
     presence: optional
     content: Local file path to the SentinelOne .pkg installer
     display_name: SentinelOne Package Path
-    display_desc: "Provide one of: pkg_path (local file), pkg_base64 (base64-encoded content), or pkg_url (S3 HTTPS URL)"
-
-  - key: sentinelone_pkg_base64
-    type: <string>
-    presence: optional
-    content: Base64-encoded SentinelOne .pkg installer content
-    display_name: SentinelOne Package (Base64)
-    display_desc: Base64-encoded content of the SentinelOne .pkg installer
+    display_desc: "Provide one of: pkg_path (local file path) or pkg_url (S3 HTTPS URL)"
 
   - key: sentinelone_pkg_url
     type: <string>
@@ -459,10 +452,3 @@ sentinelone:
     content: HTTPS URL to the SentinelOne .pkg in S3
     display_name: SentinelOne Package S3 URL
     display_desc: Virtual-hosted S3 HTTPS URL — downloaded at apply time via aws s3 cp
-
-  - key: sentinelone_pkg_filename
-    type: <string>
-    presence: optional
-    content: Display name for the package in Jamf Pro (default SentinelOne.pkg)
-    display_name: SentinelOne Package Filename
-    display_desc: Required when using pkg_base64 or pkg_url; auto-derived from pkg_path if that is used
