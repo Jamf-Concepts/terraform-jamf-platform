@@ -335,11 +335,9 @@ module "endpoint-security-macOS-sentinelone" {
   jamfpro_instance_url     = var.jamfpro_instance_url
   jamfpro_client_id        = var.jamfpro_client_id
   jamfpro_client_secret    = var.jamfpro_client_secret
-  sentinelone_org_token    = var.sentinelone_org_token
-  sentinelone_pkg_filename = var.sentinelone_pkg_filename
-  sentinelone_pkg_path     = var.sentinelone_pkg_path
-  sentinelone_pkg_base64   = var.sentinelone_pkg_base64
-  sentinelone_pkg_url      = var.sentinelone_pkg_url
+  sentinelone_org_token = var.sentinelone_org_token
+  sentinelone_pkg_path  = var.sentinelone_pkg_path
+  sentinelone_pkg_url   = var.sentinelone_pkg_url
   providers = {
     jamfpro.jpro = jamfpro.jpro
   }

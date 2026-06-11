@@ -1,39 +1,56 @@
 locals {
-  # Derive the package filename:
-  # - From the path (basename) if provided
-  # - Otherwise fall back to the explicit filename variable (required for base64/url mode)
-  sentinelone_pkg_name = var.sentinelone_pkg_path != "" ? basename(var.sentinelone_pkg_path) : var.sentinelone_pkg_filename
-
-  # Determine the package file source:
-  # 1. If a file path is provided, use it directly
-  # 2. If an S3 HTTPS URL is provided, download it to a local file
-  # 3. If base64 content is provided, decode and write to a local file
-  sentinelone_pkg_source = var.sentinelone_pkg_path != "" ? var.sentinelone_pkg_path : (
-    var.sentinelone_pkg_url != "" ? "${path.module}/support_files/${var.sentinelone_pkg_filename}" : (
-      var.sentinelone_pkg_base64 != "" ? "${path.module}/support_files/${var.sentinelone_pkg_filename}" : ""
-    )
-  )
+  sentinelone_pkg_name   = trimspace(data.local_file.sentinelone_pkg_name.content)
+  sentinelone_pkg_source = "${path.module}/support_files/${local.sentinelone_pkg_name}"
 }
 
-# Download the .pkg from S3 using the virtual-hosted HTTPS URL.
-# Converts https://bucket.s3.region.amazonaws.com/key → s3://bucket/key
-# Requires AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY in the environment.
-resource "terraform_data" "download_sentinelone_pkg" {
+# Read the versioned filename written by whichever prepare resource ran.
+data "local_file" "sentinelone_pkg_name" {
+  filename = "${path.module}/support_files/.pkg_name"
+  depends_on = [
+    terraform_data.prepare_pkg_from_url,
+    terraform_data.prepare_pkg_from_path,
+  ]
+}
+
+# Source: S3 URL — download then extract version.
+resource "terraform_data" "prepare_pkg_from_url" {
   count = var.sentinelone_pkg_url != "" && var.sentinelone_pkg_path == "" ? 1 : 0
 
   provisioner "local-exec" {
     command = <<-EOT
+      set -e
       BUCKET=$(echo '${var.sentinelone_pkg_url}' | sed 's|https://\([^.]*\)\.s3\..*|\1|')
       KEY=$(echo '${var.sentinelone_pkg_url}' | sed 's|https://[^/]*/||')
-      aws s3 cp "s3://$BUCKET/$KEY" '${path.module}/support_files/${var.sentinelone_pkg_filename}'
+      TMP='${path.module}/support_files/.download.pkg'
+      aws s3 cp "s3://$BUCKET/$KEY" "$TMP"
+      PKG_INFO=$(python3 '${path.module}/../../tools/get_pkg_version.py' "$TMP")
+      PKG_NAME=$(echo "$PKG_INFO" | sed -n '1p')
+      PKG_VERSION=$(echo "$PKG_INFO" | sed -n '2p')
+      DEST="$PKG_NAME-$PKG_VERSION.pkg"
+      mv "$TMP" '${path.module}/support_files/'"$DEST"
+      echo -n "$DEST" > '${path.module}/support_files/.pkg_name'
     EOT
   }
 
   triggers_replace = [var.sentinelone_pkg_url]
 }
 
-resource "local_file" "sentinelone_pkg" {
-  count          = var.sentinelone_pkg_base64 != "" && var.sentinelone_pkg_path == "" && var.sentinelone_pkg_url == "" ? 1 : 0
-  content_base64 = var.sentinelone_pkg_base64
-  filename       = "${path.module}/support_files/${var.sentinelone_pkg_filename}"
+# Source: local file path — copy to support_files then extract version.
+resource "terraform_data" "prepare_pkg_from_path" {
+  count = var.sentinelone_pkg_path != "" ? 1 : 0
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      set -e
+      PKG_INFO=$(python3 '${path.module}/../../tools/get_pkg_version.py' '${var.sentinelone_pkg_path}')
+      PKG_NAME=$(echo "$PKG_INFO" | sed -n '1p')
+      PKG_VERSION=$(echo "$PKG_INFO" | sed -n '2p')
+      DEST="$PKG_NAME-$PKG_VERSION.pkg"
+      cp '${var.sentinelone_pkg_path}' '${path.module}/support_files/'"$DEST"
+      echo -n "$DEST" > '${path.module}/support_files/.pkg_name'
+    EOT
+  }
+
+  triggers_replace = [var.sentinelone_pkg_path]
 }
+

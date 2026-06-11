@@ -168,7 +168,7 @@ resource "jamfpro_package" "sentinelone_installer" {
     create = "90m"
   }
 
-  depends_on = [local_file.sentinelone_pkg, terraform_data.download_sentinelone_pkg]
+  depends_on = [data.local_file.sentinelone_pkg_name]
 }
 
 ## SentinelOne Install Script

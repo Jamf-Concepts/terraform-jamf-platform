@@ -27,20 +27,8 @@ variable "sentinelone_org_token" {
   sensitive   = true
 }
 
-variable "sentinelone_pkg_filename" {
-  description = "Display name for the package in Jamf Pro. Auto-derived from path if using sentinelone_pkg_path."
-  type        = string
-  default     = "SentinelOne.pkg"
-}
-
 variable "sentinelone_pkg_path" {
   description = "Local file path to the SentinelOne .pkg installer"
-  type        = string
-  default     = ""
-}
-
-variable "sentinelone_pkg_base64" {
-  description = "Base64-encoded SentinelOne .pkg installer content"
   type        = string
   default     = ""
 }

@@ -4,8 +4,6 @@ This module creates the necessary pieces in Jamf Pro to deploy and manage the Se
 
 ## Required Variables
 
-### SentinelOne Configuration
-
 ```hcl
 sentinelone_org_token = ""  # Organization/site token from the SentinelOne console
 ```
@@ -13,53 +11,55 @@ sentinelone_org_token = ""  # Organization/site token from the SentinelOne conso
 You must also provide the package via **one** of the following methods:
 
 ```hcl
-# Option 1: Local file path (filename auto-derived via basename)
-sentinelone_pkg_path = "/path/to/Sentinel-Release-25-3-4-8365_macos_v25_3_4_8365.pkg"
+# Option 1: Local file path
+sentinelone_pkg_path = "/path/to/.pkg"
 
-# Option 2: Base64-encoded package content (for CI/CD pipelines)
-sentinelone_pkg_base64 = "..." # Package displays as "SentinelOne.pkg" in Jamf Pro
+# Option 2: S3 HTTPS URL (used by modular_onboarder CI/CD)
+sentinelone_pkg_url = "https://bucket.s3.region.amazonaws.com/custom-files/session-id/file.pkg"
 ```
 
-### Optional Variables
+## Package Naming
 
-```hcl
-sentinelone_pkg_filename = "SentinelOne.pkg"  # Override the display name in Jamf Pro (only needed for base64 mode)
+Regardless of source, the module automatically extracts the application name and version from the `.pkg`'s embedded XAR metadata and names the package accordingly in Jamf Pro:
+
 ```
+sentinel-agent-25.3.4.8365.pkg
+```
+
+This is derived from the `PackageInfo` or `Distribution` XML inside the package — the original uploaded filename is ignored entirely. The script that performs this extraction lives at [`tools/get_pkg_version.py`](../../tools/get_pkg_version.py) in the repository root and is shared across modules.
 
 ## What This Module Creates
 
-- **Category**: "SentinelOne" for organizing resources
+- **Category**: `SentinelOne`
 - **Configuration Profiles**:
   - SentinelOne - Service Management (Managed Login Items)
   - SentinelOne - Network Filter Validation (Content Filter)
   - SentinelOne - Network Monitoring Extension (System Extensions)
   - SentinelOne - Privacy Control (PPPC / Full Disk Access)
 - **Smart Computer Groups**:
-  - "SentinelOne Target Group" — devices eligible for deployment (OS >= 13.0, scoped by serial number)
-  - "SentinelOne Installed" — devices that have the SentinelOne agent
-  - "SentinelOne NOT Installed" — devices missing the agent but with the Privacy Control profile
-- **Package**: SentinelOne macOS agent installer uploaded to Jamf Pro
-- **Script**: "SentinelOne License and Install" — writes the registration token and runs the installer
-- **Policy**: "Deploy SentinelOne Agent" — caches the package, runs the install script, and triggers inventory update (scoped to the Target Group, runs once per computer)
+  - `SentinelOne Target Group` — devices eligible for deployment (macOS >= 13.0, scoped to a placeholder serial number)
+  - `SentinelOne Installed` — devices with the SentinelOne agent present
+  - `SentinelOne NOT Installed` — devices missing the agent but with the Privacy Control profile applied
+- **Package**: SentinelOne macOS agent installer, version-stamped and uploaded to Jamf Pro
+- **Script**: `SentinelOne License and Install` — writes the registration token then runs the installer
+- **Policy**: `Deploy SentinelOne Agent` — caches the package, runs the install script, triggers inventory update (scoped to Target Group, once per computer)
 
 ## Package Source Options
 
-The module supports two methods of providing the SentinelOne installer package:
+### Option 1: Local file path
 
-### Option 1: File Path (recommended for local/manual use)
-
-Provide the full path to the `.pkg` file. The filename in Jamf Pro is automatically derived from the path using `basename()`.
+Provide the full path to the `.pkg` file. The module copies it to the working directory, extracts the version, and uploads it to Jamf Pro with a clean versioned name.
 
 ```hcl
-sentinelone_pkg_path = "./support_files/Sentinel-Release-25-3-4-8365_macos_v25_3_4_8365.pkg"
+sentinelone_pkg_path = "/path/to/SentinelOne.pkg"
 ```
 
-### Option 2: Base64 Content (for CI/CD pipelines)
+### Option 2: S3 URL (modular_onboarder / CI/CD)
 
-Provide the package content as a base64-encoded string. The module decodes it and writes it to a local file before uploading. The package displays as "SentinelOne.pkg" in Jamf Pro (or override with `sentinelone_pkg_filename`).
+Provide an S3 HTTPS URL. The module downloads the file at apply time using `aws s3 cp` (requires `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in the runner environment), extracts the version, and uploads to Jamf Pro.
 
 ```hcl
-sentinelone_pkg_base64 = "..." # e.g. from a secrets manager or CI artifact
+sentinelone_pkg_url = "https://bucket.s3.region.amazonaws.com/custom-files/session-id/file.pkg"
 ```
 
 ## Obtaining Your Installer Package
@@ -67,30 +67,28 @@ sentinelone_pkg_base64 = "..." # e.g. from a secrets manager or CI artifact
 1. Sign in to the [SentinelOne Management Console](https://usea1-partners.sentinelone.net)
 2. Go to **Sentinels** > **Packages**
 3. Download the macOS `.pkg` installer for your desired agent version
-4. Provide it via `sentinelone_pkg_path` or encode it with `base64 -i <file>` for `sentinelone_pkg_base64`
 
 ## Implementation Notes
 
 ### Configuration Profiles
 
-All four configuration profiles are scoped to **All Computers**. These profiles grant system-level permissions (Full Disk Access, System Extensions, Network Filter, Managed Login Items) that the SentinelOne agent requires to function properly.
+All four configuration profiles are scoped to **All Computers**. These profiles grant the system-level permissions (Full Disk Access, System Extensions, Network Filter, Managed Login Items) that the SentinelOne agent requires to function.
 
 ### Target Group — Scoped Deployment
 
-The deployment policy is scoped to the "SentinelOne Target Group" smart group. By default this group targets devices with:
+The deployment policy is scoped to the `SentinelOne Target Group` smart group. By default this group targets devices with:
 - macOS 13.0 or later
-- A specific serial number (placeholder `111222333444555` — update the criteria to match your target devices)
+- Serial number matching placeholder `111222333444555`
 
-Edit the `jamfpro_smart_computer_group.sentinelone_target` resource to adjust scoping criteria for your environment.
+Replace the serial number criterion with your test device before expanding deployment to your fleet.
 
 ### Deployment Policy
 
-The policy runs **once per computer** at check-in. It caches the SentinelOne `.pkg` to the Jamf Pro Waiting Room, then runs the install script which writes the organization token and executes the installer. An inventory update (recon) runs after installation to immediately update the device's application inventory.
+The policy runs **once per computer** at check-in. It caches the SentinelOne `.pkg` to the Jamf Waiting Room, then runs the install script which writes the organization token and executes the installer. An inventory update runs after installation to immediately reflect the device's application inventory.
 
 ## References
 
 - [SentinelOne macOS Agent Requirements](https://support.sentinelone.com)
-- [Deploying SentinelOne with Jamf Pro](https://support.sentinelone.com)
 - [Jamf Pro Configuration Profiles](https://learn.jamf.com/bundle/jamf-pro-documentation-current/page/Configuration_Profiles.html)
 
 ## Support
