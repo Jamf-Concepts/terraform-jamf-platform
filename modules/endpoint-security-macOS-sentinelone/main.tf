@@ -121,7 +121,8 @@ resource "jamfpro_smart_computer_group" "sentinelone_installed" {
   criteria {
     name        = "Application Bundle ID"
     priority    = 0
-    search_type = "has"
+    and_or      = "and"
+    search_type = "is"
     value       = "com.sentinelone.extensions-wrapper"
   }
 }
@@ -133,16 +134,8 @@ resource "jamfpro_smart_computer_group" "sentinelone_not_installed" {
     name        = "Application Bundle ID"
     priority    = 0
     and_or      = "and"
-    search_type = "does not have"
+    search_type = "is not"
     value       = "com.sentinelone.extensions-wrapper"
-  }
-
-  criteria {
-    name        = "Profile Name"
-    priority    = 1
-    and_or      = "and"
-    search_type = "has"
-    value       = "SentinelOne - Privacy Control"
   }
 }
 
