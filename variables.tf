@@ -594,6 +594,30 @@ variable "falcon_customer_id" {
   default     = ""
 }
 
+variable "include_sentinelone" {
+  type    = bool
+  default = false
+}
+
+variable "sentinelone_org_token" {
+  description = "SentinelOne organization/site token used to register the agent"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "sentinelone_pkg_path" {
+  description = "Local file path to the SentinelOne .pkg installer"
+  type        = string
+  default     = ""
+}
+
+variable "sentinelone_pkg_url" {
+  description = "HTTPS URL to the SentinelOne .pkg in S3 (downloaded at apply time via aws s3 cp)"
+  type        = string
+  default     = ""
+}
+
 variable "include_onboarder_all" {
   type    = bool
   default = false
