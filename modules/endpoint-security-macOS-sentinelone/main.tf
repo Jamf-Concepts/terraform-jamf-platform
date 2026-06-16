@@ -6,8 +6,7 @@ terraform {
       configuration_aliases = [jamfpro.jpro]
     }
     local = {
-      source  = "hashicorp/local"
-      version = "~> 2.0"
+      source = "hashicorp/local"
     }
   }
 }
@@ -120,10 +119,10 @@ resource "jamfpro_smart_computer_group" "sentinelone_installed" {
   name = "SentinelOne Installed"
 
   criteria {
-    name        = "Application Title"
+    name        = "Application Bundle ID"
     priority    = 0
     search_type = "has"
-    value       = "SentinelOne Extensions.app"
+    value       = "com.sentinelone.extensions-wrapper"
   }
 }
 
@@ -131,11 +130,11 @@ resource "jamfpro_smart_computer_group" "sentinelone_not_installed" {
   name = "SentinelOne NOT Installed"
 
   criteria {
-    name        = "Application Title"
+    name        = "Application Bundle ID"
     priority    = 0
     and_or      = "and"
     search_type = "does not have"
-    value       = "SentinelOne Extensions.app"
+    value       = "com.sentinelone.extensions-wrapper"
   }
 
   criteria {
@@ -167,8 +166,6 @@ resource "jamfpro_package" "sentinelone_installer" {
   timeouts {
     create = "90m"
   }
-
-  depends_on = [data.local_file.sentinelone_pkg_name]
 }
 
 ## SentinelOne Install Script

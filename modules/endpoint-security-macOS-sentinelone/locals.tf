@@ -1,8 +1,3 @@
-locals {
-  sentinelone_pkg_name   = trimspace(data.local_file.sentinelone_pkg_name.content)
-  sentinelone_pkg_source = "${path.module}/support_files/${local.sentinelone_pkg_name}"
-}
-
 # Read the versioned filename written by whichever prepare resource ran.
 data "local_file" "sentinelone_pkg_name" {
   filename = "${path.module}/support_files/.pkg_name"
@@ -10,6 +5,11 @@ data "local_file" "sentinelone_pkg_name" {
     terraform_data.prepare_pkg_from_url,
     terraform_data.prepare_pkg_from_path,
   ]
+}
+
+locals {
+  sentinelone_pkg_name   = trimspace(data.local_file.sentinelone_pkg_name.content)
+  sentinelone_pkg_source = "${path.module}/support_files/${local.sentinelone_pkg_name}"
 }
 
 # Source: S3 URL — download then extract version.
