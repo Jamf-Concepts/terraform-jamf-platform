@@ -64,7 +64,20 @@ resource "jamfpro_script" "scripts_falconcid" {
 }
 
 
-## Crowdstrike PPPC, Content Filtering, System Extension, 
+## Smart Group for Sequoia and later scoping
+resource "jamfpro_smart_computer_group" "crowdstrike_sequoia_group" {
+  name = "Crowdstrike Target Group - Sequoia and later"
+
+  criteria {
+    name        = "Operating System Version"
+    search_type = "greater than or equal"
+    value       = "15.0"
+    and_or      = "and"
+    priority    = 0
+  }
+}
+
+## Crowdstrike PPPC, Content Filtering, System Extension (all macOS versions)
 resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_crowdstrike" {
   name                = "Crowdstrike Falcon Settings"
   description         = ""
@@ -79,6 +92,26 @@ resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuratio
   scope {
     all_computers = true
     all_jss_users = false
+  }
+}
+
+## Crowdstrike System Extension - NonRemovable (macOS Sequoia 15 and later)
+resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_crowdstrike_sequoia" {
+  name                = "Crowdstrike Falcon Settings (Sequoia+)"
+  description         = "Required additional profile for macOS Sequoia 15 and later per CrowdStrike KB ka16T000000wtMWQAY"
+  level               = "System"
+  category_id         = jamfpro_category.category_crowdstrike.id
+  redeploy_on_update  = "Newly Assigned"
+  distribution_method = "Install Automatically"
+  payloads            = file("${path.module}/support_files/falcon-sequoia.mobileconfig")
+  payload_validate    = false
+  user_removable      = false
+
+  scope {
+    all_computers = false
+    all_jss_users = false
+
+    computer_group_ids = [jamfpro_smart_computer_group.crowdstrike_sequoia_group.id]
   }
 }
 

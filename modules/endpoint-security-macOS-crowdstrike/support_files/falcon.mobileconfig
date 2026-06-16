@@ -54,7 +54,7 @@
 			</dict>
 			<dict>
 				<key>AllowUserOverrides</key>
-				<false/>
+				<true/>
 				<key>AllowedSystemExtensionTypes</key>
 				<dict>
 					<key>X9E956P446</key>
@@ -147,8 +147,12 @@
 						<key>RuleType</key>
 						<string>BundleIdentifier</string>
 						<key>RuleValue</key>
-						<string>com.crowdstrike.falcon.Agent</string>
-						<key>TeamIdentifier</key>
+						<string>com.crowdstrike.falcon.UserAgent</string>
+					</dict>
+					<dict>
+						<key>RuleType</key>
+						<string>TeamIdentifier</string>
+						<key>RuleValue</key>
 						<string>X9E956P446</string>
 					</dict>
 				</array>
@@ -176,27 +180,7 @@
 				<key>PayloadVersion</key>
 				<integer>1</integer>
 			</dict>
-			<dict>
-				<key>AllowedTeamIdentifiers</key>
-				<array>
-					<string>X9E956P446</string>
-				</array>
-				<key>PayloadDescription</key>
-				<string>Controls the system extension loading/unloading</string>
-				<key>PayloadDisplayName</key>
-				<string>App System Extension Control</string>
-				<key>PayloadIdentifier</key>
-				<string>E45B5986-74A6-4B6A-A4CA-E179516A7F52</string>
-				<key>PayloadOrganization</key>
-				<string>CrowdStrike Inc.</string>
-				<key>PayloadType</key>
-				<string>com.apple.system-extensions.admin</string>
-				<key>PayloadUUID</key>
-				<string>E45B5986-74A6-4B6A-A4CA-E179516A7F52</string>
-				<key>PayloadVersion</key>
-				<integer>1</integer>
-			</dict>
-		</array>
+</array>
 		<key>PayloadDescription</key>
 		<string/>
 		<key>PayloadDisplayName</key>
