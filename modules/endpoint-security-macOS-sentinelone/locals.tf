@@ -8,6 +8,7 @@ data "local_file" "sentinelone_pkg_name" {
 }
 
 locals {
+  has_pkg_source         = var.sentinelone_pkg_path != "" || var.sentinelone_pkg_url != ""
   sentinelone_pkg_name   = trimspace(data.local_file.sentinelone_pkg_name.content)
   sentinelone_pkg_source = "${path.module}/support_files/${local.sentinelone_pkg_name}"
 }
@@ -28,7 +29,7 @@ resource "terraform_data" "prepare_pkg_from_url" {
       PKG_VERSION=$(echo "$PKG_INFO" | sed -n '2p')
       DEST="$PKG_NAME-$PKG_VERSION.pkg"
       mv "$TMP" '${path.module}/support_files/'"$DEST"
-      echo -n "$DEST" > '${path.module}/support_files/.pkg_name'
+      printf '%s' "$DEST" > '${path.module}/support_files/.pkg_name'
     EOT
   }
 
@@ -47,7 +48,7 @@ resource "terraform_data" "prepare_pkg_from_path" {
       PKG_VERSION=$(echo "$PKG_INFO" | sed -n '2p')
       DEST="$PKG_NAME-$PKG_VERSION.pkg"
       cp '${var.sentinelone_pkg_path}' '${path.module}/support_files/'"$DEST"
-      echo -n "$DEST" > '${path.module}/support_files/.pkg_name'
+      printf '%s' "$DEST" > '${path.module}/support_files/.pkg_name'
     EOT
   }
 
