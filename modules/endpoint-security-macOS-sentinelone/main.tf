@@ -141,6 +141,7 @@ resource "jamfpro_smart_computer_group" "sentinelone_not_installed" {
 
 ## SentinelOne Package Upload
 resource "jamfpro_package" "sentinelone_installer" {
+  count                 = local.has_pkg_source ? 1 : 0
   package_name          = local.sentinelone_pkg_name
   package_file_source   = local.sentinelone_pkg_source
   category_id           = jamfpro_category.sentinelone.id
@@ -176,6 +177,7 @@ resource "jamfpro_script" "sentinelone_install" {
 
 ## SentinelOne Deployment Policy
 resource "jamfpro_policy" "sentinelone_deploy" {
+  count           = local.has_pkg_source ? 1 : 0
   name            = "Deploy SentinelOne Agent"
   enabled         = true
   trigger_checkin = true
@@ -186,7 +188,7 @@ resource "jamfpro_policy" "sentinelone_deploy" {
     packages {
       distribution_point = "default"
       package {
-        id                          = jamfpro_package.sentinelone_installer.id
+        id                          = jamfpro_package.sentinelone_installer[0].id
         action                      = "Cache"
         fill_user_template          = false
         fill_existing_user_template = false
