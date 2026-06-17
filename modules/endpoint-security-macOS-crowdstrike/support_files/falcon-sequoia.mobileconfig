@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>AllowUserOverrides</key>
+				<true/>
+				<key>AllowedSystemExtensions</key>
+				<dict>
+					<key>X9E956P446</key>
+					<array>
+						<string>com.crowdstrike.falcon.Agent</string>
+					</array>
+				</dict>
+				<key>NonRemovableFromUISystemExtensions</key>
+				<dict>
+					<key>X9E956P446</key>
+					<array>
+						<string>com.crowdstrike.falcon.Agent</string>
+					</array>
+				</dict>
+				<key>PayloadDescription</key>
+				<string>Configures System Extensions Policy settings for macOS Sequoia and later</string>
+				<key>PayloadDisplayName</key>
+				<string>System Extensions (Sequoia+)</string>
+				<key>PayloadEnabled</key>
+				<true/>
+				<key>PayloadIdentifier</key>
+				<string>3B7E1F2A-9C4D-4E8B-A1D5-6F2C9E0B3A7D</string>
+				<key>PayloadOrganization</key>
+				<string>CrowdStrike Inc.</string>
+				<key>PayloadType</key>
+				<string>com.apple.system-extension-policy</string>
+				<key>PayloadUUID</key>
+				<string>3B7E1F2A-9C4D-4E8B-A1D5-6F2C9E0B3A7D</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string>CrowdStrike Falcon Configuration Profile for macOS Sequoia 15 and later</string>
+		<key>PayloadDisplayName</key>
+		<string>CrowdStrike Falcon Settings (Sequoia+)</string>
+		<key>PayloadEnabled</key>
+		<true/>
+		<key>PayloadIdentifier</key>
+		<string>A4F8C2E1-7B3D-4A9C-B5E2-1D6F8A0C4B2E</string>
+		<key>PayloadOrganization</key>
+		<string>CrowdStrike Inc.</string>
+		<key>PayloadRemovalDisallowed</key>
+		<false/>
+		<key>PayloadScope</key>
+		<string>System</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>A4F8C2E1-7B3D-4A9C-B5E2-1D6F8A0C4B2E</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>

@@ -281,6 +281,29 @@ This repo uses boolean "include_..." variables to turn modules on/off. Most modu
   terraform destroy
   ```
 
+## Tools
+
+Shared utilities live in the [`tools/`](tools/) directory at the repo root. These are invoked automatically by modules at apply time and can also be run manually for inspection or debugging.
+
+### `tools/get_pkg_version.py`
+
+Extracts the application name and version from any macOS `.pkg` file (XAR archive format) without relying on the filename or external tools. The script reads the embedded `PackageInfo` and `Distribution` XML inside the package and prints two lines: the application name (spaces replaced with hyphens) and the version string.
+
+```sh
+python3 tools/get_pkg_version.py /path/to/installer.pkg
+```
+
+Example output:
+
+```
+application-name
+1.2.3
+```
+
+This is used by modules that accept a package source (local path or S3 URL) to produce a clean, version-stamped filename before uploading to Jamf Pro — regardless of what the original file was named. The resulting filename follows the pattern `<name>-<version>.pkg`, for example `jamf-1.2.3.pkg`.
+
+Modules reference this script via a relative path (`../../tools/get_pkg_version.py`) so it is shared across all modules rather than duplicated into each one.
+
 ## Contributing
 
 Contributions are welcome - especially new modules, improvements to existing modules, and documentation updates.
