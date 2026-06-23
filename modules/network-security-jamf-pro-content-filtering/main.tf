@@ -27,18 +27,21 @@ resource "jsc_ap" "content_filtering_only" {
   datapolicy       = true
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "dp" {
-  name                = "Content Filtering - macOS (Supervised)"
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  level               = "System"
-
-  payloads         = jsc_ap.content_filtering_only.macosplist
-  payload_validate = false
-
-  scope {
-    all_computers = false
+resource "jamfplatform_pro_macos_configuration_profile" "dp" {
+  general = {
+    name                = "Content Filtering - macOS (Supervised)"
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    level               = "System"
+    payloads         = jsc_ap.content_filtering_only.macosplist
   }
+
+  scope = {
+    targets = {
+      all_computers = false
+    }
+  }
+
   depends_on = [jsc_ap.content_filtering_only]
 }
 

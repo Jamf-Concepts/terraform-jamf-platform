@@ -24,33 +24,38 @@ resource "jamfplatform_pro_script" "script_reissuekey" {
 }
 
 ## Create Smart Computer Groups - Scoping
-resource "jamfplatform_pro_smart_computer_group" "group_invalid_recovery_key" {
+resource "jamfplatform_device_group" "group_invalid_recovery_key" {
   name = "Invalid FileVault 2 Recovery Key"
-  criteria {
-    name        = "FileVault 2 Partition Encryption State"
-    search_type = "is"
-    value       = "Encrypted"
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "FileVault 2 Individual Key Validation"
-    search_type = "is not"
-    value       = "Valid"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "FileVault 2 Partition Encryption State"
+      operator = "is"
+      value    = "Encrypted"
+    },
+    {
+      and_or   = "and"
+      criteria = "FileVault 2 Individual Key Validation"
+      operator = "is not"
+      value    = "Valid"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_disk_encrypted" {
+resource "jamfplatform_device_group" "group_disk_encrypted" {
   name = "* FileVault 2 Enabled"
-  criteria {
-    name        = "FileVault 2 Partition Encryption State"
-    search_type = "is"
-    value       = "Encrypted"
-    and_or      = "and"
-    priority    = 0
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "FileVault 2 Partition Encryption State"
+      operator = "is"
+      value    = "Encrypted"
+    },
+  ]
 }
 
 ## Create policies
@@ -64,7 +69,7 @@ resource "jamfplatform_pro_policy" "policy_reissue_recovery_key" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_invalid_recovery_key.id]
+    computer_group_ids = [jamfplatform_device_group.group_invalid_recovery_key.jamf_pro_id]
   }
 
   self_service {
@@ -100,19 +105,21 @@ resource "jamfplatform_pro_policy" "policy_reissue_recovery_key" {
   }
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_profile_enablefv" {
-  name                = "Enable FileVault 2"
-  description         = "This configuration profile enforces FileVault 2 encryption. Prompts at next login"
-  level               = "System"
-  category_id         = jamfplatform_pro_category.category_disk_encrpytion.id
-  redeploy_on_update  = "Newly Assigned"
-  distribution_method = "Install Automatically"
-  payloads            = file("${path.module}/support_files/enablefilevault.mobileconfig")
-  payload_validate    = false
-  user_removable      = false
+resource "jamfplatform_pro_macos_configuration_profile" "jamfplatform_pro_macos_configuration_profile_enablefv" {
+  general = {
+    name                = "Enable FileVault 2"
+    description         = "This configuration profile enforces FileVault 2 encryption. Prompts at next login"
+    level               = "System"
+    category_id         = jamfplatform_pro_category.category_disk_encrpytion.id
+    redeploy_on_update  = "Newly Assigned"
+    distribution_method = "Install Automatically"
+    payloads            = file("${path.module}/support_files/enablefilevault.mobileconfig")
+    user_removable      = false
+  }
 
-  scope {
-    all_computers = false
-    all_jss_users = false
+  scope = {
+    targets = {
+      all_computers = false
+    }
   }
 }

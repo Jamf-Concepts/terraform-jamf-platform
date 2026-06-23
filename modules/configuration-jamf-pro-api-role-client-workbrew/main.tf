@@ -18,13 +18,14 @@ resource "jamfplatform_pro_api_role" "workbrew_api_role" {
   ]
 }
 
-resource "jamfplatform_pro_api_integration" "workbrew_api_integeration" {
-  display_name         = "Workbrew"
-  enabled              = true
-  authorization_scopes = [jamfplatform_pro_api_role.workbrew_api_role.display_name]
+resource "jamfplatform_pro_api_client" "workbrew_api_integeration" {
+  display_name        = "Workbrew"
+  enabled             = true
+  credential_rotation = "1"
+  api_roles           = [jamfplatform_pro_api_role.workbrew_api_role.display_name]
 }
 
 # Data source to retrieve the full API integration details including client_secret
-data "jamfplatform_pro_api_integration" "workbrew_api_integeration_data" {
-  id = jamfplatform_pro_api_integration.workbrew_api_integeration.id
+data "jamfplatform_pro_api_client" "workbrew_api_integeration_data" {
+  id = jamfplatform_pro_api_client.workbrew_api_integeration.id
 }

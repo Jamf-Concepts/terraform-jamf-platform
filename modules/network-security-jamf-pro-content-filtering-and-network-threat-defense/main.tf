@@ -27,18 +27,21 @@ resource "jsc_ap" "mtd_dp_only" {
   datapolicy       = true
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "mtd_dp" {
-  name                = "Network Threat Defense and Content Filtering - macOS (Supervised)"
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  level               = "System"
-
-  payloads         = jsc_ap.mtd_dp_only.macosplist
-  payload_validate = false
-
-  scope {
-    all_computers = false
+resource "jamfplatform_pro_macos_configuration_profile" "mtd_dp" {
+  general = {
+    name                = "Network Threat Defense and Content Filtering - macOS (Supervised)"
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    level               = "System"
+    payloads         = jsc_ap.mtd_dp_only.macosplist
   }
+
+  scope = {
+    targets = {
+      all_computers = false
+    }
+  }
+
   depends_on = [jsc_ap.mtd_dp_only]
 }
 

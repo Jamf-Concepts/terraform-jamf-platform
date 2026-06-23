@@ -15,15 +15,18 @@ resource "jamfplatform_pro_category" "category_admin_tools" {
 }
 
 ## Create Smart Group
-resource "jamfplatform_pro_smart_computer_group" "group_apple_silicon" {
+resource "jamfplatform_device_group" "group_apple_silicon" {
   name = "Apple Silicon Macs"
-  criteria {
-    name        = "Apple Silicon"
-    search_type = "is"
-    value       = "Yes"
-    and_or      = "and"
-    priority    = 0
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Apple Silicon"
+      operator = "is"
+      value    = "Yes"
+    },
+  ]
 }
 
 ## Create Policy
@@ -37,7 +40,7 @@ resource "jamfplatform_pro_policy" "policy_rosetta_2" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_apple_silicon.id]
+    computer_group_ids = [jamfplatform_device_group.group_apple_silicon.jamf_pro_id]
   }
 
   self_service {

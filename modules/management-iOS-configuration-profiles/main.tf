@@ -30,101 +30,129 @@ resource "jamfplatform_pro_category" "category_demo" {
 }
 
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_apple_id_changes" {
-  name               = "Restrict Apple Account Changes"
-  description        = "This restricts the ability to modify account settings for Apple ID"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_restrictions.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/restrict_appleid_changes.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_apple_id_changes" {
+  general = {
+    name               = "Restrict Apple Account Changes"
+    description        = "This restricts the ability to modify account settings for Apple ID"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_restrictions.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/restrict_appleid_changes.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_airdrop" {
-  name               = "Restrict AirDrop"
-  description        = "This restricts the ability to use AirDrop"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_restrictions.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/restrict_airdrop.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_airdrop" {
+  general = {
+    name               = "Restrict AirDrop"
+    description        = "This restricts the ability to use AirDrop"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_restrictions.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/restrict_airdrop.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_passcode_requirements" {
-  name               = "Passcode Requirements"
-  description        = "Enforces a non complex 6 digit passcode"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_demo.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/passcode_requirements.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_passcode_requirements" {
+  general = {
+    name               = "Passcode Requirements"
+    description        = "Enforces a non complex 6 digit passcode"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_demo.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/passcode_requirements.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_erase_all_content_and_settings" {
-  name               = "Restrict Erase All Content and Settings"
-  description        = "Restricts Erase All Content and Settings"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_restrictions.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/restrict_erase_content_and_settings.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_erase_all_content_and_settings" {
+  general = {
+    name               = "Restrict Erase All Content and Settings"
+    description        = "Restricts Erase All Content and Settings"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_restrictions.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/restrict_erase_content_and_settings.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_camera" {
-  name               = "Restrict Camera"
-  description        = "Restricts the Camera in all Use and Apps"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_restrictions.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/restrict_camera.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_camera" {
+  general = {
+    name               = "Restrict Camera"
+    description        = "Restricts the Camera in all Use and Apps"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_restrictions.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/restrict_camera.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_restrict_screenshots" {
-  name               = "Restrict Screenshots"
-  description        = "Restricts the Ability to take Screenshots"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_restrictions.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/restrict_screenshots.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_screenshots" {
+  general = {
+    name               = "Restrict Screenshots"
+    description        = "Restricts the Ability to take Screenshots"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_restrictions.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/restrict_screenshots.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_user_enrollment_byod_restrictions" {
-  name               = "Demo - User Enrollment / BYOD Restrictions"
-  description        = "Sets DLP restrictions for User Enrollment / BYOD"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_demo.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/user_enrollment_byod_restrictions.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_user_enrollment_byod_restrictions" {
+  general = {
+    name               = "Demo - User Enrollment / BYOD Restrictions"
+    description        = "Sets DLP restrictions for User Enrollment / BYOD"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_demo.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/user_enrollment_byod_restrictions.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }
 
@@ -145,56 +173,68 @@ resource "jamfplatform_pro_mobile_device_extension_attribute" "device_type" {
 
 ## Smart Groups for Shared Device and Kiosk Mode
 
-resource "jamfplatform_pro_smart_mobile_device_group" "device_type_kiosk_mode" {
+resource "jamfplatform_device_group" "device_type_kiosk_mode" {
   name = "Demo - Kiosk Devices"
+  group_type  = "smart"
+  device_type = "mobile"
 
-  criteria {
-    name        = jamfplatform_pro_mobile_device_extension_attribute.device_type.name
-    priority    = 0
-    search_type = "is"
-    value       = "Kiosk Device"
-  }
+  criteria = [
+    {
+      criteria = jamfplatform_pro_mobile_device_extension_attribute.device_type.name
+      operator = "is"
+      value    = "Kiosk Device"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_mobile_device_group" "device_type_shared_device_mode" {
+resource "jamfplatform_device_group" "device_type_shared_device_mode" {
   name = "Demo - Shared Devices"
+  group_type  = "smart"
+  device_type = "mobile"
 
-  criteria {
-    name        = jamfplatform_pro_mobile_device_extension_attribute.device_type.name
-    priority    = 0
-    search_type = "is"
-    value       = "Shared Device"
-  }
+  criteria = [
+    {
+      criteria = jamfplatform_pro_mobile_device_extension_attribute.device_type.name
+      operator = "is"
+      value    = "Shared Device"
+    },
+  ]
 }
 
 ## Configuration Profiles for Shared Device and Kiosk Mode
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_kiosk_mode" {
-  name               = "Demo - Kiosk Mode - Safari (Single App Mode)"
-  description        = "Places device in Single App Mode for Safari"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_demo.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/kiosk_mode_safari_single_app_mode.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_kiosk_mode" {
+  general = {
+    name               = "Demo - Kiosk Mode - Safari (Single App Mode)"
+    description        = "Places device in Single App Mode for Safari"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_demo.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/kiosk_mode_safari_single_app_mode.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
-    # mobile_device_group_ids = [jamfplatform_pro_smart_mobile_device_group.device_type_kiosk_mode.id]
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }
 
-resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "mobile_device_configuration_profile_shared_device_mode" {
-  name               = "Demo - Shared Device Mode - Restrictions"
-  description        = "Restricts AirDrop, Apple Account changes, Screenshots, Erase, and Camera"
-  deployment_method  = "Install Automatically"
-  level              = "Device Level"
-  category_id        = jamfplatform_pro_category.category_demo.id
-  redeploy_on_update = "Newly Assigned"
-  payloads           = file("${path.module}/support_files/shared_device_restrictions.mobileconfig")
+resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_shared_device_mode" {
+  general = {
+    name               = "Demo - Shared Device Mode - Restrictions"
+    description        = "Restricts AirDrop, Apple Account changes, Screenshots, Erase, and Camera"
+    distribution_method  = "Install Automatically"
+    level              = "Device Level"
+    category_id        = jamfplatform_pro_category.category_demo.id
+    redeploy_on_update = "Newly Assigned"
+    payloads           = file("${path.module}/support_files/shared_device_restrictions.mobileconfig")
+  }
 
-  scope {
-    all_mobile_devices = false
-    # mobile_device_group_ids = [jamfplatform_pro_smart_mobile_device_group.device_type_shared_device_mode.id]
+  scope = {
+    targets = {
+      all_mobile_devices = false
+    }
   }
 }

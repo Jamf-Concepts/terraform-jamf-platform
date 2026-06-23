@@ -101,71 +101,77 @@ resource "jamfplatform_pro_computer_extension_attribute" "homebrew_version_ea" {
   data_type              = "STRING"
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "workbrew_managed_login_item" {
-  name                = "Workbrew Managed Login Item"
-  description         = ""
-  level               = "System"
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  payloads            = file("${path.module}/support_files/Workbrew Managed Login Item.mobileconfig")
-  payload_validate    = true
-  user_removable      = false
-  category_id         = jamfplatform_pro_category.workbrew_category.id
-
-  scope {
-    all_computers = true
-    all_jss_users = false
+resource "jamfplatform_pro_macos_configuration_profile" "workbrew_managed_login_item" {
+  general = {
+    name                = "Workbrew Managed Login Item"
+    description         = ""
+    level               = "System"
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    payloads            = file("${path.module}/support_files/Workbrew Managed Login Item.mobileconfig")
+    user_removable      = false
+    category_id         = jamfplatform_pro_category.workbrew_category.id
   }
 
+  scope = {
+    targets = {
+      all_computers = true
+    }
+  }
 }
 
-resource "jamfplatform_pro_smart_computer_group" "workbrew_target_smart_computer_group" {
+resource "jamfplatform_device_group" "workbrew_target_smart_computer_group" {
   name = "Workbrew Target Target Group"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "greater than or equal"
-    value       = "13.0"
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "greater than or equal"
+      value    = "13.0"
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "workbrew_installed_smart_computer_group" {
+resource "jamfplatform_device_group" "workbrew_installed_smart_computer_group" {
   name = "Workbrew Installed"
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
-    search_type = "is"
-    value       = "Installed"
-    and_or      = "and"
-    priority    = 0
-  }
+  group_type  = "smart"
+  device_type = "computer"
 
+  criteria = [
+    {
+      criteria = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
+      operator = "is"
+      value    = "Installed"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "workbrew_not_installed_smart_computer_group" {
+resource "jamfplatform_device_group" "workbrew_not_installed_smart_computer_group" {
   name = "Workbrew Not Installed"
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
-    search_type = "is"
-    value       = "Not Installed"
-    and_or      = "or"
-    priority    = 0
-  }
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
-    search_type = "is"
-    value       = ""
-    and_or      = "or"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
 
+  criteria = [
+    {
+      criteria = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
+      operator = "is"
+      value    = "Not Installed"
+    },
+    {
+      and_or   = "or"
+      criteria = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
+      operator = "is"
+      value    = ""
+    },
+  ]
 }
 
 resource "jamfplatform_pro_policy" "workbrew_install_policy" {
@@ -213,6 +219,6 @@ resource "jamfplatform_pro_policy" "workbrew_install_policy" {
     all_computers = false
     all_jss_users = false
 
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.workbrew_target_smart_computer_group.id]
+    computer_group_ids = [jamfplatform_device_group.workbrew_target_smart_computer_group.jamf_pro_id]
   }
 }

@@ -60,34 +60,35 @@ resource "jamfplatform_pro_api_role" "jamfplatform_pro_api_role_deploy" {
   ]
 }
 
-resource "jamfplatform_pro_api_integration" "jamfplatform_pro_api_integration_jsc" {
+resource "jamfplatform_pro_api_client" "jamfplatform_pro_api_integration_jsc" {
   display_name                  = "JSC API Client"
   enabled                       = true
+  credential_rotation           = "1"
   access_token_lifetime_seconds = 6000
-  authorization_scopes          = [jamfplatform_pro_api_role.jamfplatform_pro_api_role_sync.display_name, jamfplatform_pro_api_role.jamfplatform_pro_api_role_signalling.display_name, jamfplatform_pro_api_role.jamfplatform_pro_api_role_deploy.display_name]
+  api_roles                     = [jamfplatform_pro_api_role.jamfplatform_pro_api_role_sync.display_name, jamfplatform_pro_api_role.jamfplatform_pro_api_role_signalling.display_name, jamfplatform_pro_api_role.jamfplatform_pro_api_role_deploy.display_name]
 }
 
-data "jamfplatform_pro_api_integration" "jamf_pro_api_integration_001_data" {
-  id = jamfplatform_pro_api_integration.jamfplatform_pro_api_integration_jsc.id
+data "jamfplatform_pro_api_client" "jamf_pro_api_integration_001_data" {
+  id = jamfplatform_pro_api_client.jamfplatform_pro_api_integration_jsc.id
 }
 
 output "jp_client_id" {
-  value = data.jamfplatform_pro_api_integration.jamf_pro_api_integration_001_data.client_id
+  value = data.jamfplatform_pro_api_client.jamf_pro_api_integration_001_data.client_id
 }
 
 output "jp_client_secret" {
-  value = data.jamfplatform_pro_api_integration.jamf_pro_api_integration_001_data.client_secret
+  value = data.jamfplatform_pro_api_client.jamf_pro_api_integration_001_data.client_secret
 }
 
 /* resource "time_sleep" "wait_60_seconds" {
-  depends_on = [jamfplatform_pro_api_integration.jamfplatform_pro_api_integration_jsc]
+  depends_on = [jamfplatform_pro_api_client.jamfplatform_pro_api_integration_jsc]
 
   create_duration = "60s"
 } */
 
 resource "jsc_uemc" "initial_uemc" {
   domain       = var.jamfplatform_base_url
-  clientid     = data.jamfplatform_pro_api_integration.jamf_pro_api_integration_001_data.client_id
-  clientsecret = data.jamfplatform_pro_api_integration.jamf_pro_api_integration_001_data.client_secret
+  clientid     = data.jamfplatform_pro_api_client.jamf_pro_api_integration_001_data.client_id
+  clientsecret = data.jamfplatform_pro_api_client.jamf_pro_api_integration_001_data.client_secret
   /* depends_on   = [time_sleep.wait_60_seconds] */
 }

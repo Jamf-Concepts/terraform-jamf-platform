@@ -78,112 +78,124 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_version" {
 }
 
 ## Create Smart Computer Groups
-resource "jamfplatform_pro_smart_computer_group" "group_sonoma_computers" {
+resource "jamfplatform_device_group" "group_sonoma_computers" {
   name = "NIST 800-171 - Sonoma Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "14."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "14."
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_sonoma_800_171_non_compliant" {
+resource "jamfplatform_device_group" "group_sonoma_800_171_non_compliant" {
   name = "NIST 800-171 - Sonoma - Non Compliant Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "14."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.ea_800_171_failed_count.name
-    search_type = "more than"
-    value       = "0"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "14."
+    },
+    {
+      and_or   = "and"
+      criteria = jamfplatform_pro_computer_extension_attribute.ea_800_171_failed_count.name
+      operator = "more than"
+      value    = "0"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_sequoia_computers" {
+resource "jamfplatform_device_group" "group_sequoia_computers" {
   name = "NIST 800-171 - Sequoia Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "15."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "15."
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_sequoia_800_171_non_compliant" {
+resource "jamfplatform_device_group" "group_sequoia_800_171_non_compliant" {
   name = "NIST 800-171 - Sequoia - Non Compliant Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "15."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.ea_800_171_failed_count.name
-    search_type = "more than"
-    value       = "0"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "15."
+    },
+    {
+      and_or   = "and"
+      criteria = jamfplatform_pro_computer_extension_attribute.ea_800_171_failed_count.name
+      operator = "more than"
+      value    = "0"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_tahoe_computers" {
+resource "jamfplatform_device_group" "group_tahoe_computers" {
   name = "NIST 800-171 - Tahoe Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "26."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "26."
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_tahoe_800_171_non_compliant" {
+resource "jamfplatform_device_group" "group_tahoe_800_171_non_compliant" {
   name = "NIST 800-171 - Tahoe - Non Compliant Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "26."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.ea_800_171_failed_count.name
-    search_type = "more than"
-    value       = "0"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "26."
+    },
+    {
+      and_or   = "and"
+      criteria = jamfplatform_pro_computer_extension_attribute.ea_800_171_failed_count.name
+      operator = "more than"
+      value    = "0"
+    },
+  ]
 }
 
 ## Create policies
@@ -196,7 +208,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_800_171_audit" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_computers.id]
+    computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
   }
 
   self_service {
@@ -234,7 +246,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_800_171_remediation" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_800_171_non_compliant.id]
+    computer_group_ids = [jamfplatform_device_group.group_sonoma_800_171_non_compliant.jamf_pro_id]
   }
 
   self_service {
@@ -274,7 +286,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_800_171_audit" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_computers.id]
+    computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
   }
 
   self_service {
@@ -312,7 +324,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_800_171_remediation" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_800_171_non_compliant.id]
+    computer_group_ids = [jamfplatform_device_group.group_sequoia_800_171_non_compliant.jamf_pro_id]
   }
 
   self_service {
@@ -352,7 +364,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_800_171_audit" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_computers.id]
+    computer_group_ids = [jamfplatform_device_group.group_tahoe_computers.jamf_pro_id]
   }
 
   self_service {
@@ -390,7 +402,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_800_171_remediation" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_800_171_non_compliant.id]
+    computer_group_ids = [jamfplatform_device_group.group_tahoe_800_171_non_compliant.jamf_pro_id]
   }
 
   self_service {
@@ -451,38 +463,43 @@ locals {
 }
 
 ## Create configuration profiles for Sonoma
-resource "jamfplatform_pro_macos_configuration_profile_plist" "sonoma_800_171" {
+resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171" {
   for_each            = local.sonoma_800_171_dict
-  name                = "Sonoma NIST 800-171 - ${each.key}"
-  description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'NIST 800-171 - Sonoma Computers' Smart Group and remove the placeholder serial number criteria."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
-  level               = "System"
 
-  payloads         = file("${each.value}")
-  payload_validate = false
+  general = {
+    name                = "Sonoma NIST 800-171 - ${each.key}"
+    description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'NIST 800-171 - Sonoma Computers' Smart Group and remove the placeholder serial number criteria."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
+    level               = "System"
+    payloads         = file("${each.value}")
+  }
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_computers.id]
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
+    }
   }
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "sonoma_800_171_smart_card" {
-  name                = "Sonoma NIST 800-171 - Smart Card"
-  description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Sonoma Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
-  level               = "System"
+resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171_smart_card" {
+  general = {
+    name                = "Sonoma NIST 800-171 - Smart Card"
+    description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Sonoma Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
+    level               = "System"
+    payloads         = file("${path.module}/support_files/computer_config_profiles/Sonoma_800-171-security.smartcard.mobileconfig")
+  }
 
-  payloads         = file("${path.module}/support_files/computer_config_profiles/Sonoma_800-171-security.smartcard.mobileconfig")
-  payload_validate = false
-
-  scope {
-    all_computers      = false
-    computer_group_ids = []
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = []
+    }
   }
 }
 
@@ -516,39 +533,45 @@ locals {
 }
 
 ## Create configuration profiles for Sequoia part 1
-resource "jamfplatform_pro_macos_configuration_profile_plist" "sequoia_800_171" {
+resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171" {
   for_each            = local.sequoia_800_171_dict
-  name                = "Sequoia NIST 800-171 - ${each.key}"
-  description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'NIST 800-171 - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
-  level               = "System"
 
-  payloads         = file("${each.value}")
-  payload_validate = false
-
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_computers.id]
+  general = {
+    name                = "Sequoia NIST 800-171 - ${each.key}"
+    description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'NIST 800-171 - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
+    level               = "System"
+    payloads         = file("${each.value}")
   }
-  depends_on = [jamfplatform_pro_macos_configuration_profile_plist.sonoma_800_171]
+
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
+    }
+  }
+
+  depends_on = [jamfplatform_pro_macos_configuration_profile.sonoma_800_171]
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "sequoia_800_171_smart_card" {
-  name                = "Sequoia NIST 800-171 - Smart Card"
-  description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Sequoia Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
-  level               = "System"
+resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171_smart_card" {
+  general = {
+    name                = "Sequoia NIST 800-171 - Smart Card"
+    description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Sequoia Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
+    level               = "System"
+    payloads         = file("${path.module}/support_files/computer_config_profiles/Sequoia_800-171-security.smartcard.mobileconfig")
+  }
 
-  payloads         = file("${path.module}/support_files/computer_config_profiles/Sequoia_800-171-security.smartcard.mobileconfig")
-  payload_validate = false
-
-  scope {
-    all_computers      = false
-    computer_group_ids = []
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = []
+    }
   }
 }
 
@@ -582,38 +605,44 @@ locals {
 }
 
 ## Create configuration profiles for Tahoe
-resource "jamfplatform_pro_macos_configuration_profile_plist" "tahoe_800_171" {
+resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171" {
   for_each            = local.tahoe_800_171_dict
-  name                = "Tahoe NIST 800-171 - ${each.key}"
-  description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'NIST 800-171 - Tahoe Computers' Smart Group and remove the placeholder serial number criteria."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
-  level               = "System"
 
-  payloads         = file("${each.value}")
-  payload_validate = false
-
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_computers.id]
+  general = {
+    name                = "Tahoe NIST 800-171 - ${each.key}"
+    description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'NIST 800-171 - Tahoe Computers' Smart Group and remove the placeholder serial number criteria."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
+    level               = "System"
+    payloads         = file("${each.value}")
   }
-  depends_on = [jamfplatform_pro_macos_configuration_profile_plist.sequoia_800_171]
+
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.group_tahoe_computers.jamf_pro_id]
+    }
+  }
+
+  depends_on = [jamfplatform_pro_macos_configuration_profile.sequoia_800_171]
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "tahoe_800_171_smart_card" {
-  name                = "Tahoe NIST 800-171 - Smart Card"
-  description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Tahoe Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
-  level               = "System"
+resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171_smart_card" {
+  general = {
+    name                = "Tahoe NIST 800-171 - Smart Card"
+    description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Tahoe Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
+    level               = "System"
+    payloads         = file("${path.module}/support_files/computer_config_profiles/Tahoe_800-171-security.smartcard.mobileconfig")
+  }
 
-  payloads         = file("${path.module}/support_files/computer_config_profiles/Tahoe_800-171-security.smartcard.mobileconfig")
-  payload_validate = false
-
-  scope {
-    all_computers      = false
-    computer_group_ids = []
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = []
+    }
   }
 }

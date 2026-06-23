@@ -30,15 +30,14 @@ resource "jamfplatform_pro_computer_inventory_collection_settings" "example" {
 }
 
 ##Computer Check-in Settings
-resource "jamfplatform_pro_client_checkin" "jamfplatform_pro_client_checkin" {
+resource "jamfplatform_pro_computer_check_in_settings" "jamfplatform_pro_client_checkin" {
   check_in_frequency                  = 15
   create_startup_script               = true
   startup_log                         = true
   startup_ssh                         = false
   startup_policies                    = true
-  create_hooks                        = true
-  hook_log                            = true
-  hook_policies                       = true
-  enable_local_configuration_profiles = true
+  create_login_hook                        = true
+  login_hook_log                            = true
+  login_hook_policies                       = true
   allow_network_state_change_triggers = true
 }

@@ -11,18 +11,21 @@ data "http" "profile" {
 
 
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_profile_SaaSTenCert" {
-  name                = "SaaS Tenancy Cert"
-  description         = "An example mobile device configuration profile."
-  level               = "System"                // "User", "Device"
-  distribution_method = "Install Automatically" // "Make Available in Self Service", "Install Automatically"
-  payloads            = trimspace(data.http.profile.response_body)
-  payload_validate    = false
-  redeploy_on_update  = "Newly Assigned"
-  user_removable      = false
+resource "jamfplatform_pro_macos_configuration_profile" "jamfplatform_pro_macos_configuration_profile_SaaSTenCert" {
+  general = {
+    name                = "SaaS Tenancy Cert"
+    description         = "An example mobile device configuration profile."
+    level               = "System"                // "User", "Device"
+    distribution_method = "Install Automatically" // "Make Available in Self Service", "Install Automatically"
+    payloads            = trimspace(data.http.profile.response_body)
+    redeploy_on_update  = "Newly Assigned"
+    user_removable      = false
+  }
 
-  scope {
-    all_computers = true
+  scope = {
+    targets = {
+      all_computers = true
+    }
   }
 
   lifecycle {
@@ -31,8 +34,6 @@ resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_
       error_message = "Status code invalid"
     }
   }
-
-
 }
 
 output "profile" {

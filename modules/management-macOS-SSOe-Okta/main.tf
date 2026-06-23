@@ -24,22 +24,24 @@ resource "jamfplatform_pro_script" "script_ssoe-okta" {
 }
 
 ## Create Smart Computer Groups
-resource "jamfplatform_pro_smart_computer_group" "ssoe-okta" {
+resource "jamfplatform_device_group" "ssoe-okta" {
   name = "SSOe-(Okta)"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "15."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "15."
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
 ## Define configuration profiles
@@ -51,21 +53,25 @@ locals {
 
 
 ## Create configuration profiles for SSOe Okta (generic)
-resource "jamfplatform_pro_macos_configuration_profile_plist" "ssoe-okta" {
+resource "jamfplatform_pro_macos_configuration_profile" "ssoe-okta" {
   for_each            = local.ssoe-okta_dict
-  name                = "Single Sign On - ${each.key}"
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_ssoe.id
-  level               = "System"
 
-  payloads         = file("${each.value}")
-  payload_validate = false
-
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.ssoe-okta.id]
+  general = {
+    name                = "Single Sign On - ${each.key}"
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_ssoe.id
+    level               = "System"
+    payloads         = file("${each.value}")
   }
+
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.ssoe-okta.jamf_pro_id]
+    }
+  }
+
   lifecycle {
     prevent_destroy = false
     ignore_changes  = all
@@ -83,7 +89,7 @@ resource "jamfplatform_pro_policy" "policy_ssoe" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.ssoe-okta.id]
+    computer_group_ids = [jamfplatform_device_group.ssoe-okta.jamf_pro_id]
   }
 
   self_service {

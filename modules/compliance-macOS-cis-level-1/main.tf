@@ -78,112 +78,124 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_cis_lvl1_version" {
 }
 
 ## Create Smart Computer Groups
-resource "jamfplatform_pro_smart_computer_group" "group_sonoma_computers" {
+resource "jamfplatform_device_group" "group_sonoma_computers" {
   name = "CIS Level 1 - Sonoma Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "14."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "14."
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_sonoma_cis_lvl1_non_compliant" {
+resource "jamfplatform_device_group" "group_sonoma_cis_lvl1_non_compliant" {
   name = "CIS Level 1 - Sonoma - Non Compliant Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "14."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.ea_cis_lvl1_failed_count.name
-    search_type = "more than"
-    value       = "0"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "14."
+    },
+    {
+      and_or   = "and"
+      criteria = jamfplatform_pro_computer_extension_attribute.ea_cis_lvl1_failed_count.name
+      operator = "more than"
+      value    = "0"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_sequoia_computers" {
+resource "jamfplatform_device_group" "group_sequoia_computers" {
   name = "CIS Level 1 - Sequoia Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "15."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "15."
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_sequoia_cis_lvl1_non_compliant" {
+resource "jamfplatform_device_group" "group_sequoia_cis_lvl1_non_compliant" {
   name = "CIS Level 1 - Sequoia - Non Compliant Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "15."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.ea_cis_lvl1_failed_count.name
-    search_type = "more than"
-    value       = "0"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "15."
+    },
+    {
+      and_or   = "and"
+      criteria = jamfplatform_pro_computer_extension_attribute.ea_cis_lvl1_failed_count.name
+      operator = "more than"
+      value    = "0"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_tahoe_computers" {
+resource "jamfplatform_device_group" "group_tahoe_computers" {
   name = "CIS Level 1 - Tahoe Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "26."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "26."
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "group_tahoe_cis_lvl1_non_compliant" {
+resource "jamfplatform_device_group" "group_tahoe_cis_lvl1_non_compliant" {
   name = "CIS Level 1 - Tahoe - Non Compliant Computers"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "like"
-    value       = "26."
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = jamfplatform_pro_computer_extension_attribute.ea_cis_lvl1_failed_count.name
-    search_type = "more than"
-    value       = "0"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "like"
+      value    = "26."
+    },
+    {
+      and_or   = "and"
+      criteria = jamfplatform_pro_computer_extension_attribute.ea_cis_lvl1_failed_count.name
+      operator = "more than"
+      value    = "0"
+    },
+  ]
 }
 
 ## Create policies
@@ -196,7 +208,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_cis_lvl1_audit" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_computers.id]
+    computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
   }
 
   self_service {
@@ -234,7 +246,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_cis_lvl1_remediation" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_cis_lvl1_non_compliant.id]
+    computer_group_ids = [jamfplatform_device_group.group_sonoma_cis_lvl1_non_compliant.jamf_pro_id]
   }
 
   self_service {
@@ -274,7 +286,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_cis_lvl1_audit" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_computers.id]
+    computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
   }
 
   self_service {
@@ -312,7 +324,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_cis_lvl1_remediation" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_cis_lvl1_non_compliant.id]
+    computer_group_ids = [jamfplatform_device_group.group_sequoia_cis_lvl1_non_compliant.jamf_pro_id]
   }
 
   self_service {
@@ -352,7 +364,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_cis_lvl1_audit" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_computers.id]
+    computer_group_ids = [jamfplatform_device_group.group_tahoe_computers.jamf_pro_id]
   }
 
   self_service {
@@ -390,7 +402,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_cis_lvl1_remediation" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_cis_lvl1_non_compliant.id]
+    computer_group_ids = [jamfplatform_device_group.group_tahoe_cis_lvl1_non_compliant.jamf_pro_id]
   }
 
   self_service {
@@ -441,21 +453,24 @@ locals {
 }
 
 ## Create configuration profiles for Sonoma
-resource "jamfplatform_pro_macos_configuration_profile_plist" "sonoma_cis_lvl1" {
+resource "jamfplatform_pro_macos_configuration_profile" "sonoma_cis_lvl1" {
   for_each            = local.sonoma_cis_lvl1_dict
-  name                = "Sonoma CIS Level 1 - ${each.key}"
-  description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Sonoma Computers' Smart Group and remove the placeholder serial number criteria."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_sonoma_cis_lvl1_benchmarks.id
-  level               = "System"
 
-  payloads         = file("${each.value}")
-  payload_validate = false
+  general = {
+    name                = "Sonoma CIS Level 1 - ${each.key}"
+    description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Sonoma Computers' Smart Group and remove the placeholder serial number criteria."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_sonoma_cis_lvl1_benchmarks.id
+    level               = "System"
+    payloads         = file("${each.value}")
+  }
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_computers.id]
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
+    }
   }
 }
 
@@ -483,23 +498,27 @@ locals {
 }
 
 ## Create configuration profiles for Sequoia part 1
-resource "jamfplatform_pro_macos_configuration_profile_plist" "sequoia_cis_lvl1" {
+resource "jamfplatform_pro_macos_configuration_profile" "sequoia_cis_lvl1" {
   for_each            = local.sequoia_cis_lvl1_dict
-  name                = "Sequoia CIS Level 1 - ${each.key}"
-  description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_sequoia_cis_lvl1_benchmarks.id
-  level               = "System"
 
-  payloads         = file("${each.value}")
-  payload_validate = false
-
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_computers.id]
+  general = {
+    name                = "Sequoia CIS Level 1 - ${each.key}"
+    description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_sequoia_cis_lvl1_benchmarks.id
+    level               = "System"
+    payloads         = file("${each.value}")
   }
-  depends_on = [jamfplatform_pro_macos_configuration_profile_plist.sonoma_cis_lvl1]
+
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
+    }
+  }
+
+  depends_on = [jamfplatform_pro_macos_configuration_profile.sonoma_cis_lvl1]
 }
 
 ## Define configuration profile details for Tahoe
@@ -523,21 +542,25 @@ locals {
 }
 
 ## Create configuration profiles for Tahoe
-resource "jamfplatform_pro_macos_configuration_profile_plist" "tahoe_cis_lvl1" {
+resource "jamfplatform_pro_macos_configuration_profile" "tahoe_cis_lvl1" {
   for_each            = local.tahoe_cis_lvl1_dict
-  name                = "Tahoe CIS Level 1 - ${each.key}"
-  description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Tahoe Computers' Smart Group and remove the placeholder serial number criteria."
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfplatform_pro_category.category_tahoe_cis_lvl1_benchmarks.id
-  level               = "System"
 
-  payloads         = file("${each.value}")
-  payload_validate = false
-
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_computers.id]
+  general = {
+    name                = "Tahoe CIS Level 1 - ${each.key}"
+    description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'CIS Level 1 - Tahoe Computers' Smart Group and remove the placeholder serial number criteria."
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_tahoe_cis_lvl1_benchmarks.id
+    level               = "System"
+    payloads         = file("${each.value}")
   }
-  depends_on = [jamfplatform_pro_macos_configuration_profile_plist.sequoia_cis_lvl1]
+
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.group_tahoe_computers.jamf_pro_id]
+    }
+  }
+
+  depends_on = [jamfplatform_pro_macos_configuration_profile.sequoia_cis_lvl1]
 }

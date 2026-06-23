@@ -27,18 +27,21 @@ resource "jsc_ap" "ztna" {
   datapolicy       = false
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "ztna_macos" {
-  name                = "Jamf Connect ZTNA - macOS (Supervised)"
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  level               = "System"
-
-  payloads         = jsc_ap.ztna.macosplist
-  payload_validate = false
-
-  scope {
-    all_computers = false
+resource "jamfplatform_pro_macos_configuration_profile" "ztna_macos" {
+  general = {
+    name                = "Jamf Connect ZTNA - macOS (Supervised)"
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    level               = "System"
+    payloads         = jsc_ap.ztna.macosplist
   }
+
+  scope = {
+    targets = {
+      all_computers = false
+    }
+  }
+
   depends_on = [jsc_ap.ztna]
 }
 

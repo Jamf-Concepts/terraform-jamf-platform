@@ -15,15 +15,18 @@ resource "jamfplatform_pro_category" "google_chrome_cloud_management" {
 }
 
 ## Create Smart Computer Groups
-resource "jamfplatform_pro_smart_computer_group" "google_chrome_cloud_management" {
+resource "jamfplatform_device_group" "google_chrome_cloud_management" {
   name = "Google Chrome Cloud Management Devices"
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 0
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
 ## Create Google Chrome Cloud Management Configuration Profile Payload
@@ -37,20 +40,23 @@ locals {
 }
 
 ## Create Google Chrome Cloud Management Configuration Profile
-resource "jamfplatform_pro_macos_configuration_profile_plist" "google_chrome_cloud_management" {
-  name                = "Google Chrome Cloud Management Settings"
-  description         = "To customize Google Chrome Enterprise for your organization, check out the Google documentation: https://support.google.com/chrome/a/answer/9771882?hl=en"
-  level               = "System"
-  category_id         = jamfplatform_pro_category.google_chrome_cloud_management.id
-  redeploy_on_update  = "Newly Assigned"
-  distribution_method = "Install Automatically"
-  payloads            = local.google_chrome_cloud_management_profile_payload
-  payload_validate    = true
-  user_removable      = false
+resource "jamfplatform_pro_macos_configuration_profile" "google_chrome_cloud_management" {
+  general = {
+    name                = "Google Chrome Cloud Management Settings"
+    description         = "To customize Google Chrome Enterprise for your organization, check out the Google documentation: https://support.google.com/chrome/a/answer/9771882?hl=en"
+    level               = "System"
+    category_id         = jamfplatform_pro_category.google_chrome_cloud_management.id
+    redeploy_on_update  = "Newly Assigned"
+    distribution_method = "Install Automatically"
+    payloads            = local.google_chrome_cloud_management_profile_payload
+    user_removable      = false
+  }
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.google_chrome_cloud_management.id]
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.google_chrome_cloud_management.jamf_pro_id]
+    }
   }
 }
 
@@ -64,7 +70,7 @@ resource "jamfplatform_pro_app_installer" "google_chrome" {
   update_behavior = "AUTOMATIC"
   category_id     = jamfplatform_pro_category.google_chrome_cloud_management.id
   site_id         = "-1"
-  smart_group_id  = jamfplatform_pro_smart_computer_group.google_chrome_cloud_management.id
+  smart_group_id  = jamfplatform_device_group.google_chrome_cloud_management.jamf_pro_id
 
   install_predefined_config_profiles = true
   trigger_admin_notifications        = true

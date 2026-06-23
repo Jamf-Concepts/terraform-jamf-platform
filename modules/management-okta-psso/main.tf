@@ -13,40 +13,44 @@ resource "jamfplatform_pro_category" "okta_psso" {
   priority = 9
 }
 
-resource "jamfplatform_pro_smart_computer_group" "okta_psso_target" {
+resource "jamfplatform_device_group" "okta_psso_target" {
   name = "Okta PSSO Target Group"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "greater than or equal"
-    value       = "14.0"
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Serial Number"
-    search_type = "like"
-    value       = "111222333444555"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "greater than or equal"
+      value    = "14.0"
+    },
+    {
+      and_or   = "and"
+      criteria = "Serial Number"
+      operator = "like"
+      value    = "111222333444555"
+    },
+  ]
 }
 
-resource "jamfplatform_pro_smart_computer_group" "okta_psso_exclusion" {
+resource "jamfplatform_device_group" "okta_psso_exclusion" {
   name = "Okta PSSO Exclusion Group"
-  criteria {
-    name        = "Operating System Version"
-    search_type = "greater than or equal"
-    value       = "14.0"
-    and_or      = "and"
-    priority    = 0
-  }
-  criteria {
-    name        = "Application Title"
-    search_type = "is"
-    value       = "Jamf Connect.app"
-    and_or      = "and"
-    priority    = 1
-  }
+  group_type  = "smart"
+  device_type = "computer"
+
+  criteria = [
+    {
+      criteria = "Operating System Version"
+      operator = "greater than or equal"
+      value    = "14.0"
+    },
+    {
+      and_or   = "and"
+      criteria = "Application Title"
+      operator = "is"
+      value    = "Jamf Connect.app"
+    },
+  ]
 }
 
 resource "jamfplatform_pro_package" "okta_verify" {
@@ -86,64 +90,67 @@ resource "jamfplatform_pro_policy" "install_okta_verify" {
     all_computers = false
     all_jss_users = false
 
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.okta_psso_target.id]
+    computer_group_ids = [jamfplatform_device_group.okta_psso_target.jamf_pro_id]
   }
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "okta_device_access_scep" {
-  name                = "Okta Device Access SCEP"
-  description         = ""
-  level               = "System"
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  payloads            = local.okta_device_access_scep
-  payload_validate    = true
-  user_removable      = false
-  category_id         = jamfplatform_pro_category.okta_psso.id
+resource "jamfplatform_pro_macos_configuration_profile" "okta_device_access_scep" {
+  general = {
+    name                = "Okta Device Access SCEP"
+    description         = ""
+    level               = "System"
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    payloads            = local.okta_device_access_scep
+    user_removable      = false
+    category_id         = jamfplatform_pro_category.okta_psso.id
+  }
 
-  scope {
-    all_computers = false
-    all_jss_users = false
-
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.okta_psso_target.id]
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.okta_psso_target.jamf_pro_id]
+    }
   }
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "okta_verify_psso" {
-  name                = "Okta Verify for PSSO at Setup"
-  description         = ""
-  level               = "System"
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  payloads            = local.okta_verify_psso_setup
-  payload_validate    = true
-  user_removable      = false
-  category_id         = jamfplatform_pro_category.okta_psso.id
+resource "jamfplatform_pro_macos_configuration_profile" "okta_verify_psso" {
+  general = {
+    name                = "Okta Verify for PSSO at Setup"
+    description         = ""
+    level               = "System"
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    payloads            = local.okta_verify_psso_setup
+    user_removable      = false
+    category_id         = jamfplatform_pro_category.okta_psso.id
+  }
 
-  scope {
-    all_computers = false
-    all_jss_users = false
-
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.okta_psso_target.id]
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.okta_psso_target.jamf_pro_id]
+    }
   }
 }
 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "okta_verify_psso_app_config" {
-  name                = "Okta Verify App Configuration"
-  description         = ""
-  level               = "System"
-  distribution_method = "Install Automatically"
-  redeploy_on_update  = "Newly Assigned"
-  payloads            = local.okta_verify_psso_app_config
-  payload_validate    = true
-  user_removable      = false
-  category_id         = jamfplatform_pro_category.okta_psso.id
+resource "jamfplatform_pro_macos_configuration_profile" "okta_verify_psso_app_config" {
+  general = {
+    name                = "Okta Verify App Configuration"
+    description         = ""
+    level               = "System"
+    distribution_method = "Install Automatically"
+    redeploy_on_update  = "Newly Assigned"
+    payloads            = local.okta_verify_psso_app_config
+    user_removable      = false
+    category_id         = jamfplatform_pro_category.okta_psso.id
+  }
 
-  scope {
-    all_computers = false
-    all_jss_users = false
-
-    computer_group_ids = [jamfplatform_pro_smart_computer_group.okta_psso_target.id]
+  scope = {
+    targets = {
+      all_computers = false
+      computer_group_ids = [jamfplatform_device_group.okta_psso_target.jamf_pro_id]
+    }
   }
 }
 

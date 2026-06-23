@@ -45,20 +45,22 @@ resource "jamfplatform_pro_script" "scripts_falconcid" {
 
 
 ## Crowdstrke PPPC, Content Filtering, System Extension, 
-resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_crowdstrike" {
-  name                = "Crowdstrike Falcon Settings"
-  description         = ""
-  level               = "System"
-  category_id         = jamfplatform_pro_category.category_crowdstrike.id
-  redeploy_on_update  = "Newly Assigned"
-  distribution_method = "Install Automatically"
-  payloads            = file("${path.module}/support_files/falcon.mobileconfig")
-  payload_validate    = false
-  user_removable      = false
+resource "jamfplatform_pro_macos_configuration_profile" "jamfplatform_pro_macos_configuration_crowdstrike" {
+  general = {
+    name                = "Crowdstrike Falcon Settings"
+    description         = ""
+    level               = "System"
+    category_id         = jamfplatform_pro_category.category_crowdstrike.id
+    redeploy_on_update  = "Newly Assigned"
+    distribution_method = "Install Automatically"
+    payloads            = file("${path.module}/support_files/falcon.mobileconfig")
+    user_removable      = false
+  }
 
-  scope {
-    all_computers = true
-    all_jss_users = false
+  scope = {
+    targets = {
+      all_computers = true
+    }
   }
 }
 
