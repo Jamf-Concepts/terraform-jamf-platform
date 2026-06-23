@@ -1,37 +1,23 @@
-## Define Jamf Pro provider variables (populated by .tfvars file)
-variable "jamfpro_instance_url" {
-  description = "Jamf Pro Instance name."
+## Define Jamf Platform provider variables (populated by .tfvars file)
+variable "jamfplatform_base_url" {
+  description = "Regional API gateway URL (e.g. https://us.apigw.jamf.com)."
   type        = string
 }
 
-variable "jamfpro_auth_method" {
-  description = "Jamf Pro Auth Method."
-  type        = string
-  default     = "oauth2" #basic or oauth2
-}
-
-variable "jamfpro_client_id" {
-  description = "Jamf Pro Client ID for authentication."
+variable "jamfplatform_client_id" {
+  description = "OAuth2 client ID from account.jamf.com Integration."
   type        = string
 }
 
-variable "jamfpro_client_secret" {
-  description = "Jamf Pro Client Secret for authentication."
+variable "jamfplatform_client_secret" {
+  description = "OAuth2 client secret from account.jamf.com Integration."
   type        = string
   sensitive   = true
 }
 
-variable "jamfpro_username" {
-  description = "Jamf Pro username used for authentication."
+variable "jamfplatform_tenant_id" {
+  description = "Tenant UUID from account.jamf.com Integration details panel."
   type        = string
-  default     = ""
-}
-
-variable "jamfpro_password" {
-  description = "Jamf Pro password used for authentication."
-  type        = string
-  sensitive   = true
-  default     = ""
 }
 
 variable "jamfprotect_url" {

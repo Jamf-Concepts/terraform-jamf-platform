@@ -3,19 +3,19 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create Microsoft 365 Category
-resource "jamfpro_category" "category_microsoft_365" {
+resource "jamfplatform_pro_category" "category_microsoft_365" {
   name     = "Microsoft 365"
   priority = 9
 }
 
 ## Create Microsoft 365 Smart Groups
-resource "jamfpro_smart_computer_group" "group_msft_word" {
+resource "jamfplatform_pro_smart_computer_group" "group_msft_word" {
   name = "Auto Update:  Microsoft Word"
   criteria {
     name        = "Application Title"
@@ -26,7 +26,7 @@ resource "jamfpro_smart_computer_group" "group_msft_word" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_msft_excel" {
+resource "jamfplatform_pro_smart_computer_group" "group_msft_excel" {
   name = "Auto Update: Microsoft Excel"
   criteria {
     name        = "Application Title"
@@ -37,7 +37,7 @@ resource "jamfpro_smart_computer_group" "group_msft_excel" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_msft_onedrive" {
+resource "jamfplatform_pro_smart_computer_group" "group_msft_onedrive" {
   name = "Auto Update: Microsoft OneDrive"
   criteria {
     name        = "Application Title"
@@ -48,7 +48,7 @@ resource "jamfpro_smart_computer_group" "group_msft_onedrive" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_msft_outlook" {
+resource "jamfplatform_pro_smart_computer_group" "group_msft_outlook" {
   name = "Auto Update: Microsoft Outlook"
   criteria {
     name        = "Application Title"
@@ -59,7 +59,7 @@ resource "jamfpro_smart_computer_group" "group_msft_outlook" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_msft_powerpoint" {
+resource "jamfplatform_pro_smart_computer_group" "group_msft_powerpoint" {
   name = "Auto Update:  Microsoft PowerPoint"
   criteria {
     name        = "Application Title"
@@ -70,7 +70,7 @@ resource "jamfpro_smart_computer_group" "group_msft_powerpoint" {
   }
 }
 
-# resource "jamfpro_smart_computer_group" "group_msft_edge" {
+# resource "jamfplatform_pro_smart_computer_group" "group_msft_edge" {
 #   name = "Auto Update:  Microsoft Edge"
 #   criteria {
 #     name        = "Application Title"
@@ -81,7 +81,7 @@ resource "jamfpro_smart_computer_group" "group_msft_powerpoint" {
 #   }
 # }
 
-resource "jamfpro_smart_computer_group" "group_msft_teams" {
+resource "jamfplatform_pro_smart_computer_group" "group_msft_teams" {
   name = "Auto Update: Microsoft Teams"
   criteria {
     name        = "Application Title"
@@ -94,15 +94,15 @@ resource "jamfpro_smart_computer_group" "group_msft_teams" {
 }
 
 ## Create Microsoft 365 App Installers
-resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_excel" {
+resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_excel" {
   app_title_name  = "Microsoft Excel 365"
   name            = "Microsoft Excel 365"
   enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
-  category_id     = jamfpro_category.category_microsoft_365.id
+  category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
-  smart_group_id  = jamfpro_smart_computer_group.group_msft_excel.id
+  smart_group_id  = jamfplatform_pro_smart_computer_group.group_msft_excel.id
 
   install_predefined_config_profiles = false
   trigger_admin_notifications        = false
@@ -125,20 +125,20 @@ resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_excel" {
     description                    = "This applicaton is managed by Jamf Pro"
 
     categories {
-      id       = jamfpro_category.category_microsoft_365.id
+      id       = jamfplatform_pro_category.category_microsoft_365.id
       featured = true
     }
   }
 }
 
-# resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_edge_365" {
+# resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_edge_365" {
 #   name            = "Microsoft Edge"
 #   enabled         = true
 #   deployment_type = "SELF_SERVICE"
 #   update_behavior = "AUTOMATIC"
-#   category_id     = jamfpro_category.category_microsoft_365.id
+#   category_id     = jamfplatform_pro_category.category_microsoft_365.id
 #   site_id         = "-1"
-#   smart_group_id  = jamfpro_smart_computer_group.group_msft_edge.id
+#   smart_group_id  = jamfplatform_pro_smart_computer_group.group_msft_edge.id
 
 #   install_predefined_config_profiles = false
 #   trigger_admin_notifications        = false
@@ -161,21 +161,21 @@ resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_excel" {
 #     description                    = "This applicaton is managed by Jamf Pro"
 
 #     categories {
-#       id       = jamfpro_category.category_microsoft_365.id
+#       id       = jamfplatform_pro_category.category_microsoft_365.id
 #       featured = true
 #     }
 #   }
 # }
 
-resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_powerpoint_365" {
+resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_powerpoint_365" {
   app_title_name  = "Microsoft PowerPoint 365"
   name            = "Microsoft PowerPoint 365"
   enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
-  category_id     = jamfpro_category.category_microsoft_365.id
+  category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
-  smart_group_id  = jamfpro_smart_computer_group.group_msft_powerpoint.id
+  smart_group_id  = jamfplatform_pro_smart_computer_group.group_msft_powerpoint.id
 
   install_predefined_config_profiles = false
   trigger_admin_notifications        = false
@@ -198,21 +198,21 @@ resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_powerpoint_365
     description                    = "This applicaton is managed by Jamf Pro"
 
     categories {
-      id       = jamfpro_category.category_microsoft_365.id
+      id       = jamfplatform_pro_category.category_microsoft_365.id
       featured = true
     }
   }
 }
 
-resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_outlook_365" {
+resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_outlook_365" {
   app_title_name  = "Microsoft Outlook 365"
   name            = "Microsoft Outlook 365"
   enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
-  category_id     = jamfpro_category.category_microsoft_365.id
+  category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
-  smart_group_id  = jamfpro_smart_computer_group.group_msft_outlook.id
+  smart_group_id  = jamfplatform_pro_smart_computer_group.group_msft_outlook.id
 
   install_predefined_config_profiles = false
   trigger_admin_notifications        = false
@@ -235,21 +235,21 @@ resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_outlook_365" {
     description                    = "This applicaton is managed by Jamf Pro"
 
     categories {
-      id       = jamfpro_category.category_microsoft_365.id
+      id       = jamfplatform_pro_category.category_microsoft_365.id
       featured = true
     }
   }
 }
 
-resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_onedrive_365" {
+resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_onedrive_365" {
   app_title_name  = "Microsoft OneDrive"
   name            = "Microsoft OneDrive"
   enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
-  category_id     = jamfpro_category.category_microsoft_365.id
+  category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
-  smart_group_id  = jamfpro_smart_computer_group.group_msft_onedrive.id
+  smart_group_id  = jamfplatform_pro_smart_computer_group.group_msft_onedrive.id
 
   install_predefined_config_profiles = false
   trigger_admin_notifications        = false
@@ -272,21 +272,21 @@ resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_onedrive_365" 
     description                    = "This applicaton is managed by Jamf Pro"
 
     categories {
-      id       = jamfpro_category.category_microsoft_365.id
+      id       = jamfplatform_pro_category.category_microsoft_365.id
       featured = true
     }
   }
 }
 
-resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_word_365" {
+resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_word_365" {
   app_title_name  = "Microsoft Word 365"
   name            = "Microsoft Word 365"
   enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
-  category_id     = jamfpro_category.category_microsoft_365.id
+  category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
-  smart_group_id  = jamfpro_smart_computer_group.group_msft_word.id
+  smart_group_id  = jamfplatform_pro_smart_computer_group.group_msft_word.id
 
   install_predefined_config_profiles = false
   trigger_admin_notifications        = false
@@ -309,21 +309,21 @@ resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_word_365" {
     description                    = "This applicaton is managed by Jamf Pro"
 
     categories {
-      id       = jamfpro_category.category_microsoft_365.id
+      id       = jamfplatform_pro_category.category_microsoft_365.id
       featured = true
     }
   }
 }
 
-resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_teams_365" {
+resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_teams_365" {
   app_title_name  = "Microsoft Teams"
   name            = "Microsoft Teams"
   enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
-  category_id     = jamfpro_category.category_microsoft_365.id
+  category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
-  smart_group_id  = jamfpro_smart_computer_group.group_msft_teams.id
+  smart_group_id  = jamfplatform_pro_smart_computer_group.group_msft_teams.id
 
   install_predefined_config_profiles = false
   trigger_admin_notifications        = false
@@ -346,7 +346,7 @@ resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_teams_365" {
     description                    = "This applicaton is managed by Jamf Pro"
 
     categories {
-      id       = jamfpro_category.category_microsoft_365.id
+      id       = jamfplatform_pro_category.category_microsoft_365.id
       featured = true
     }
   }

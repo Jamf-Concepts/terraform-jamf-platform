@@ -1,24 +1,31 @@
 credentials:
-  - key: jamfpro_instance_url
+  - key: jamfplatform_base_url
     type: <string>
     presence: required
-    content: The URL of the Jamf Pro instance must start with 'https://'
-    display_name: Jamf Pro Instance URL
-    display_desc: URL for the Jamf Pro instance - must start with 'https://'
+    content: "Regional API gateway URL (https://us.apigw.jamf.com | https://eu.apigw.jamf.com | https://apac.apigw.jamf.com)"
+    display_name: Jamf Platform Region
+    display_desc: "US: https://us.apigw.jamf.com, EU: https://eu.apigw.jamf.com, APAC: https://apac.apigw.jamf.com"
 
-  - key: jamfpro_client_id
+  - key: jamfplatform_client_id
     type: <string>
     presence: required
-    content: The client ID for Jamf Pro API access
-    display_name: Jamf Pro Client ID
-    display_desc: Client ID used for Jamf Pro API access
+    content: OAuth2 client ID from account.jamf.com Integration
+    display_name: Platform Client ID
+    display_desc: Client ID generated when you create an Integration in Jamf Account
 
-  - key: jamfpro_client_secret
+  - key: jamfplatform_client_secret
     type: <string>
     presence: required
-    content: The client secret for Jamf Pro API access
-    display_name: Jamf Pro Client Secret
-    display_desc: Client Secret used for Jamf Pro API access
+    content: OAuth2 client secret from account.jamf.com Integration
+    display_name: Platform Client Secret
+    display_desc: Client Secret generated when you create an Integration in Jamf Account
+
+  - key: jamfplatform_tenant_id
+    type: <string>
+    presence: required
+    content: Tenant UUID from the Integration details panel in account.jamf.com
+    display_name: Tenant ID
+    display_desc: UUID shown when you click the tenant pill in the Integration details panel
 
   - key: jamfprotect_url
     type: <string>
@@ -75,13 +82,6 @@ credentials:
     content: Okta Short URL
     display_name: Okta Organization Domain - Short URL
     display_desc: Example "company.okta.com"
-
-  - key: okta_org_domain
-    type: <string>
-    presence: optional
-    content: Okta Organization Domain
-    display_name: Okta Organization Domain
-    display_desc: Example "https://sso.tryjamf.com"
 
   - key: okta_org_name
     type: <string>

@@ -3,7 +3,7 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
     null = {
       source  = "hashicorp/null"
@@ -12,16 +12,16 @@ terraform {
   }
 }
 
-resource "jamfpro_category" "workbrew_category" {
+resource "jamfplatform_pro_category" "workbrew_category" {
   name     = "Workbrew"
   priority = 9
 }
 
 
-resource "jamfpro_script" "workbrew_script" {
+resource "jamfplatform_pro_script" "workbrew_script" {
   name            = "Workbrew Activation"
   script_contents = file("${path.module}/support_files/Workbrew Activation.sh")
-  category_id     = jamfpro_category.workbrew_category.id
+  category_id     = jamfplatform_pro_category.workbrew_category.id
   os_requirements = ""
   priority        = "BEFORE"
   info            = "Script to activate Workbrew agent on macOS devices."
@@ -57,10 +57,10 @@ locals {
   workbrew_package_name = trimspace(data.local_file.workbrew_version.content)
 }
 
-resource "jamfpro_package" "workbrew_package" {
+resource "jamfplatform_pro_package" "workbrew_package" {
   package_name          = local.workbrew_package_name != "" ? local.workbrew_package_name : "Workbrew"
   package_file_source   = "https://console.workbrew.com/downloads/macos"
-  category_id           = jamfpro_category.workbrew_category.id
+  category_id           = jamfplatform_pro_category.workbrew_category.id
   fill_user_template    = false
   os_install            = false
   priority              = 1
@@ -71,7 +71,7 @@ resource "jamfpro_package" "workbrew_package" {
   suppress_updates      = false
 }
 
-resource "jamfpro_computer_extension_attribute" "workbrew_installed_ea" {
+resource "jamfplatform_pro_computer_extension_attribute" "workbrew_installed_ea" {
   name                   = "Workbrew Installed"
   enabled                = true
   input_type             = "SCRIPT"
@@ -81,7 +81,7 @@ resource "jamfpro_computer_extension_attribute" "workbrew_installed_ea" {
   data_type              = "STRING"
 }
 
-resource "jamfpro_computer_extension_attribute" "workbrew_version_ea" {
+resource "jamfplatform_pro_computer_extension_attribute" "workbrew_version_ea" {
   name                   = "Workbrew Version"
   enabled                = true
   input_type             = "SCRIPT"
@@ -91,7 +91,7 @@ resource "jamfpro_computer_extension_attribute" "workbrew_version_ea" {
   data_type              = "INTEGER"
 }
 
-resource "jamfpro_computer_extension_attribute" "homebrew_version_ea" {
+resource "jamfplatform_pro_computer_extension_attribute" "homebrew_version_ea" {
   name                   = "Homebrew Version"
   enabled                = true
   input_type             = "SCRIPT"
@@ -101,7 +101,7 @@ resource "jamfpro_computer_extension_attribute" "homebrew_version_ea" {
   data_type              = "STRING"
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "workbrew_managed_login_item" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "workbrew_managed_login_item" {
   name                = "Workbrew Managed Login Item"
   description         = ""
   level               = "System"
@@ -110,7 +110,7 @@ resource "jamfpro_macos_configuration_profile_plist" "workbrew_managed_login_ite
   payloads            = file("${path.module}/support_files/Workbrew Managed Login Item.mobileconfig")
   payload_validate    = true
   user_removable      = false
-  category_id         = jamfpro_category.workbrew_category.id
+  category_id         = jamfplatform_pro_category.workbrew_category.id
 
   scope {
     all_computers = true
@@ -119,7 +119,7 @@ resource "jamfpro_macos_configuration_profile_plist" "workbrew_managed_login_ite
 
 }
 
-resource "jamfpro_smart_computer_group" "workbrew_target_smart_computer_group" {
+resource "jamfplatform_pro_smart_computer_group" "workbrew_target_smart_computer_group" {
   name = "Workbrew Target Target Group"
   criteria {
     name        = "Operating System Version"
@@ -137,10 +137,10 @@ resource "jamfpro_smart_computer_group" "workbrew_target_smart_computer_group" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "workbrew_installed_smart_computer_group" {
+resource "jamfplatform_pro_smart_computer_group" "workbrew_installed_smart_computer_group" {
   name = "Workbrew Installed"
   criteria {
-    name        = jamfpro_computer_extension_attribute.workbrew_installed_ea.name
+    name        = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
     search_type = "is"
     value       = "Installed"
     and_or      = "and"
@@ -149,17 +149,17 @@ resource "jamfpro_smart_computer_group" "workbrew_installed_smart_computer_group
 
 }
 
-resource "jamfpro_smart_computer_group" "workbrew_not_installed_smart_computer_group" {
+resource "jamfplatform_pro_smart_computer_group" "workbrew_not_installed_smart_computer_group" {
   name = "Workbrew Not Installed"
   criteria {
-    name        = jamfpro_computer_extension_attribute.workbrew_installed_ea.name
+    name        = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
     search_type = "is"
     value       = "Not Installed"
     and_or      = "or"
     priority    = 0
   }
   criteria {
-    name        = jamfpro_computer_extension_attribute.workbrew_installed_ea.name
+    name        = jamfplatform_pro_computer_extension_attribute.workbrew_installed_ea.name
     search_type = "is"
     value       = ""
     and_or      = "or"
@@ -168,26 +168,26 @@ resource "jamfpro_smart_computer_group" "workbrew_not_installed_smart_computer_g
 
 }
 
-resource "jamfpro_policy" "workbrew_install_policy" {
+resource "jamfplatform_pro_policy" "workbrew_install_policy" {
   name                        = "Install Workbrew Agent"
   enabled                     = true
   trigger_enrollment_complete = true
   trigger_checkin             = true
   frequency                   = "Once per computer"
-  category_id                 = jamfpro_category.workbrew_category.id
+  category_id                 = jamfplatform_pro_category.workbrew_category.id
 
   payloads {
     packages {
       distribution_point = "default"
       package {
-        id                          = jamfpro_package.workbrew_package.id
+        id                          = jamfplatform_pro_package.workbrew_package.id
         action                      = "Install"
         fill_user_template          = false
         fill_existing_user_template = false
       }
     }
     scripts {
-      id         = jamfpro_script.workbrew_script.id
+      id         = jamfplatform_pro_script.workbrew_script.id
       priority   = "Before"
       parameter4 = var.workbrew_workspace_api_key
       parameter5 = ""
@@ -213,6 +213,6 @@ resource "jamfpro_policy" "workbrew_install_policy" {
     all_computers = false
     all_jss_users = false
 
-    computer_group_ids = [jamfpro_smart_computer_group.workbrew_target_smart_computer_group.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.workbrew_target_smart_computer_group.id]
   }
 }

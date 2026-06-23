@@ -3,28 +3,28 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create categories
-resource "jamfpro_category" "category_ssoe" {
+resource "jamfplatform_pro_category" "category_ssoe" {
   name     = "IdP & SSO"
   priority = 9
 }
 
 ## Create scripts
-resource "jamfpro_script" "script_ssoe-okta" {
+resource "jamfplatform_pro_script" "script_ssoe-okta" {
   name            = "SSOe-(Okta)"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/SSOe-(Okta).zsh")
-  category_id     = jamfpro_category.category_ssoe.id
+  category_id     = jamfplatform_pro_category.category_ssoe.id
   info            = "This script will check for the presence of the Okta Verify App. If not present, it will download and install the latest version. It will then launch the app with the the URL of the Experience Jamf Okta tenant."
 }
 
 ## Create Smart Computer Groups
-resource "jamfpro_smart_computer_group" "ssoe-okta" {
+resource "jamfplatform_pro_smart_computer_group" "ssoe-okta" {
   name = "SSOe-(Okta)"
   criteria {
     name        = "Operating System Version"
@@ -51,12 +51,12 @@ locals {
 
 
 ## Create configuration profiles for SSOe Okta (generic)
-resource "jamfpro_macos_configuration_profile_plist" "ssoe-okta" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "ssoe-okta" {
   for_each            = local.ssoe-okta_dict
   name                = "Single Sign On - ${each.key}"
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_ssoe.id
+  category_id         = jamfplatform_pro_category.category_ssoe.id
   level               = "System"
 
   payloads         = file("${each.value}")
@@ -64,7 +64,7 @@ resource "jamfpro_macos_configuration_profile_plist" "ssoe-okta" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.ssoe-okta.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.ssoe-okta.id]
   }
   lifecycle {
     prevent_destroy = false
@@ -74,16 +74,16 @@ resource "jamfpro_macos_configuration_profile_plist" "ssoe-okta" {
 
 
 ## Create policies
-resource "jamfpro_policy" "policy_ssoe" {
+resource "jamfplatform_pro_policy" "policy_ssoe" {
   name            = "Enable SSOe (Okta)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Once per computer"
-  category_id     = jamfpro_category.category_ssoe.id
+  category_id     = jamfplatform_pro_category.category_ssoe.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.ssoe-okta.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.ssoe-okta.id]
   }
 
   self_service {
@@ -92,7 +92,7 @@ resource "jamfpro_policy" "policy_ssoe" {
 
   payloads {
     scripts {
-      id       = jamfpro_script.script_ssoe-okta.id
+      id       = jamfplatform_pro_script.script_ssoe-okta.id
       priority = "Before"
     }
 

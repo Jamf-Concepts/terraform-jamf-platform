@@ -3,17 +3,17 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 module "management-iOS-configuration-profiles" {
   source                = "../management-iOS-configuration-profiles"
-  jamfpro_instance_url  = var.jamfpro_instance_url
-  jamfpro_client_id     = var.jamfpro_client_id
-  jamfpro_client_secret = var.jamfpro_client_secret
+  jamfplatform_base_url  = var.jamfplatform_base_url
+  jamfplatform_client_id     = var.jamfplatform_client_id
+  jamfplatform_client_secret = var.jamfplatform_client_secret
   providers = {
-    jamfpro.jpro = jamfpro.jpro
+    jamfplatform.jpro = jamfplatform.jpro
   }
 }

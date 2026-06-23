@@ -3,47 +3,47 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 module "configuration-jamf-pro-smart-groups" {
   source                = "../configuration-jamf-pro-smart-groups"
-  jamfpro_instance_url  = var.jamfpro_instance_url
-  jamfpro_client_id     = var.jamfpro_client_id
-  jamfpro_client_secret = var.jamfpro_client_secret
+  jamfplatform_base_url  = var.jamfplatform_base_url
+  jamfplatform_client_id     = var.jamfplatform_client_id
+  jamfplatform_client_secret = var.jamfplatform_client_secret
   providers = {
-    jamfpro.jpro = jamfpro.jpro
+    jamfplatform.jpro = jamfplatform.jpro
   }
 }
 
 module "configuration-jamf-pro-categories" {
   source                = "../configuration-jamf-pro-categories"
-  jamfpro_instance_url  = var.jamfpro_instance_url
-  jamfpro_client_id     = var.jamfpro_client_id
-  jamfpro_client_secret = var.jamfpro_client_secret
+  jamfplatform_base_url  = var.jamfplatform_base_url
+  jamfplatform_client_id     = var.jamfplatform_client_id
+  jamfplatform_client_secret = var.jamfplatform_client_secret
   providers = {
-    jamfpro.jpro = jamfpro.jpro
+    jamfplatform.jpro = jamfplatform.jpro
   }
 }
 
 module "configuration-jamf-pro-computer-management-settings" {
   source                = "../configuration-jamf-pro-computer-management-settings"
-  jamfpro_instance_url  = var.jamfpro_instance_url
-  jamfpro_client_id     = var.jamfpro_client_id
-  jamfpro_client_secret = var.jamfpro_client_secret
+  jamfplatform_base_url  = var.jamfplatform_base_url
+  jamfplatform_client_id     = var.jamfplatform_client_id
+  jamfplatform_client_secret = var.jamfplatform_client_secret
   providers = {
-    jamfpro.jpro = jamfpro.jpro
+    jamfplatform.jpro = jamfplatform.jpro
   }
 }
 
 module "management-macOS-rosetta" {
   source                = "../management-macOS-rosetta"
-  jamfpro_instance_url  = var.jamfpro_instance_url
-  jamfpro_client_id     = var.jamfpro_client_id
-  jamfpro_client_secret = var.jamfpro_client_secret
+  jamfplatform_base_url  = var.jamfplatform_base_url
+  jamfplatform_client_id     = var.jamfplatform_client_id
+  jamfplatform_client_secret = var.jamfplatform_client_secret
   providers = {
-    jamfpro.jpro = jamfpro.jpro
+    jamfplatform.jpro = jamfplatform.jpro
   }
 }

@@ -3,13 +3,13 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create Smart Computer Groups - Quality Of Life
-resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
+resource "jamfplatform_pro_smart_computer_group" "group_sonoma_computers" {
   name = "*Sonoma Macs"
   criteria {
     name        = "Operating System Version"
@@ -20,7 +20,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
+resource "jamfplatform_pro_smart_computer_group" "group_sequoia_computers" {
   name = "*Sequoia Macs"
   criteria {
     name        = "Operating System Version"
@@ -31,7 +31,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_last_checkin" {
+resource "jamfplatform_pro_smart_computer_group" "group_last_checkin" {
   name = "*7 Days Since Last Check-In"
   criteria {
     name        = "Last Check-in"
@@ -42,7 +42,7 @@ resource "jamfpro_smart_computer_group" "group_last_checkin" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_available_swu" {
+resource "jamfplatform_pro_smart_computer_group" "group_available_swu" {
   name = "*Available Software Updates"
   criteria {
     name        = "Number of Available Updates"
@@ -55,7 +55,7 @@ resource "jamfpro_smart_computer_group" "group_available_swu" {
 
 ## Create Smart Mobile Device Groups - Quality Of Life
 
-resource "jamfpro_smart_mobile_device_group" "supervised_ios" {
+resource "jamfplatform_pro_smart_mobile_device_group" "supervised_ios" {
   name = "*Supervised Devices"
 
   criteria {
@@ -66,7 +66,7 @@ resource "jamfpro_smart_mobile_device_group" "supervised_ios" {
   }
 }
 
-resource "jamfpro_smart_mobile_device_group" "unsupervised_ios" {
+resource "jamfplatform_pro_smart_mobile_device_group" "unsupervised_ios" {
   name = "*Un-Supervised Devices"
 
   criteria {
@@ -77,7 +77,7 @@ resource "jamfpro_smart_mobile_device_group" "unsupervised_ios" {
   }
 }
 
-resource "jamfpro_smart_mobile_device_group" "byod_ios" {
+resource "jamfplatform_pro_smart_mobile_device_group" "byod_ios" {
   name = "*BYOD Devices"
 
   criteria {
@@ -88,7 +88,7 @@ resource "jamfpro_smart_mobile_device_group" "byod_ios" {
   }
 }
 
-resource "jamfpro_smart_mobile_device_group" "ios_17" {
+resource "jamfplatform_pro_smart_mobile_device_group" "ios_17" {
   name = "*Devices Running iOS 17"
 
   criteria {
@@ -99,7 +99,7 @@ resource "jamfpro_smart_mobile_device_group" "ios_17" {
   }
 }
 
-resource "jamfpro_smart_mobile_device_group" "ios_18" {
+resource "jamfplatform_pro_smart_mobile_device_group" "ios_18" {
   name = "*Devices Running iOS 18"
 
   criteria {
@@ -110,7 +110,7 @@ resource "jamfpro_smart_mobile_device_group" "ios_18" {
   }
 }
 
-resource "jamfpro_smart_mobile_device_group" "group_last_checkin" {
+resource "jamfplatform_pro_smart_mobile_device_group" "group_last_checkin" {
   name = "*Last Check-In More Than a Week Ago"
 
   criteria {
@@ -121,7 +121,7 @@ resource "jamfpro_smart_mobile_device_group" "group_last_checkin" {
   }
 }
 
-resource "jamfpro_smart_mobile_device_group" "group_used_space_above_75" {
+resource "jamfplatform_pro_smart_mobile_device_group" "group_used_space_above_75" {
   name = "*Used Storage above 75 percent"
 
   criteria {
@@ -132,7 +132,7 @@ resource "jamfpro_smart_mobile_device_group" "group_used_space_above_75" {
   }
 }
 
-resource "jamfpro_smart_mobile_device_group" "group_passcode_not_present" {
+resource "jamfplatform_pro_smart_mobile_device_group" "group_passcode_not_present" {
   name = "*Passcode Not Present"
 
   criteria {

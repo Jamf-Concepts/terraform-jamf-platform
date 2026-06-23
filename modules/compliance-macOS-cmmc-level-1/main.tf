@@ -3,54 +3,54 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create categories
-resource "jamfpro_category" "category_sonoma_cmmc_lvl1_benchmarks" {
+resource "jamfplatform_pro_category" "category_sonoma_cmmc_lvl1_benchmarks" {
   name     = "Sonoma - US CMMC 2.0 Level 1 Benchmarks"
   priority = 9
 }
 
-resource "jamfpro_category" "category_sequoia_cmmc_lvl1_benchmarks" {
+resource "jamfplatform_pro_category" "category_sequoia_cmmc_lvl1_benchmarks" {
   name     = "Sequoia - US CMMC 2.0 Level 1 Benchmarks"
   priority = 9
 }
 
-resource "jamfpro_category" "category_tahoe_cmmc_lvl1_benchmarks" {
+resource "jamfplatform_pro_category" "category_tahoe_cmmc_lvl1_benchmarks" {
   name     = "Tahoe - US CMMC 2.0 Level 1 Benchmarks"
   priority = 9
 }
 
 ## Create scripts
-resource "jamfpro_script" "script_sonoma_cmmc_lvl1_compliance" {
+resource "jamfplatform_pro_script" "script_sonoma_cmmc_lvl1_compliance" {
   name            = "Sonoma - US CMMC 2.0 Level 1 Compliance"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/sonoma_cmmc_lvl1_compliance.sh")
-  category_id     = jamfpro_category.category_sonoma_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sonoma_cmmc_lvl1_benchmarks.id
   info            = "This script will apply a set of rules related to the US CMMC 2.0 Level 1 benchmark for macOS Sonoma"
 }
 
-resource "jamfpro_script" "script_sequoia_cmmc_lvl1_compliance" {
+resource "jamfplatform_pro_script" "script_sequoia_cmmc_lvl1_compliance" {
   name            = "Sequoia - US CMMC 2.0 Level 1 Compliance"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/sequoia_cmmc_lvl1_compliance.sh")
-  category_id     = jamfpro_category.category_sequoia_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sequoia_cmmc_lvl1_benchmarks.id
   info            = "This script will apply a set of rules related to the US CMMC 2.0 Level 1 benchmark for macOS Sequoia"
 }
 
-resource "jamfpro_script" "script_tahoe_cmmc_lvl1_compliance" {
+resource "jamfplatform_pro_script" "script_tahoe_cmmc_lvl1_compliance" {
   name            = "Tahoe - US CMMC 2.0 Level 1 Compliance"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/tahoe_cmmc_lvl1_compliance.sh")
-  category_id     = jamfpro_category.category_tahoe_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_tahoe_cmmc_lvl1_benchmarks.id
   info            = "This script will apply a set of rules related to the US CMMC 2.0 Level 1 benchmark for macOS Tahoe"
 }
 
 ## Create computer extension attributes
-resource "jamfpro_computer_extension_attribute" "ea_cmmc_lvl1_failed_count" {
+resource "jamfplatform_pro_computer_extension_attribute" "ea_cmmc_lvl1_failed_count" {
   name                   = "US CMMC 2.0 Level 1 - Failed Results Count"
   input_type             = "SCRIPT"
   enabled                = true
@@ -59,7 +59,7 @@ resource "jamfpro_computer_extension_attribute" "ea_cmmc_lvl1_failed_count" {
   script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsCount.sh")
 }
 
-resource "jamfpro_computer_extension_attribute" "ea_cmmc_lvl1_failed_list" {
+resource "jamfplatform_pro_computer_extension_attribute" "ea_cmmc_lvl1_failed_list" {
   name                   = "US CMMC 2.0 Level 1 - Failed Results List"
   input_type             = "SCRIPT"
   enabled                = true
@@ -68,7 +68,7 @@ resource "jamfpro_computer_extension_attribute" "ea_cmmc_lvl1_failed_list" {
   script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsList.sh")
 }
 
-resource "jamfpro_computer_extension_attribute" "ea_cmmc_lvl1_version" {
+resource "jamfplatform_pro_computer_extension_attribute" "ea_cmmc_lvl1_version" {
   name                   = "US CMMC 2.0 Level 1 - Compliance Version"
   input_type             = "SCRIPT"
   enabled                = true
@@ -78,7 +78,7 @@ resource "jamfpro_computer_extension_attribute" "ea_cmmc_lvl1_version" {
 }
 
 ## Create Smart Computer Groups
-resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
+resource "jamfplatform_pro_smart_computer_group" "group_sonoma_computers" {
   name = "US CMMC 2.0 Level 1 - Sonoma Computers"
   criteria {
     name        = "Operating System Version"
@@ -96,7 +96,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_sonoma_cmmc_lvl1_non_compliant" {
+resource "jamfplatform_pro_smart_computer_group" "group_sonoma_cmmc_lvl1_non_compliant" {
   name = "US CMMC 2.0 Level 1 - Sonoma - Non Compliant Computers"
   criteria {
     name        = "Operating System Version"
@@ -106,7 +106,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_cmmc_lvl1_non_compliant" {
     priority    = 0
   }
   criteria {
-    name        = jamfpro_computer_extension_attribute.ea_cmmc_lvl1_failed_count.name
+    name        = jamfplatform_pro_computer_extension_attribute.ea_cmmc_lvl1_failed_count.name
     search_type = "more than"
     value       = "0"
     and_or      = "and"
@@ -114,7 +114,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_cmmc_lvl1_non_compliant" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
+resource "jamfplatform_pro_smart_computer_group" "group_sequoia_computers" {
   name = "US CMMC 2.0 Level 1 - Sequoia Computers"
   criteria {
     name        = "Operating System Version"
@@ -132,7 +132,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_sequoia_cmmc_lvl1_non_compliant" {
+resource "jamfplatform_pro_smart_computer_group" "group_sequoia_cmmc_lvl1_non_compliant" {
   name = "US CMMC 2.0 Level 1 - Sequoia - Non Compliant Computers"
   criteria {
     name        = "Operating System Version"
@@ -142,7 +142,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_cmmc_lvl1_non_compliant" 
     priority    = 0
   }
   criteria {
-    name        = jamfpro_computer_extension_attribute.ea_cmmc_lvl1_failed_count.name
+    name        = jamfplatform_pro_computer_extension_attribute.ea_cmmc_lvl1_failed_count.name
     search_type = "more than"
     value       = "0"
     and_or      = "and"
@@ -150,7 +150,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_cmmc_lvl1_non_compliant" 
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_tahoe_computers" {
+resource "jamfplatform_pro_smart_computer_group" "group_tahoe_computers" {
   name = "US CMMC 2.0 Level 1 - Tahoe Computers"
   criteria {
     name        = "Operating System Version"
@@ -168,7 +168,7 @@ resource "jamfpro_smart_computer_group" "group_tahoe_computers" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_tahoe_cmmc_lvl1_non_compliant" {
+resource "jamfplatform_pro_smart_computer_group" "group_tahoe_cmmc_lvl1_non_compliant" {
   name = "US CMMC 2.0 Level 1 - Tahoe - Non Compliant Computers"
   criteria {
     name        = "Operating System Version"
@@ -178,7 +178,7 @@ resource "jamfpro_smart_computer_group" "group_tahoe_cmmc_lvl1_non_compliant" {
     priority    = 0
   }
   criteria {
-    name        = jamfpro_computer_extension_attribute.ea_cmmc_lvl1_failed_count.name
+    name        = jamfplatform_pro_computer_extension_attribute.ea_cmmc_lvl1_failed_count.name
     search_type = "more than"
     value       = "0"
     and_or      = "and"
@@ -187,16 +187,16 @@ resource "jamfpro_smart_computer_group" "group_tahoe_cmmc_lvl1_non_compliant" {
 }
 
 ## Create policies
-resource "jamfpro_policy" "policy_sonoma_cmmc_lvl1_audit" {
+resource "jamfplatform_pro_policy" "policy_sonoma_cmmc_lvl1_audit" {
   name            = "US CMMC 2.0 Level 1 - Audit (Sonoma)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_sonoma_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sonoma_cmmc_lvl1_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sonoma_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_computers.id]
   }
 
   self_service {
@@ -205,7 +205,7 @@ resource "jamfpro_policy" "policy_sonoma_cmmc_lvl1_audit" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_sonoma_cmmc_lvl1_compliance.id
+      id         = jamfplatform_pro_script.script_sonoma_cmmc_lvl1_compliance.id
       parameter4 = "--check"
     }
 
@@ -225,16 +225,16 @@ resource "jamfpro_policy" "policy_sonoma_cmmc_lvl1_audit" {
   }
 }
 
-resource "jamfpro_policy" "policy_sonoma_cmmc_lvl1_remediation" {
+resource "jamfplatform_pro_policy" "policy_sonoma_cmmc_lvl1_remediation" {
   name            = "US CMMC 2.0 Level 1 - Remediation (Sonoma)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_sonoma_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sonoma_cmmc_lvl1_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sonoma_cmmc_lvl1_non_compliant.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_cmmc_lvl1_non_compliant.id]
   }
 
   self_service {
@@ -243,7 +243,7 @@ resource "jamfpro_policy" "policy_sonoma_cmmc_lvl1_remediation" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_sonoma_cmmc_lvl1_compliance.id
+      id         = jamfplatform_pro_script.script_sonoma_cmmc_lvl1_compliance.id
       parameter4 = "--check"
       parameter5 = "--fix"
       parameter6 = "--check"
@@ -265,16 +265,16 @@ resource "jamfpro_policy" "policy_sonoma_cmmc_lvl1_remediation" {
   }
 }
 
-resource "jamfpro_policy" "policy_sequoia_cmmc_lvl1_audit" {
+resource "jamfplatform_pro_policy" "policy_sequoia_cmmc_lvl1_audit" {
   name            = "US CMMC 2.0 Level 1 - Audit (Sequoia)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_sequoia_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sequoia_cmmc_lvl1_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sequoia_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_computers.id]
   }
 
   self_service {
@@ -283,7 +283,7 @@ resource "jamfpro_policy" "policy_sequoia_cmmc_lvl1_audit" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_sequoia_cmmc_lvl1_compliance.id
+      id         = jamfplatform_pro_script.script_sequoia_cmmc_lvl1_compliance.id
       parameter4 = "--check"
     }
 
@@ -303,16 +303,16 @@ resource "jamfpro_policy" "policy_sequoia_cmmc_lvl1_audit" {
   }
 }
 
-resource "jamfpro_policy" "policy_sequoia_cmmc_lvl1_remediation" {
+resource "jamfplatform_pro_policy" "policy_sequoia_cmmc_lvl1_remediation" {
   name            = "US CMMC 2.0 Level 1 - Remediation (Sequoia)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_sequoia_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sequoia_cmmc_lvl1_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sequoia_cmmc_lvl1_non_compliant.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_cmmc_lvl1_non_compliant.id]
   }
 
   self_service {
@@ -321,7 +321,7 @@ resource "jamfpro_policy" "policy_sequoia_cmmc_lvl1_remediation" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_sequoia_cmmc_lvl1_compliance.id
+      id         = jamfplatform_pro_script.script_sequoia_cmmc_lvl1_compliance.id
       parameter4 = "--check"
       parameter5 = "--fix"
       parameter6 = "--check"
@@ -343,16 +343,16 @@ resource "jamfpro_policy" "policy_sequoia_cmmc_lvl1_remediation" {
   }
 }
 
-resource "jamfpro_policy" "policy_tahoe_cmmc_lvl1_audit" {
+resource "jamfplatform_pro_policy" "policy_tahoe_cmmc_lvl1_audit" {
   name            = "US CMMC 2.0 Level 1 - Audit (Tahoe)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_tahoe_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_tahoe_cmmc_lvl1_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_tahoe_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_computers.id]
   }
 
   self_service {
@@ -361,7 +361,7 @@ resource "jamfpro_policy" "policy_tahoe_cmmc_lvl1_audit" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_tahoe_cmmc_lvl1_compliance.id
+      id         = jamfplatform_pro_script.script_tahoe_cmmc_lvl1_compliance.id
       parameter4 = "--check"
     }
 
@@ -381,16 +381,16 @@ resource "jamfpro_policy" "policy_tahoe_cmmc_lvl1_audit" {
   }
 }
 
-resource "jamfpro_policy" "policy_tahoe_cmmc_lvl1_remediation" {
+resource "jamfplatform_pro_policy" "policy_tahoe_cmmc_lvl1_remediation" {
   name            = "US CMMC 2.0 Level 1 - Remediation (Tahoe)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_tahoe_cmmc_lvl1_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_tahoe_cmmc_lvl1_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_tahoe_cmmc_lvl1_non_compliant.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_cmmc_lvl1_non_compliant.id]
   }
 
   self_service {
@@ -399,7 +399,7 @@ resource "jamfpro_policy" "policy_tahoe_cmmc_lvl1_remediation" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_tahoe_cmmc_lvl1_compliance.id
+      id         = jamfplatform_pro_script.script_tahoe_cmmc_lvl1_compliance.id
       parameter4 = "--check"
       parameter5 = "--fix"
       parameter6 = "--check"
@@ -441,13 +441,13 @@ locals {
 }
 
 ## Create configuration profiles for Sonoma
-resource "jamfpro_macos_configuration_profile_plist" "sonoma_cmmc_lvl1" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "sonoma_cmmc_lvl1" {
   for_each            = local.sonoma_cmmc_lvl1_dict
   name                = "Sonoma US CMMC 2.0 Level 1 - ${each.key}"
   description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'US CMMC 2.0 Level 1 - Sonoma Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_sonoma_cmmc_lvl1_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_sonoma_cmmc_lvl1_benchmarks.id
   level               = "System"
 
   payloads         = file("${each.value}")
@@ -455,15 +455,15 @@ resource "jamfpro_macos_configuration_profile_plist" "sonoma_cmmc_lvl1" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sonoma_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_computers.id]
   }
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "sonoma_cmmc_lvl1_smart_card" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "sonoma_cmmc_lvl1_smart_card" {
   name                = "Sonoma US CMMC 2.0 Level 1 - Smart Card"
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_sonoma_cmmc_lvl1_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_sonoma_cmmc_lvl1_benchmarks.id
   level               = "System"
 
   payloads         = file("${path.module}/support_files/computer_config_profiles/Sonoma_cmmc_lvl1-security.smartcard.mobileconfig")
@@ -495,13 +495,13 @@ locals {
 }
 
 ## Create configuration profiles for Sequoia
-resource "jamfpro_macos_configuration_profile_plist" "sequoia_cmmc_lvl1" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "sequoia_cmmc_lvl1" {
   for_each            = local.sequoia_cmmc_lvl1_dict
   name                = "Sequoia US CMMC 2.0 Level 1 - ${each.key}"
   description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'US CMMC 2.0 Level 1 - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_sequoia_cmmc_lvl1_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_sequoia_cmmc_lvl1_benchmarks.id
   level               = "System"
 
   payloads         = file("${each.value}")
@@ -509,16 +509,16 @@ resource "jamfpro_macos_configuration_profile_plist" "sequoia_cmmc_lvl1" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sequoia_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_computers.id]
   }
-  depends_on = [jamfpro_macos_configuration_profile_plist.sonoma_cmmc_lvl1]
+  depends_on = [jamfplatform_pro_macos_configuration_profile_plist.sonoma_cmmc_lvl1]
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "sequoia_cmmc_lvl1_smart_card" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "sequoia_cmmc_lvl1_smart_card" {
   name                = "Sequoia US CMMC 2.0 Level 1 - Smart Card"
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_sequoia_cmmc_lvl1_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_sequoia_cmmc_lvl1_benchmarks.id
   level               = "System"
 
   payloads         = file("${path.module}/support_files/computer_config_profiles/Sequoia_cmmc_lvl1-security.smartcard.mobileconfig")
@@ -550,13 +550,13 @@ locals {
 }
 
 ## Create configuration profiles for Tahoe
-resource "jamfpro_macos_configuration_profile_plist" "tahoe_cmmc_lvl1" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "tahoe_cmmc_lvl1" {
   for_each            = local.tahoe_cmmc_lvl1_dict
   name                = "Tahoe US CMMC 2.0 Level 1 - ${each.key}"
   description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'US CMMC 2.0 Level 1 - Tahoe Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_tahoe_cmmc_lvl1_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_tahoe_cmmc_lvl1_benchmarks.id
   level               = "System"
 
   payloads         = file("${each.value}")
@@ -564,16 +564,16 @@ resource "jamfpro_macos_configuration_profile_plist" "tahoe_cmmc_lvl1" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_tahoe_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_tahoe_computers.id]
   }
-  depends_on = [jamfpro_macos_configuration_profile_plist.sequoia_cmmc_lvl1]
+  depends_on = [jamfplatform_pro_macos_configuration_profile_plist.sequoia_cmmc_lvl1]
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "tahoe_cmmc_lvl1_smart_card" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "tahoe_cmmc_lvl1_smart_card" {
   name                = "Tahoe US CMMC 2.0 Level 1 - Smart Card"
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_tahoe_cmmc_lvl1_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_tahoe_cmmc_lvl1_benchmarks.id
   level               = "System"
 
   payloads         = file("${path.module}/support_files/computer_config_profiles/Tahoe_cmmc_lvl1-security.smartcard.mobileconfig")

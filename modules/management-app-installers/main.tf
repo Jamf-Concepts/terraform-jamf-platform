@@ -3,13 +3,13 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Iterate over selected App Installers
-resource "jamfpro_app_installer" "app_installers" {
+resource "jamfplatform_pro_app_installer" "app_installers" {
   name            = var.app_installer_name
   app_title_name  = var.app_installer_name
   enabled         = var.enabled

@@ -3,19 +3,19 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create Categories
-resource "jamfpro_category" "category_admin_tools" {
+resource "jamfplatform_pro_category" "category_admin_tools" {
   name     = "Admin Tools"
   priority = 9
 }
 
 ## Create Smart Group
-resource "jamfpro_smart_computer_group" "group_apple_silicon" {
+resource "jamfplatform_pro_smart_computer_group" "group_apple_silicon" {
   name = "Apple Silicon Macs"
   criteria {
     name        = "Apple Silicon"
@@ -27,17 +27,17 @@ resource "jamfpro_smart_computer_group" "group_apple_silicon" {
 }
 
 ## Create Policy
-resource "jamfpro_policy" "policy_rosetta_2" {
+resource "jamfplatform_pro_policy" "policy_rosetta_2" {
   name            = "Rosetta 2 Install"
   enabled         = true
   trigger_checkin = true
   frequency       = "Once per computer"
-  category_id     = jamfpro_category.category_admin_tools.id
+  category_id     = jamfplatform_pro_category.category_admin_tools.id
 
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_apple_silicon.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_apple_silicon.id]
   }
 
   self_service {

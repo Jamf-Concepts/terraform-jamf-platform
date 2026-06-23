@@ -3,7 +3,7 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
@@ -14,13 +14,13 @@ data "http" "defender_combined" {
 }
 
 ## Create Categories
-resource "jamfpro_category" "category_defender" {
+resource "jamfplatform_pro_category" "category_defender" {
   name     = "Microsoft Defender"
   priority = 9
 }
 
 ## Create Smart Group for scoping Microsoft Defender
-resource "jamfpro_smart_computer_group" "microsoft_defender_target" {
+resource "jamfplatform_pro_smart_computer_group" "microsoft_defender_target" {
   name = "Microsoft Defender Target Group"
   criteria {
     name        = "Operating System Version"
@@ -39,11 +39,11 @@ resource "jamfpro_smart_computer_group" "microsoft_defender_target" {
 }
 
 ## Combined Config Profile with Content Filtering, Notifications, PPPC, Allowed System Extension and Managed Login items
-resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_combined" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_combined" {
   name                = "Microsoft Defender MacOS Settings"
   description         = "This will configure all necessary settings for Microsoft Defender for Endpoint on macOS including Content Filtering, Notifications, PPPC, Allowed System Extensions and Managed Login Items. For more information, please see: https://learn.microsoft.com/en-us/defender-endpoint/mac-jamfpro-policies#step-2-create-and-deploy-microsoft-defender-for-endpoint-configuration-profiles"
   level               = "System"
-  category_id         = jamfpro_category.category_defender.id
+  category_id         = jamfplatform_pro_category.category_defender.id
   redeploy_on_update  = "Newly Assigned"
   distribution_method = "Install Automatically"
   payloads            = data.http.defender_combined.response_body
@@ -56,11 +56,11 @@ resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuratio
   }
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_mau" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_mau" {
   name                = "Microsoft Defender Auto Update Settings"
   description         = "Configuration profile to manage Microsoft Defender for Endpoint auto update settings on macOS devices."
   level               = "System"
-  category_id         = jamfpro_category.category_defender.id
+  category_id         = jamfplatform_pro_category.category_defender.id
   redeploy_on_update  = "Newly Assigned"
   distribution_method = "Install Automatically"
   payloads            = file("${path.module}/support_files/defendermau.mobileconfig")
@@ -73,11 +73,11 @@ resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuratio
   }
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_onboarding" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_onboarding" {
   name                = "Microsoft Defender Onboarding Settings"
   description         = "This profile contains the Microsoft Defender for Endpoint onboarding configuration for macOS devices."
   level               = "System"
-  category_id         = jamfpro_category.category_defender.id
+  category_id         = jamfplatform_pro_category.category_defender.id
   redeploy_on_update  = "Newly Assigned"
   distribution_method = "Install Automatically"
   payloads            = local.defender_onboarding_profile
@@ -92,15 +92,15 @@ resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuratio
 
 
 ## Create Microsoft Defender Appinstaller
-resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_defender" {
+resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_defender" {
   name            = "Microsoft Defender"
   app_title_name  = "Microsoft Defender"
   enabled         = true
   deployment_type = "INSTALL_AUTOMATICALLY"
   update_behavior = "MANUAL"
-  category_id     = jamfpro_category.category_defender.id
+  category_id     = jamfplatform_pro_category.category_defender.id
   site_id         = "-1"
-  smart_group_id  = jamfpro_smart_computer_group.microsoft_defender_target.id
+  smart_group_id  = jamfplatform_pro_smart_computer_group.microsoft_defender_target.id
 
   install_predefined_config_profiles = true
   trigger_admin_notifications        = true

@@ -1,4 +1,4 @@
-variable "jamfpro_instance_url" {
+variable "jamfplatform_base_url" {
   type      = string
   sensitive = true
   default   = ""
@@ -64,13 +64,13 @@ variable "basic_auth_username" {
   default   = ""
 }
 
-variable "jamfpro_client_id" {
+variable "jamfplatform_client_id" {
   type      = string
   sensitive = true
   default   = ""
 }
 
-variable "jamfpro_client_secret" {
+variable "jamfplatform_client_secret" {
   type      = string
   sensitive = true
   default   = ""

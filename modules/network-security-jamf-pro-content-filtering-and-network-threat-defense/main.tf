@@ -3,7 +3,7 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
       source                = "Jamf-Concepts/jsctfprovider"
@@ -27,7 +27,7 @@ resource "jsc_ap" "mtd_dp_only" {
   datapolicy       = true
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "mtd_dp" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "mtd_dp" {
   name                = "Network Threat Defense and Content Filtering - macOS (Supervised)"
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"

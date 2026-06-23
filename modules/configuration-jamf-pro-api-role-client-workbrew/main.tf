@@ -3,12 +3,12 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
-resource "jamfpro_api_role" "workbrew_api_role" {
+resource "jamfplatform_pro_api_role" "workbrew_api_role" {
   display_name = "Workbrew"
   privileges = [
     "Read Smart Computer Groups",
@@ -18,13 +18,13 @@ resource "jamfpro_api_role" "workbrew_api_role" {
   ]
 }
 
-resource "jamfpro_api_integration" "workbrew_api_integeration" {
+resource "jamfplatform_pro_api_integration" "workbrew_api_integeration" {
   display_name         = "Workbrew"
   enabled              = true
-  authorization_scopes = [jamfpro_api_role.workbrew_api_role.display_name]
+  authorization_scopes = [jamfplatform_pro_api_role.workbrew_api_role.display_name]
 }
 
 # Data source to retrieve the full API integration details including client_secret
-data "jamfpro_api_integration" "workbrew_api_integeration_data" {
-  id = jamfpro_api_integration.workbrew_api_integeration.id
+data "jamfplatform_pro_api_integration" "workbrew_api_integeration_data" {
+  id = jamfplatform_pro_api_integration.workbrew_api_integeration.id
 }

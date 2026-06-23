@@ -3,7 +3,7 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
@@ -12,37 +12,37 @@ terraform {
 
 ## Create Categories
 
-resource "jamfpro_category" "category_communication" {
+resource "jamfplatform_pro_category" "category_communication" {
   name     = "Communication"
   priority = 9
 }
 
-resource "jamfpro_category" "category_developer_tools" {
+resource "jamfplatform_pro_category" "category_developer_tools" {
   name     = "Developer Tools"
   priority = 9
 }
 
-resource "jamfpro_category" "category_network" {
+resource "jamfplatform_pro_category" "category_network" {
   name     = "Network Security"
   priority = 9
 }
 
-resource "jamfpro_category" "category_printers" {
+resource "jamfplatform_pro_category" "category_printers" {
   name     = "Printers"
   priority = 9
 }
 
-resource "jamfpro_category" "category_productivity" {
+resource "jamfplatform_pro_category" "category_productivity" {
   name     = "Productivity"
   priority = 9
 }
 
-resource "jamfpro_category" "category_security_compliance" {
+resource "jamfplatform_pro_category" "category_security_compliance" {
   name     = "Security and Compliance"
   priority = 9
 }
 
-resource "jamfpro_category" "category_uninstallers" {
+resource "jamfplatform_pro_category" "category_uninstallers" {
   name     = "Uninstallers"
   priority = 9
 }

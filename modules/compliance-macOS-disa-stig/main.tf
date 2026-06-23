@@ -3,41 +3,41 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create categories
-resource "jamfpro_category" "category_sonoma_stig_benchmarks" {
+resource "jamfplatform_pro_category" "category_sonoma_stig_benchmarks" {
   name     = "Sonoma - DISA STIG Benchmarks"
   priority = 9
 }
 
-resource "jamfpro_category" "category_sequoia_stig_benchmarks" {
+resource "jamfplatform_pro_category" "category_sequoia_stig_benchmarks" {
   name     = "Sequoia - DISA STIG Benchmarks"
   priority = 9
 }
 
 ## Create scripts
-resource "jamfpro_script" "script_sonoma_stig_compliance" {
+resource "jamfplatform_pro_script" "script_sonoma_stig_compliance" {
   name            = "Sonoma - DISA STIG Compliance"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/sonoma_stig_compliance.sh")
-  category_id     = jamfpro_category.category_sonoma_stig_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
   info            = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sonoma"
 }
 
-resource "jamfpro_script" "script_sequoia_stig_compliance" {
+resource "jamfplatform_pro_script" "script_sequoia_stig_compliance" {
   name            = "Sequoia - DISA STIG Compliance"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/computer_scripts/sequoia_stig_compliance.sh")
-  category_id     = jamfpro_category.category_sequoia_stig_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
   info            = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sequoia"
 }
 
 ## Create computer extension attributes
-resource "jamfpro_computer_extension_attribute" "ea_stig_failed_count" {
+resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_failed_count" {
   name                   = "DISA STIG - Failed Results Count"
   input_type             = "SCRIPT"
   enabled                = true
@@ -46,7 +46,7 @@ resource "jamfpro_computer_extension_attribute" "ea_stig_failed_count" {
   script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsCount.sh")
 }
 
-resource "jamfpro_computer_extension_attribute" "ea_stig_failed_list" {
+resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_failed_list" {
   name                   = "DISA STIG - Failed Results List"
   input_type             = "SCRIPT"
   enabled                = true
@@ -55,7 +55,7 @@ resource "jamfpro_computer_extension_attribute" "ea_stig_failed_list" {
   script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsList.sh")
 }
 
-resource "jamfpro_computer_extension_attribute" "ea_stig_version" {
+resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_version" {
   name                   = "DISA STIG - Compliance Version"
   input_type             = "SCRIPT"
   enabled                = true
@@ -65,7 +65,7 @@ resource "jamfpro_computer_extension_attribute" "ea_stig_version" {
 }
 
 ## Create Smart Computer Groups
-resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
+resource "jamfplatform_pro_smart_computer_group" "group_sonoma_computers" {
   name = "DISA STIG - Sonoma Computers"
   criteria {
     name        = "Operating System Version"
@@ -83,7 +83,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_computers" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_sonoma_stig_non_compliant" {
+resource "jamfplatform_pro_smart_computer_group" "group_sonoma_stig_non_compliant" {
   name = "DISA STIG - Sonoma - Non Compliant Computers"
   criteria {
     name        = "Operating System Version"
@@ -93,7 +93,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_stig_non_compliant" {
     priority    = 0
   }
   criteria {
-    name        = jamfpro_computer_extension_attribute.ea_stig_failed_count.name
+    name        = jamfplatform_pro_computer_extension_attribute.ea_stig_failed_count.name
     search_type = "more than"
     value       = "0"
     and_or      = "and"
@@ -101,7 +101,7 @@ resource "jamfpro_smart_computer_group" "group_sonoma_stig_non_compliant" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
+resource "jamfplatform_pro_smart_computer_group" "group_sequoia_computers" {
   name = "DISA STIG - Sequoia Computers"
   criteria {
     name        = "Operating System Version"
@@ -119,7 +119,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_computers" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_sequoia_stig_non_compliant" {
+resource "jamfplatform_pro_smart_computer_group" "group_sequoia_stig_non_compliant" {
   name = "DISA STIG - Sequoia - Non Compliant Computers"
   criteria {
     name        = "Operating System Version"
@@ -129,7 +129,7 @@ resource "jamfpro_smart_computer_group" "group_sequoia_stig_non_compliant" {
     priority    = 0
   }
   criteria {
-    name        = jamfpro_computer_extension_attribute.ea_stig_failed_count.name
+    name        = jamfplatform_pro_computer_extension_attribute.ea_stig_failed_count.name
     search_type = "more than"
     value       = "0"
     and_or      = "and"
@@ -138,16 +138,16 @@ resource "jamfpro_smart_computer_group" "group_sequoia_stig_non_compliant" {
 }
 
 ## Create policies
-resource "jamfpro_policy" "policy_sonoma_stig_audit" {
+resource "jamfplatform_pro_policy" "policy_sonoma_stig_audit" {
   name            = "DISA STIG - Audit (Sonoma)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_sonoma_stig_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sonoma_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_computers.id]
   }
 
   self_service {
@@ -156,7 +156,7 @@ resource "jamfpro_policy" "policy_sonoma_stig_audit" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_sonoma_stig_compliance.id
+      id         = jamfplatform_pro_script.script_sonoma_stig_compliance.id
       parameter4 = "--check"
     }
 
@@ -176,16 +176,16 @@ resource "jamfpro_policy" "policy_sonoma_stig_audit" {
   }
 }
 
-resource "jamfpro_policy" "policy_sonoma_stig_remediation" {
+resource "jamfplatform_pro_policy" "policy_sonoma_stig_remediation" {
   name            = "DISA STIG - Remediation (Sonoma)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_sonoma_stig_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sonoma_stig_non_compliant.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_stig_non_compliant.id]
   }
 
   self_service {
@@ -194,7 +194,7 @@ resource "jamfpro_policy" "policy_sonoma_stig_remediation" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_sonoma_stig_compliance.id
+      id         = jamfplatform_pro_script.script_sonoma_stig_compliance.id
       parameter4 = "--check"
       parameter5 = "--fix"
       parameter6 = "--check"
@@ -216,16 +216,16 @@ resource "jamfpro_policy" "policy_sonoma_stig_remediation" {
   }
 }
 
-resource "jamfpro_policy" "policy_sequoia_stig_audit" {
+resource "jamfplatform_pro_policy" "policy_sequoia_stig_audit" {
   name            = "DISA STIG - Audit (Sequoia)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_sequoia_stig_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sequoia_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_computers.id]
   }
 
   self_service {
@@ -234,7 +234,7 @@ resource "jamfpro_policy" "policy_sequoia_stig_audit" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_sequoia_stig_compliance.id
+      id         = jamfplatform_pro_script.script_sequoia_stig_compliance.id
       parameter4 = "--check"
     }
 
@@ -254,16 +254,16 @@ resource "jamfpro_policy" "policy_sequoia_stig_audit" {
   }
 }
 
-resource "jamfpro_policy" "policy_sequoia_stig_remediation" {
+resource "jamfplatform_pro_policy" "policy_sequoia_stig_remediation" {
   name            = "DISA STIG - Remediation (Sequoia)"
   enabled         = true
   trigger_checkin = true
   frequency       = "Ongoing"
-  category_id     = jamfpro_category.category_sequoia_stig_benchmarks.id
+  category_id     = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sequoia_stig_non_compliant.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_stig_non_compliant.id]
   }
 
   self_service {
@@ -272,7 +272,7 @@ resource "jamfpro_policy" "policy_sequoia_stig_remediation" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_sequoia_stig_compliance.id
+      id         = jamfplatform_pro_script.script_sequoia_stig_compliance.id
       parameter4 = "--check"
       parameter5 = "--fix"
       parameter6 = "--check"
@@ -321,13 +321,13 @@ locals {
 }
 
 ## Create configuration profiles for Sonoma
-resource "jamfpro_macos_configuration_profile_plist" "sonoma_stig" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "sonoma_stig" {
   for_each            = local.sonoma_stig_dict
   name                = "Sonoma DISA STIG - ${each.key}"
   description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'DISA STIG - Sonoma Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_sonoma_stig_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
   level               = "System"
 
   payloads         = file("${each.value}")
@@ -335,16 +335,16 @@ resource "jamfpro_macos_configuration_profile_plist" "sonoma_stig" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sonoma_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sonoma_computers.id]
   }
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "sonoma_stig_smart_card" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "sonoma_stig_smart_card" {
   name                = "Sonoma DISA STIG - Smart Card"
   description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'DISA STIG - Sonoma Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_sonoma_stig_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
   level               = "System"
 
   payloads         = file("${path.module}/support_files/computer_config_profiles/Sonoma_stig-security.smartcard.mobileconfig")
@@ -383,13 +383,13 @@ locals {
 }
 
 ## Create configuration profiles for Sequoia part 1
-resource "jamfpro_macos_configuration_profile_plist" "sequoia_stig" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "sequoia_stig" {
   for_each            = local.sequoia_stig_dict
   name                = "Sequoia DISA STIG - ${each.key}"
   description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'DISA STIG - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_sequoia_stig_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
   level               = "System"
 
   payloads         = file("${each.value}")
@@ -397,17 +397,17 @@ resource "jamfpro_macos_configuration_profile_plist" "sequoia_stig" {
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_sequoia_computers.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_sequoia_computers.id]
   }
-  depends_on = [jamfpro_macos_configuration_profile_plist.sonoma_stig]
+  depends_on = [jamfplatform_pro_macos_configuration_profile_plist.sonoma_stig]
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "sequoia_stig_smart_card" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "sequoia_stig_smart_card" {
   name                = "Sequoia DISA STIG - Smart Card"
   description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'DISA STIG - Sequoia Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
-  category_id         = jamfpro_category.category_sequoia_stig_benchmarks.id
+  category_id         = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
   level               = "System"
 
   payloads         = file("${path.module}/support_files/computer_config_profiles/Sequoia_stig-security.smartcard.mobileconfig")

@@ -3,7 +3,7 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
       source                = "Jamf-Concepts/jsctfprovider"
@@ -27,7 +27,7 @@ resource "jsc_ap" "content_filtering_only" {
   datapolicy       = true
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "dp" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "dp" {
   name                = "Content Filtering - macOS (Supervised)"
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"

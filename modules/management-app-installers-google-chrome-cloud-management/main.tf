@@ -3,19 +3,19 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create Categories
-resource "jamfpro_category" "google_chrome_cloud_management" {
+resource "jamfplatform_pro_category" "google_chrome_cloud_management" {
   name     = "Google Chrome Cloud Management"
   priority = 9
 }
 
 ## Create Smart Computer Groups
-resource "jamfpro_smart_computer_group" "google_chrome_cloud_management" {
+resource "jamfplatform_pro_smart_computer_group" "google_chrome_cloud_management" {
   name = "Google Chrome Cloud Management Devices"
   criteria {
     name        = "Serial Number"
@@ -37,11 +37,11 @@ locals {
 }
 
 ## Create Google Chrome Cloud Management Configuration Profile
-resource "jamfpro_macos_configuration_profile_plist" "google_chrome_cloud_management" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "google_chrome_cloud_management" {
   name                = "Google Chrome Cloud Management Settings"
   description         = "To customize Google Chrome Enterprise for your organization, check out the Google documentation: https://support.google.com/chrome/a/answer/9771882?hl=en"
   level               = "System"
-  category_id         = jamfpro_category.google_chrome_cloud_management.id
+  category_id         = jamfplatform_pro_category.google_chrome_cloud_management.id
   redeploy_on_update  = "Newly Assigned"
   distribution_method = "Install Automatically"
   payloads            = local.google_chrome_cloud_management_profile_payload
@@ -50,21 +50,21 @@ resource "jamfpro_macos_configuration_profile_plist" "google_chrome_cloud_manage
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.google_chrome_cloud_management.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.google_chrome_cloud_management.id]
   }
 }
 
 ## Create Google Chrome App Installer
-resource "jamfpro_app_installer" "google_chrome" {
+resource "jamfplatform_pro_app_installer" "google_chrome" {
   count           = var.include_google_chrome == true || contains(var.app_installers, "Google Chrome") ? 0 : 1
   name            = "Google Chrome"
   app_title_name  = "Google Chrome"
   enabled         = true
   deployment_type = "INSTALL_AUTOMATICALLY"
   update_behavior = "AUTOMATIC"
-  category_id     = jamfpro_category.google_chrome_cloud_management.id
+  category_id     = jamfplatform_pro_category.google_chrome_cloud_management.id
   site_id         = "-1"
-  smart_group_id  = jamfpro_smart_computer_group.google_chrome_cloud_management.id
+  smart_group_id  = jamfplatform_pro_smart_computer_group.google_chrome_cloud_management.id
 
   install_predefined_config_profiles = true
   trigger_admin_notifications        = true

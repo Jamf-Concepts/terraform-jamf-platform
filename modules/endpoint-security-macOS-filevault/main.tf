@@ -3,28 +3,28 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create Categories
-resource "jamfpro_category" "category_disk_encrpytion" {
+resource "jamfplatform_pro_category" "category_disk_encrpytion" {
   name     = "Disk Encryption"
   priority = 9
 }
 
 ## Create scripts
-resource "jamfpro_script" "script_reissuekey" {
+resource "jamfplatform_pro_script" "script_reissuekey" {
   name            = "Reissue FileVault 2 Key"
   priority        = "AFTER"
   script_contents = file("${path.module}/support_files/reissuekey.sh")
-  category_id     = jamfpro_category.category_disk_encrpytion.id
+  category_id     = jamfplatform_pro_category.category_disk_encrpytion.id
   info            = "Source: https://github.com/jamf/FileVault2_Scripts/blob/master/reissueKey.sh"
 }
 
 ## Create Smart Computer Groups - Scoping
-resource "jamfpro_smart_computer_group" "group_invalid_recovery_key" {
+resource "jamfplatform_pro_smart_computer_group" "group_invalid_recovery_key" {
   name = "Invalid FileVault 2 Recovery Key"
   criteria {
     name        = "FileVault 2 Partition Encryption State"
@@ -42,7 +42,7 @@ resource "jamfpro_smart_computer_group" "group_invalid_recovery_key" {
   }
 }
 
-resource "jamfpro_smart_computer_group" "group_disk_encrypted" {
+resource "jamfplatform_pro_smart_computer_group" "group_disk_encrypted" {
   name = "* FileVault 2 Enabled"
   criteria {
     name        = "FileVault 2 Partition Encryption State"
@@ -54,17 +54,17 @@ resource "jamfpro_smart_computer_group" "group_disk_encrypted" {
 }
 
 ## Create policies
-resource "jamfpro_policy" "policy_reissue_recovery_key" {
+resource "jamfplatform_pro_policy" "policy_reissue_recovery_key" {
   name          = "Reissue FileVault 2 Recovery Key"
   enabled       = true
   trigger_other = ""
   frequency     = "Ongoing"
-  category_id   = jamfpro_category.category_disk_encrpytion.id
+  category_id   = jamfplatform_pro_category.category_disk_encrpytion.id
 
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.group_invalid_recovery_key.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.group_invalid_recovery_key.id]
   }
 
   self_service {
@@ -78,7 +78,7 @@ resource "jamfpro_policy" "policy_reissue_recovery_key" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.script_reissuekey.id
+      id         = jamfplatform_pro_script.script_reissuekey.id
       priority   = "After"
       parameter4 = "<Replace with your organization name>"
       parameter5 = ""
@@ -100,11 +100,11 @@ resource "jamfpro_policy" "policy_reissue_recovery_key" {
   }
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_profile_enablefv" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_profile_enablefv" {
   name                = "Enable FileVault 2"
   description         = "This configuration profile enforces FileVault 2 encryption. Prompts at next login"
   level               = "System"
-  category_id         = jamfpro_category.category_disk_encrpytion.id
+  category_id         = jamfplatform_pro_category.category_disk_encrpytion.id
   redeploy_on_update  = "Newly Assigned"
   distribution_method = "Install Automatically"
   payloads            = file("${path.module}/support_files/enablefilevault.mobileconfig")

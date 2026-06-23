@@ -3,7 +3,7 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
       source                = "Jamf-Concepts/jsctfprovider"
@@ -27,12 +27,12 @@ resource "jsc_ap" "all_services" {
   datapolicy    = true
 }
 
-resource "jamfpro_category" "jsc_all_services_profiles" {
+resource "jamfplatform_pro_category" "jsc_all_services_profiles" {
   name     = "Jamf Security Cloud - Activation Profiles"
   priority = 9
 }
 
-resource "jamfpro_smart_computer_group" "all_macs" {
+resource "jamfplatform_pro_smart_computer_group" "all_macs" {
   name = "All Computers"
 
   criteria {
@@ -49,20 +49,20 @@ resource "jamfpro_smart_computer_group" "all_macs" {
   }
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "all_services_macos" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "all_services_macos" {
   name                = "Network Threat and Content Control - macOS (Supervised)"
   description         = "This configuration profile contains all the pieces you'll need to deploy and enforce Network Security and Content Control. We have also created a Smart Group called 'All Computers' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'All Computers' group and remove the serial number criteria with the 111222333444555 serial number."
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"
   level               = "System"
-  category_id         = jamfpro_category.jsc_all_services_profiles.id
+  category_id         = jamfplatform_pro_category.jsc_all_services_profiles.id
 
   payloads         = jsc_ap.all_services.macosplist
   payload_validate = false
 
   scope {
     all_computers      = false
-    computer_group_ids = [jamfpro_smart_computer_group.all_macs.id]
+    computer_group_ids = [jamfplatform_pro_smart_computer_group.all_macs.id]
   }
   lifecycle {
     prevent_destroy = false
@@ -70,7 +70,7 @@ resource "jamfpro_macos_configuration_profile_plist" "all_services_macos" {
   }
 }
 
-resource "jamfpro_smart_mobile_device_group" "supervised_devices" {
+resource "jamfplatform_pro_smart_mobile_device_group" "supervised_devices" {
   name = "Supervised Mobile Devices"
 
   criteria {
@@ -87,7 +87,7 @@ resource "jamfpro_smart_mobile_device_group" "supervised_devices" {
   }
 }
 
-# resource "jamfpro_smart_mobile_device_group" "unsupervised_devices" {
+# resource "jamfplatform_pro_smart_mobile_device_group" "unsupervised_devices" {
 #   name = "Unsupervised Mobile Devices"
 
 #   criteria {
@@ -104,7 +104,7 @@ resource "jamfpro_smart_mobile_device_group" "supervised_devices" {
 #   }
 # }
 
-# resource "jamfpro_smart_mobile_device_group" "byod" {
+# resource "jamfplatform_pro_smart_mobile_device_group" "byod" {
 #   name = "BYOD Mobile Devices"
 
 #   criteria {
@@ -121,12 +121,12 @@ resource "jamfpro_smart_mobile_device_group" "supervised_devices" {
 #   }
 # }
 
-resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobile_supervised" {
+resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "all_services_mobile_supervised" {
   name               = "Network Threat and Content Control - Mobile (Supervised)"
   description        = "This configuration profile contains all the pieces you'll need to deploy and enforce Network Security and Content Control. We have also created a Smart Group called 'Supervised Mobile Devices' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'Supervised Mobile Devices' group and remove the serial number criteria with the 111222333444555 serial number."
   deployment_method  = "Install Automatically"
   level              = "Device Level"
-  category_id        = jamfpro_category.jsc_all_services_profiles.id
+  category_id        = jamfplatform_pro_category.jsc_all_services_profiles.id
   redeploy_on_update = "Newly Assigned"
 
   payloads         = jsc_ap.all_services.supervisedplist
@@ -135,7 +135,7 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobil
   scope {
     all_mobile_devices      = false
     all_jss_users           = false
-    mobile_device_group_ids = [jamfpro_smart_mobile_device_group.supervised_devices.id]
+    mobile_device_group_ids = [jamfplatform_pro_smart_mobile_device_group.supervised_devices.id]
   }
   lifecycle {
     prevent_destroy = false
@@ -143,12 +143,12 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobil
   }
 }
 
-# resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobile_unsupervised" {
+# resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "all_services_mobile_unsupervised" {
 #   name               = "Network Threat and Content Control - Mobile (Unsupervised)"
 #   description        = "This configuration profile contains all the pieces you'll need to deploy and enforce Network Security and Content Control. We have also created a Smart Group called 'Unsupervised Mobile Devices' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'Unsupervised Mobile Devices' group and remove the serial number criteria with the 111222333444555 serial number."
 #   deployment_method  = "Install Automatically"
 #   level              = "Device Level"
-#   category_id        = jamfpro_category.jsc_all_services_profiles.id
+#   category_id        = jamfplatform_pro_category.jsc_all_services_profiles.id
 #   redeploy_on_update = "Newly Assigned"
 
 #   payloads         = jsc_ap.all_services.unsupervisedplist
@@ -164,12 +164,12 @@ resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobil
 #   }
 # }
 
-# resource "jamfpro_mobile_device_configuration_profile_plist" "all_services_mobile_byod" {
+# resource "jamfplatform_pro_mobile_device_configuration_profile_plist" "all_services_mobile_byod" {
 #   name               = "Network Threat and Content Control - Mobile (BYOD)"
 #   description        = "This configuration profile contains all the pieces you'll need to deploy and enforce Network Security and Content Control. We have also created a Smart Group called 'BYOD Mobile Devices' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'BYOD Mobile Devices' group and remove the serial number criteria with the 111222333444555 serial number."
 #   deployment_method  = "Install Automatically"
 #   level              = "Device Level"
-#   category_id        = jamfpro_category.jsc_all_services_profiles.id
+#   category_id        = jamfplatform_pro_category.jsc_all_services_profiles.id
 #   redeploy_on_update = "Newly Assigned"
 
 #   payloads         = jsc_ap.all_services.byodplist

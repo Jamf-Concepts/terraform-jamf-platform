@@ -3,22 +3,22 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ## Create Categories
-resource "jamfpro_category" "category_crowdstrike" {
+resource "jamfplatform_pro_category" "category_crowdstrike" {
   name     = "Crowdstrike"
   priority = 9
 }
 
 ## Create Scripts
-resource "jamfpro_script" "scripts_falconpkg" {
+resource "jamfplatform_pro_script" "scripts_falconpkg" {
   name            = "Falcon Sensor API Install"
   script_contents = file("${path.module}/support_files/scripts/falconinstall.sh")
-  category_id     = jamfpro_category.category_crowdstrike.id
+  category_id     = jamfplatform_pro_category.category_crowdstrike.id
   os_requirements = "0"
   priority        = "AFTER"
   info            = "Source: https://github.com/franton/Crowdstrike-API-Scripts/blob/main/install-csf.sh"
@@ -29,10 +29,10 @@ resource "jamfpro_script" "scripts_falconpkg" {
   parameter7      = ""
 }
 
-resource "jamfpro_script" "scripts_falconcid" {
+resource "jamfplatform_pro_script" "scripts_falconcid" {
   name            = "Falcon CID"
   script_contents = file("${path.module}/support_files/scripts/falconcid.sh")
-  category_id     = jamfpro_category.category_crowdstrike.id
+  category_id     = jamfplatform_pro_category.category_crowdstrike.id
   os_requirements = "0"
   priority        = "AFTER"
   info            = ""
@@ -45,11 +45,11 @@ resource "jamfpro_script" "scripts_falconcid" {
 
 
 ## Crowdstrke PPPC, Content Filtering, System Extension, 
-resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_crowdstrike" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_crowdstrike" {
   name                = "Crowdstrike Falcon Settings"
   description         = ""
   level               = "System"
-  category_id         = jamfpro_category.category_crowdstrike.id
+  category_id         = jamfplatform_pro_category.category_crowdstrike.id
   redeploy_on_update  = "Newly Assigned"
   distribution_method = "Install Automatically"
   payloads            = file("${path.module}/support_files/falcon.mobileconfig")
@@ -63,12 +63,12 @@ resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuratio
 }
 
 ## Create Crowdsrike Install Policy
-resource "jamfpro_policy" "policy_crowdstrike_api_install" {
+resource "jamfplatform_pro_policy" "policy_crowdstrike_api_install" {
   name            = "Crowdstrike Falcon API Install"
   enabled         = true
   trigger_checkin = "true"
   frequency       = "Once per computer"
-  category_id     = jamfpro_category.category_crowdstrike.id
+  category_id     = jamfplatform_pro_category.category_crowdstrike.id
 
 
   scope {
@@ -86,14 +86,14 @@ resource "jamfpro_policy" "policy_crowdstrike_api_install" {
 
   payloads {
     scripts {
-      id         = jamfpro_script.scripts_falconpkg.id
+      id         = jamfplatform_pro_script.scripts_falconpkg.id
       priority   = "Before"
       parameter4 = var.falcon_api_client_id
       parameter5 = var.falcon_api_secret
       parameter6 = ""
     }
     scripts {
-      id         = jamfpro_script.scripts_falconcid.id
+      id         = jamfplatform_pro_script.scripts_falconcid.id
       priority   = "After"
       parameter4 = var.falcon_customer_id
       parameter5 = ""

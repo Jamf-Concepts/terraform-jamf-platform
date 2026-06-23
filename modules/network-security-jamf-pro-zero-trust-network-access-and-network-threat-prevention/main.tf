@@ -3,7 +3,7 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
       source                = "Jamf-Concepts/jsctfprovider"
@@ -27,7 +27,7 @@ resource "jsc_ap" "ztna_mtd_only" {
   datapolicy       = false
 }
 
-resource "jamfpro_macos_configuration_profile_plist" "ztna_mtd" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "ztna_mtd" {
   name                = "Jamf Connect ZTNA and Network Threat Defense - macOS (Supervised)"
   distribution_method = "Install Automatically"
   redeploy_on_update  = "Newly Assigned"

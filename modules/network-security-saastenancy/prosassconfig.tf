@@ -11,7 +11,7 @@ data "http" "profile" {
 
 
 
-resource "jamfpro_macos_configuration_profile_plist" "jamfpro_macos_configuration_profile_SaaSTenCert" {
+resource "jamfplatform_pro_macos_configuration_profile_plist" "jamfplatform_pro_macos_configuration_profile_SaaSTenCert" {
   name                = "SaaS Tenancy Cert"
   description         = "An example mobile device configuration profile."
   level               = "System"                // "User", "Device"

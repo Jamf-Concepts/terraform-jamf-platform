@@ -3,13 +3,13 @@ terraform {
   required_providers {
     jamfpro = {
       source                = "deploymenttheory/jamfpro"
-      configuration_aliases = [jamfpro.jpro]
+      configuration_aliases = [jamfplatform.jpro]
     }
   }
 }
 
 ##Computer Inventory Collection Settings
-resource "jamfpro_computer_inventory_collection_settings" "example" {
+resource "jamfplatform_pro_computer_inventory_collection_settings" "example" {
   computer_inventory_collection_preferences {
     monitor_application_usage                          = true
     include_packages                                   = true
@@ -30,7 +30,7 @@ resource "jamfpro_computer_inventory_collection_settings" "example" {
 }
 
 ##Computer Check-in Settings
-resource "jamfpro_client_checkin" "jamfpro_client_checkin" {
+resource "jamfplatform_pro_client_checkin" "jamfplatform_pro_client_checkin" {
   check_in_frequency                  = 15
   create_startup_script               = true
   startup_log                         = true
