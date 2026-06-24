@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -13,13 +13,9 @@ resource "jamfplatform_pro_sso_settings" "adminsso" {
   sso_enabled        = true
   configuration_type = "OIDC"
 
-  oidc_settings {
+
+  oidc_settings = {
     user_mapping                   = "EMAIL"
     jamf_id_authentication_enabled = true
-
-  }
-
-  enrollment_sso_config {
-    hosts = []
   }
 }

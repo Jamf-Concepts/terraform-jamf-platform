@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -21,55 +21,52 @@ resource "jamfplatform_pro_category" "category_sequoia_stig_benchmarks" {
 
 ## Create scripts
 resource "jamfplatform_pro_script" "script_sonoma_stig_compliance" {
-  name            = "Sonoma - DISA STIG Compliance"
-  priority        = "AFTER"
-  script_contents = file("${path.module}/support_files/computer_scripts/sonoma_stig_compliance.sh")
-  category_id     = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
-  info            = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sonoma"
+  name     = "Sonoma - DISA STIG Compliance"
+  priority = "AFTER"
+  info     = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sonoma"
+  script   = file("${path.module}/support_files/computer_scripts/sonoma_stig_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_stig_compliance" {
-  name            = "Sequoia - DISA STIG Compliance"
-  priority        = "AFTER"
-  script_contents = file("${path.module}/support_files/computer_scripts/sequoia_stig_compliance.sh")
-  category_id     = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
-  info            = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sequoia"
+  name     = "Sequoia - DISA STIG Compliance"
+  priority = "AFTER"
+  info     = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sequoia"
+  script   = file("${path.module}/support_files/computer_scripts/sequoia_stig_compliance.sh")
 }
 
 ## Create computer extension attributes
 resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_failed_count" {
-  name                   = "DISA STIG - Failed Results Count"
-  input_type             = "SCRIPT"
-  enabled                = true
-  data_type              = "INTEGER"
-  inventory_display_type = "EXTENSION_ATTRIBUTES"
-  script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsCount.sh")
+  name              = "DISA STIG - Failed Results Count"
+  input_type        = "SCRIPT"
+  enabled           = true
+  data_type         = "INTEGER"
+  inventory_display = "EXTENSION_ATTRIBUTES"
+  script            = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsCount.sh")
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_failed_list" {
-  name                   = "DISA STIG - Failed Results List"
-  input_type             = "SCRIPT"
-  enabled                = true
-  data_type              = "STRING"
-  inventory_display_type = "EXTENSION_ATTRIBUTES"
-  script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsList.sh")
+  name              = "DISA STIG - Failed Results List"
+  input_type        = "SCRIPT"
+  enabled           = true
+  data_type         = "STRING"
+  inventory_display = "EXTENSION_ATTRIBUTES"
+  script            = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsList.sh")
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_version" {
-  name                   = "DISA STIG - Compliance Version"
-  input_type             = "SCRIPT"
-  enabled                = true
-  data_type              = "STRING"
-  inventory_display_type = "EXTENSION_ATTRIBUTES"
-  script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-version.sh")
+  name              = "DISA STIG - Compliance Version"
+  input_type        = "SCRIPT"
+  enabled           = true
+  data_type         = "STRING"
+  inventory_display = "EXTENSION_ATTRIBUTES"
+  script            = file("${path.module}/support_files/computer_extension_attributes/compliance-version.sh")
 }
 
 ## Create Smart Computer Groups
 resource "jamfplatform_device_group" "group_sonoma_computers" {
-  name = "DISA STIG - Sonoma Computers"
+  name        = "DISA STIG - Sonoma Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -86,10 +83,9 @@ resource "jamfplatform_device_group" "group_sonoma_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sonoma_stig_non_compliant" {
-  name = "DISA STIG - Sonoma - Non Compliant Computers"
+  name        = "DISA STIG - Sonoma - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -106,10 +102,9 @@ resource "jamfplatform_device_group" "group_sonoma_stig_non_compliant" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_computers" {
-  name = "DISA STIG - Sequoia Computers"
+  name        = "DISA STIG - Sequoia Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -126,10 +121,9 @@ resource "jamfplatform_device_group" "group_sequoia_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_stig_non_compliant" {
-  name = "DISA STIG - Sequoia - Non Compliant Computers"
+  name        = "DISA STIG - Sequoia - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -147,158 +141,174 @@ resource "jamfplatform_device_group" "group_sequoia_stig_non_compliant" {
 
 ## Create policies
 resource "jamfplatform_pro_policy" "policy_sonoma_stig_audit" {
-  name            = "DISA STIG - Audit (Sonoma)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
+
+
+  general = {
+    name            = "DISA STIG - Audit (Sonoma)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_sonoma_stig_compliance.id
-      parameter4 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_sonoma_stig_compliance.id
+        parameter4 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
 resource "jamfplatform_pro_policy" "policy_sonoma_stig_remediation" {
-  name            = "DISA STIG - Remediation (Sonoma)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_sonoma_stig_non_compliant.jamf_pro_id]
+
+
+  general = {
+    name            = "DISA STIG - Remediation (Sonoma)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_sonoma_stig_non_compliant.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_sonoma_stig_compliance.id
-      parameter4 = "--check"
-      parameter5 = "--fix"
-      parameter6 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_sonoma_stig_compliance.id
+        parameter4 = "--check"
+        parameter5 = "--fix"
+        parameter6 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
 resource "jamfplatform_pro_policy" "policy_sequoia_stig_audit" {
-  name            = "DISA STIG - Audit (Sequoia)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
+
+
+  general = {
+    name            = "DISA STIG - Audit (Sequoia)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_sequoia_stig_compliance.id
-      parameter4 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_sequoia_stig_compliance.id
+        parameter4 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
 resource "jamfplatform_pro_policy" "policy_sequoia_stig_remediation" {
-  name            = "DISA STIG - Remediation (Sequoia)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_sequoia_stig_non_compliant.jamf_pro_id]
+
+
+  general = {
+    name            = "DISA STIG - Remediation (Sequoia)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_sequoia_stig_non_compliant.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_sequoia_stig_compliance.id
-      parameter4 = "--check"
-      parameter5 = "--fix"
-      parameter6 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_sequoia_stig_compliance.id
+        parameter4 = "--check"
+        parameter5 = "--fix"
+        parameter6 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
@@ -330,7 +340,8 @@ locals {
 
 ## Create configuration profiles for Sonoma
 resource "jamfplatform_pro_macos_configuration_profile" "sonoma_stig" {
-  for_each            = local.sonoma_stig_dict
+  for_each = local.sonoma_stig_dict
+
 
   general = {
     name                = "Sonoma DISA STIG - ${each.key}"
@@ -339,18 +350,19 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_stig" {
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
     level               = "System"
-    payloads         = file("${each.value}")
+    payloads            = file("${each.value}")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
     }
   }
 }
 
 resource "jamfplatform_pro_macos_configuration_profile" "sonoma_stig_smart_card" {
+
+
   general = {
     name                = "Sonoma DISA STIG - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'DISA STIG - Sonoma Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
@@ -358,12 +370,11 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_stig_smart_card"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
     level               = "System"
-    payloads         = file("${path.module}/support_files/computer_config_profiles/Sonoma_stig-security.smartcard.mobileconfig")
+    payloads            = file("${path.module}/support_files/computer_config_profiles/Sonoma_stig-security.smartcard.mobileconfig")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = []
     }
   }
@@ -397,8 +408,10 @@ locals {
 
 ## Create configuration profiles for Sequoia part 1
 resource "jamfplatform_pro_macos_configuration_profile" "sequoia_stig" {
-  for_each            = local.sequoia_stig_dict
+  for_each = local.sequoia_stig_dict
 
+
+  depends_on = [jamfplatform_pro_macos_configuration_profile.sonoma_stig]
   general = {
     name                = "Sequoia DISA STIG - ${each.key}"
     description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'DISA STIG - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
@@ -406,20 +419,19 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_stig" {
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
     level               = "System"
-    payloads         = file("${each.value}")
+    payloads            = file("${each.value}")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
     }
   }
-
-  depends_on = [jamfplatform_pro_macos_configuration_profile.sonoma_stig]
 }
 
 resource "jamfplatform_pro_macos_configuration_profile" "sequoia_stig_smart_card" {
+
+
   general = {
     name                = "Sequoia DISA STIG - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'DISA STIG - Sequoia Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
@@ -427,12 +439,11 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_stig_smart_card
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
     level               = "System"
-    payloads         = file("${path.module}/support_files/computer_config_profiles/Sequoia_stig-security.smartcard.mobileconfig")
+    payloads            = file("${path.module}/support_files/computer_config_profiles/Sequoia_stig-security.smartcard.mobileconfig")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = []
     }
   }

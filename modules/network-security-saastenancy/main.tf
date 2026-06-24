@@ -5,8 +5,8 @@ terraform {
       source                = "Jamf-Concepts/jsctfprovider"
       configuration_aliases = [jsc.jsc]
     }
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
     aws = {

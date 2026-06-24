@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -26,63 +26,59 @@ resource "jamfplatform_pro_category" "category_tahoe_800_171_benchmarks" {
 
 ## Create scripts
 resource "jamfplatform_pro_script" "script_sonoma_800_171_compliance" {
-  name            = "Sonoma - NIST 800-171 Compliance"
-  priority        = "AFTER"
-  script_contents = file("${path.module}/support_files/computer_scripts/sonoma_800-171_compliance.sh")
-  category_id     = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
-  info            = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sonoma"
+  name     = "Sonoma - NIST 800-171 Compliance"
+  priority = "AFTER"
+  info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sonoma"
+  script   = file("${path.module}/support_files/computer_scripts/sonoma_800-171_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_800_171_compliance" {
-  name            = "Sequoia - NIST 800-171 Compliance"
-  priority        = "AFTER"
-  script_contents = file("${path.module}/support_files/computer_scripts/sequoia_800-171_compliance.sh")
-  category_id     = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
-  info            = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sequoia"
+  name     = "Sequoia - NIST 800-171 Compliance"
+  priority = "AFTER"
+  info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sequoia"
+  script   = file("${path.module}/support_files/computer_scripts/sequoia_800-171_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_tahoe_800_171_compliance" {
-  name            = "Tahoe - NIST 800-171 Compliance"
-  priority        = "AFTER"
-  script_contents = file("${path.module}/support_files/computer_scripts/tahoe_800-171_compliance.sh")
-  category_id     = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
-  info            = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Tahoe"
+  name     = "Tahoe - NIST 800-171 Compliance"
+  priority = "AFTER"
+  info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Tahoe"
+  script   = file("${path.module}/support_files/computer_scripts/tahoe_800-171_compliance.sh")
 }
 
 ## Create computer extension attributes
 resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_failed_count" {
-  name                   = "NIST 800-171 - Failed Results Count"
-  input_type             = "SCRIPT"
-  enabled                = true
-  data_type              = "INTEGER"
-  inventory_display_type = "EXTENSION_ATTRIBUTES"
-  script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsCount.sh")
+  name              = "NIST 800-171 - Failed Results Count"
+  input_type        = "SCRIPT"
+  enabled           = true
+  data_type         = "INTEGER"
+  inventory_display = "EXTENSION_ATTRIBUTES"
+  script            = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsCount.sh")
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_failed_list" {
-  name                   = "NIST 800-171 - Failed Results List"
-  input_type             = "SCRIPT"
-  enabled                = true
-  data_type              = "STRING"
-  inventory_display_type = "EXTENSION_ATTRIBUTES"
-  script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsList.sh")
+  name              = "NIST 800-171 - Failed Results List"
+  input_type        = "SCRIPT"
+  enabled           = true
+  data_type         = "STRING"
+  inventory_display = "EXTENSION_ATTRIBUTES"
+  script            = file("${path.module}/support_files/computer_extension_attributes/compliance-FailedResultsList.sh")
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_version" {
-  name                   = "NIST 800-171 - Compliance Version"
-  input_type             = "SCRIPT"
-  enabled                = true
-  data_type              = "STRING"
-  inventory_display_type = "EXTENSION_ATTRIBUTES"
-  script_contents        = file("${path.module}/support_files/computer_extension_attributes/compliance-version.sh")
+  name              = "NIST 800-171 - Compliance Version"
+  input_type        = "SCRIPT"
+  enabled           = true
+  data_type         = "STRING"
+  inventory_display = "EXTENSION_ATTRIBUTES"
+  script            = file("${path.module}/support_files/computer_extension_attributes/compliance-version.sh")
 }
 
 ## Create Smart Computer Groups
 resource "jamfplatform_device_group" "group_sonoma_computers" {
-  name = "NIST 800-171 - Sonoma Computers"
+  name        = "NIST 800-171 - Sonoma Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -99,10 +95,9 @@ resource "jamfplatform_device_group" "group_sonoma_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sonoma_800_171_non_compliant" {
-  name = "NIST 800-171 - Sonoma - Non Compliant Computers"
+  name        = "NIST 800-171 - Sonoma - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -119,10 +114,9 @@ resource "jamfplatform_device_group" "group_sonoma_800_171_non_compliant" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_computers" {
-  name = "NIST 800-171 - Sequoia Computers"
+  name        = "NIST 800-171 - Sequoia Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -139,10 +133,9 @@ resource "jamfplatform_device_group" "group_sequoia_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_800_171_non_compliant" {
-  name = "NIST 800-171 - Sequoia - Non Compliant Computers"
+  name        = "NIST 800-171 - Sequoia - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -159,10 +152,9 @@ resource "jamfplatform_device_group" "group_sequoia_800_171_non_compliant" {
 }
 
 resource "jamfplatform_device_group" "group_tahoe_computers" {
-  name = "NIST 800-171 - Tahoe Computers"
+  name        = "NIST 800-171 - Tahoe Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -179,10 +171,9 @@ resource "jamfplatform_device_group" "group_tahoe_computers" {
 }
 
 resource "jamfplatform_device_group" "group_tahoe_800_171_non_compliant" {
-  name = "NIST 800-171 - Tahoe - Non Compliant Computers"
+  name        = "NIST 800-171 - Tahoe - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -200,236 +191,260 @@ resource "jamfplatform_device_group" "group_tahoe_800_171_non_compliant" {
 
 ## Create policies
 resource "jamfplatform_pro_policy" "policy_sonoma_800_171_audit" {
-  name            = "NIST 800-171 - Audit (Sonoma)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
+
+
+  general = {
+    name            = "NIST 800-171 - Audit (Sonoma)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_sonoma_800_171_compliance.id
-      parameter4 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_sonoma_800_171_compliance.id
+        parameter4 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
 resource "jamfplatform_pro_policy" "policy_sonoma_800_171_remediation" {
-  name            = "NIST 800-171 - Remediation (Sonoma)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_sonoma_800_171_non_compliant.jamf_pro_id]
+
+
+  general = {
+    name            = "NIST 800-171 - Remediation (Sonoma)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_sonoma_800_171_non_compliant.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_sonoma_800_171_compliance.id
-      parameter4 = "--check"
-      parameter5 = "--fix"
-      parameter6 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_sonoma_800_171_compliance.id
+        parameter4 = "--check"
+        parameter5 = "--fix"
+        parameter6 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
 resource "jamfplatform_pro_policy" "policy_sequoia_800_171_audit" {
-  name            = "NIST 800-171 - Audit (Sequoia)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
+
+
+  general = {
+    name            = "NIST 800-171 - Audit (Sequoia)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_sequoia_800_171_compliance.id
-      parameter4 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_sequoia_800_171_compliance.id
+        parameter4 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
 resource "jamfplatform_pro_policy" "policy_sequoia_800_171_remediation" {
-  name            = "NIST 800-171 - Remediation (Sequoia)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_sequoia_800_171_non_compliant.jamf_pro_id]
+
+
+  general = {
+    name            = "NIST 800-171 - Remediation (Sequoia)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_sequoia_800_171_non_compliant.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_sequoia_800_171_compliance.id
-      parameter4 = "--check"
-      parameter5 = "--fix"
-      parameter6 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_sequoia_800_171_compliance.id
+        parameter4 = "--check"
+        parameter5 = "--fix"
+        parameter6 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
 resource "jamfplatform_pro_policy" "policy_tahoe_800_171_audit" {
-  name            = "NIST 800-171 - Audit (Tahoe)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_tahoe_computers.jamf_pro_id]
+
+
+  general = {
+    name            = "NIST 800-171 - Audit (Tahoe)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_tahoe_computers.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_tahoe_800_171_compliance.id
-      parameter4 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_tahoe_800_171_compliance.id
+        parameter4 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
 resource "jamfplatform_pro_policy" "policy_tahoe_800_171_remediation" {
-  name            = "NIST 800-171 - Remediation (Tahoe)"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
 
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfplatform_device_group.group_tahoe_800_171_non_compliant.jamf_pro_id]
+
+
+  general = {
+    name            = "NIST 800-171 - Remediation (Tahoe)"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
   }
-
-  self_service {
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.group_tahoe_800_171_non_compliant.jamf_pro_id]
+    }
+  }
+  self_service = {
     use_for_self_service = false
   }
-
-  payloads {
-    scripts {
-      id         = jamfplatform_pro_script.script_tahoe_800_171_compliance.id
-      parameter4 = "--check"
-      parameter5 = "--fix"
-      parameter6 = "--check"
-    }
-
-    maintenance {
-      recon = true
-    }
-
-    reboot {
-      file_vault_2_reboot            = false
-      message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
-      minutes_until_reboot           = 5
-      no_user_logged_in              = "Do not restart"
-      start_reboot_timer_immediately = false
-      startup_disk                   = "Current Startup Disk"
-      user_logged_in                 = "Do not restart"
-    }
+  scripts = {
+    scripts = [
+      {
+        id         = jamfplatform_pro_script.script_tahoe_800_171_compliance.id
+        parameter4 = "--check"
+        parameter5 = "--fix"
+        parameter6 = "--check"
+      },
+    ]
+  }
+  maintenance = {
+    recon = true
+  }
+  restart_options = {
+    file_vault_2_reboot            = false
+    message                        = "This computer will restart in 5 minutes. Please save anything you are working on and log out by choosing Log Out from the bottom of the Apple menu."
+    minutes_until_reboot           = 5
+    no_user_logged_in              = "Do not restart"
+    start_reboot_timer_immediately = false
+    startup_disk                   = "Current Startup Disk"
+    user_logged_in                 = "Do not restart"
   }
 }
 
@@ -464,7 +479,8 @@ locals {
 
 ## Create configuration profiles for Sonoma
 resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171" {
-  for_each            = local.sonoma_800_171_dict
+  for_each = local.sonoma_800_171_dict
+
 
   general = {
     name                = "Sonoma NIST 800-171 - ${each.key}"
@@ -473,18 +489,19 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171" {
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
     level               = "System"
-    payloads         = file("${each.value}")
+    payloads            = file("${each.value}")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = [jamfplatform_device_group.group_sonoma_computers.jamf_pro_id]
     }
   }
 }
 
 resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171_smart_card" {
+
+
   general = {
     name                = "Sonoma NIST 800-171 - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Sonoma Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
@@ -492,12 +509,11 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171_smart_ca
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
     level               = "System"
-    payloads         = file("${path.module}/support_files/computer_config_profiles/Sonoma_800-171-security.smartcard.mobileconfig")
+    payloads            = file("${path.module}/support_files/computer_config_profiles/Sonoma_800-171-security.smartcard.mobileconfig")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = []
     }
   }
@@ -534,8 +550,10 @@ locals {
 
 ## Create configuration profiles for Sequoia part 1
 resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171" {
-  for_each            = local.sequoia_800_171_dict
+  for_each = local.sequoia_800_171_dict
 
+
+  depends_on = [jamfplatform_pro_macos_configuration_profile.sonoma_800_171]
   general = {
     name                = "Sequoia NIST 800-171 - ${each.key}"
     description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'NIST 800-171 - Sequoia Computers' Smart Group and remove the placeholder serial number criteria."
@@ -543,20 +561,19 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171" {
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
     level               = "System"
-    payloads         = file("${each.value}")
+    payloads            = file("${each.value}")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = [jamfplatform_device_group.group_sequoia_computers.jamf_pro_id]
     }
   }
-
-  depends_on = [jamfplatform_pro_macos_configuration_profile.sonoma_800_171]
 }
 
 resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171_smart_card" {
+
+
   general = {
     name                = "Sequoia NIST 800-171 - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Sequoia Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
@@ -564,12 +581,11 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171_smart_c
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
     level               = "System"
-    payloads         = file("${path.module}/support_files/computer_config_profiles/Sequoia_800-171-security.smartcard.mobileconfig")
+    payloads            = file("${path.module}/support_files/computer_config_profiles/Sequoia_800-171-security.smartcard.mobileconfig")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = []
     }
   }
@@ -606,8 +622,10 @@ locals {
 
 ## Create configuration profiles for Tahoe
 resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171" {
-  for_each            = local.tahoe_800_171_dict
+  for_each = local.tahoe_800_171_dict
 
+
+  depends_on = [jamfplatform_pro_macos_configuration_profile.sequoia_800_171]
   general = {
     name                = "Tahoe NIST 800-171 - ${each.key}"
     description         = "To scope this configuration profile, navigate to Smart Computer Groups, select the 'NIST 800-171 - Tahoe Computers' Smart Group and remove the placeholder serial number criteria."
@@ -615,20 +633,19 @@ resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171" {
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
     level               = "System"
-    payloads         = file("${each.value}")
+    payloads            = file("${each.value}")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = [jamfplatform_device_group.group_tahoe_computers.jamf_pro_id]
     }
   }
-
-  depends_on = [jamfplatform_pro_macos_configuration_profile.sequoia_800_171]
 }
 
 resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171_smart_card" {
+
+
   general = {
     name                = "Tahoe NIST 800-171 - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Tahoe Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
@@ -636,12 +653,11 @@ resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171_smart_car
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
     level               = "System"
-    payloads         = file("${path.module}/support_files/computer_config_profiles/Tahoe_800-171-security.smartcard.mobileconfig")
+    payloads            = file("${path.module}/support_files/computer_config_profiles/Tahoe_800-171-security.smartcard.mobileconfig")
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = []
     }
   }

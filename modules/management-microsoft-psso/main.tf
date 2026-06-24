@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -14,10 +14,9 @@ resource "jamfplatform_pro_category" "microsoft_psso" {
 }
 
 resource "jamfplatform_device_group" "microsoft_psso_target" {
-  name = "Microsoft Entra PSSO Target Group"
+  name        = "Microsoft Entra PSSO Target Group"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -34,10 +33,9 @@ resource "jamfplatform_device_group" "microsoft_psso_target" {
 }
 
 resource "jamfplatform_device_group" "microsoft_psso_exclusion" {
-  name = "Microsoft Entra PSSO Exclusion Group"
+  name        = "Microsoft Entra PSSO Exclusion Group"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Operating System Version"
@@ -54,48 +52,45 @@ resource "jamfplatform_device_group" "microsoft_psso_exclusion" {
 }
 
 resource "jamfplatform_pro_package" "microsoft_company_portal" {
-  package_name          = "Microsoft_CompanyPortal_Installer"
-  package_file_source   = "https://go.microsoft.com/fwlink/?linkid=862280"
-  category_id           = jamfplatform_pro_category.microsoft_psso.id
-  fill_user_template    = false
-  os_install            = false
-  priority              = 1
-  reboot_required       = false
-  suppress_eula         = false
-  suppress_from_dock    = false
-  suppress_registration = false
-  suppress_updates      = false
+  package_file_source = "https://go.microsoft.com/fwlink/?linkid=862280"
+  category_id         = jamfplatform_pro_category.microsoft_psso.id
+  priority            = 1
+  reboot_required     = false
+  display_name        = "Microsoft_CompanyPortal_Installer"
 }
 
 resource "jamfplatform_pro_policy" "install_microsoft_company_portal" {
-  name                        = "Install Microsoft Company Portal"
-  enabled                     = true
-  trigger_checkin             = true
-  trigger_enrollment_complete = true
-  category_id                 = jamfplatform_pro_category.microsoft_psso.id
 
-  payloads {
-    packages {
-      distribution_point = "default"
-      package {
+
+
+  general = {
+    name                        = "Install Microsoft Company Portal"
+    enabled                     = true
+    trigger_checkin             = true
+    trigger_enrollment_complete = true
+    category_id                 = jamfplatform_pro_category.microsoft_psso.id
+  }
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.microsoft_psso_target.jamf_pro_id]
+    }
+  }
+  packages = {
+    distribution_point = "default"
+    packages = [
+      {
         id                          = jamfplatform_pro_package.microsoft_company_portal.id
         action                      = "Install"
         fill_user_template          = false
         fill_existing_user_template = false
-      }
-    }
+      },
+    ]
   }
-
-  scope {
-    all_computers = false
-    all_jss_users = false
-
-    computer_group_ids = [jamfplatform_device_group.microsoft_psso_target.jamf_pro_id]
-  }
-
 }
 
 resource "jamfplatform_pro_macos_configuration_profile" "microsoft_psso_settings" {
+
   general = {
     name                = "Microsoft Entra PSSO Settings"
     description         = "Configuration Profile to set Microsoft Entra PSSO settings"
@@ -106,10 +101,9 @@ resource "jamfplatform_pro_macos_configuration_profile" "microsoft_psso_settings
     user_removable      = false
     category_id         = jamfplatform_pro_category.microsoft_psso.id
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = [jamfplatform_device_group.microsoft_psso_target.jamf_pro_id]
     }
   }

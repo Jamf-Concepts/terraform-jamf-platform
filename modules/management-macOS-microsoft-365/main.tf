@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -16,10 +16,9 @@ resource "jamfplatform_pro_category" "category_microsoft_365" {
 
 ## Create Microsoft 365 Smart Groups
 resource "jamfplatform_device_group" "group_msft_word" {
-  name = "Auto Update:  Microsoft Word"
+  name        = "Auto Update:  Microsoft Word"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Application Title"
@@ -30,10 +29,9 @@ resource "jamfplatform_device_group" "group_msft_word" {
 }
 
 resource "jamfplatform_device_group" "group_msft_excel" {
-  name = "Auto Update: Microsoft Excel"
+  name        = "Auto Update: Microsoft Excel"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Application Title"
@@ -44,10 +42,9 @@ resource "jamfplatform_device_group" "group_msft_excel" {
 }
 
 resource "jamfplatform_device_group" "group_msft_onedrive" {
-  name = "Auto Update: Microsoft OneDrive"
+  name        = "Auto Update: Microsoft OneDrive"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Application Title"
@@ -58,10 +55,9 @@ resource "jamfplatform_device_group" "group_msft_onedrive" {
 }
 
 resource "jamfplatform_device_group" "group_msft_outlook" {
-  name = "Auto Update: Microsoft Outlook"
+  name        = "Auto Update: Microsoft Outlook"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Application Title"
@@ -72,10 +68,9 @@ resource "jamfplatform_device_group" "group_msft_outlook" {
 }
 
 resource "jamfplatform_device_group" "group_msft_powerpoint" {
-  name = "Auto Update:  Microsoft PowerPoint"
+  name        = "Auto Update:  Microsoft PowerPoint"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Application Title"
@@ -85,7 +80,7 @@ resource "jamfplatform_device_group" "group_msft_powerpoint" {
   ]
 }
 
-# resource "jamfplatform_device_group" "group_msft_edge" {
+# resource "jamfpro_smart_computer_group" "group_msft_edge" {
 #   name = "Auto Update:  Microsoft Edge"
 #   criteria {
 #     name        = "Application Title"
@@ -95,11 +90,11 @@ resource "jamfplatform_device_group" "group_msft_powerpoint" {
 #     priority    = 0
 #   }
 # }
+
 resource "jamfplatform_device_group" "group_msft_teams" {
   name        = "Auto Update: Microsoft Teams"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Application Title"
@@ -110,18 +105,18 @@ resource "jamfplatform_device_group" "group_msft_teams" {
 }
 
 ## Create Microsoft 365 App Installers
-resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_excel" {
+resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_excel" {
   app_title_name  = "Microsoft Excel 365"
   name            = "Microsoft Excel 365"
-  enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
   category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
   smart_group_id  = jamfplatform_device_group.group_msft_excel.jamf_pro_id
-  install_predefined_config_profiles = false
-  trigger_admin_notifications        = false
-  notification_settings {
+
+
+
+  notification_settings = {
     notification_message  = "A new update is available"
     notification_interval = 1
     deadline_message      = "Update deadline approaching"
@@ -131,18 +126,15 @@ resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_micros
     relaunch              = true
     suppress              = false
   }
-  self_service_settings {
+  self_service_settings = {
     include_in_featured_category   = true
     include_in_compliance_category = true
     force_view_description         = true
     description                    = "This applicaton is managed by Jamf Pro"
-    categories {
-      id       = jamfplatform_pro_category.category_microsoft_365.id
-      featured = true
-    }
   }
 }
-# resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_edge_365" {
+
+# resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_edge_365" {
 #   name            = "Microsoft Edge"
 #   enabled         = true
 #   deployment_type = "SELF_SERVICE"
@@ -150,8 +142,10 @@ resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_micros
 #   category_id     = jamfplatform_pro_category.category_microsoft_365.id
 #   site_id         = "-1"
 #   smart_group_id  = jamfplatform_device_group.group_msft_edge.jamf_pro_id
+
 #   install_predefined_config_profiles = false
 #   trigger_admin_notifications        = false
+
 #   notification_settings {
 #     notification_message  = "A new update is available"
 #     notification_interval = 1
@@ -162,29 +156,32 @@ resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_micros
 #     relaunch              = true
 #     suppress              = false
 #   }
+
 #   self_service_settings {
 #     include_in_featured_category   = true
 #     include_in_compliance_category = true
 #     force_view_description         = true
 #     description                    = "This applicaton is managed by Jamf Pro"
+
 #     categories {
 #       id       = jamfplatform_pro_category.category_microsoft_365.id
 #       featured = true
 #     }
 #   }
 # }
-resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_powerpoint_365" {
+
+resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_powerpoint_365" {
   app_title_name  = "Microsoft PowerPoint 365"
   name            = "Microsoft PowerPoint 365"
-  enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
   category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
   smart_group_id  = jamfplatform_device_group.group_msft_powerpoint.jamf_pro_id
-  install_predefined_config_profiles = false
-  trigger_admin_notifications        = false
-  notification_settings {
+
+
+
+  notification_settings = {
     notification_message  = "A new update is available"
     notification_interval = 1
     deadline_message      = "Update deadline approaching"
@@ -194,29 +191,26 @@ resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_micros
     relaunch              = true
     suppress              = false
   }
-  self_service_settings {
+  self_service_settings = {
     include_in_featured_category   = true
     include_in_compliance_category = true
     force_view_description         = true
     description                    = "This applicaton is managed by Jamf Pro"
-    categories {
-      id       = jamfplatform_pro_category.category_microsoft_365.id
-      featured = true
-    }
   }
 }
-resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_outlook_365" {
+
+resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_outlook_365" {
   app_title_name  = "Microsoft Outlook 365"
   name            = "Microsoft Outlook 365"
-  enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
   category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
   smart_group_id  = jamfplatform_device_group.group_msft_outlook.jamf_pro_id
-  install_predefined_config_profiles = false
-  trigger_admin_notifications        = false
-  notification_settings {
+
+
+
+  notification_settings = {
     notification_message  = "A new update is available"
     notification_interval = 1
     deadline_message      = "Update deadline approaching"
@@ -226,29 +220,26 @@ resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_micros
     relaunch              = true
     suppress              = false
   }
-  self_service_settings {
+  self_service_settings = {
     include_in_featured_category   = true
     include_in_compliance_category = true
     force_view_description         = true
     description                    = "This applicaton is managed by Jamf Pro"
-    categories {
-      id       = jamfplatform_pro_category.category_microsoft_365.id
-      featured = true
-    }
   }
 }
-resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_onedrive_365" {
+
+resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_onedrive_365" {
   app_title_name  = "Microsoft OneDrive"
   name            = "Microsoft OneDrive"
-  enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
   category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
   smart_group_id  = jamfplatform_device_group.group_msft_onedrive.jamf_pro_id
-  install_predefined_config_profiles = false
-  trigger_admin_notifications        = false
-  notification_settings {
+
+
+
+  notification_settings = {
     notification_message  = "A new update is available"
     notification_interval = 1
     deadline_message      = "Update deadline approaching"
@@ -258,29 +249,26 @@ resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_micros
     relaunch              = true
     suppress              = false
   }
-  self_service_settings {
+  self_service_settings = {
     include_in_featured_category   = true
     include_in_compliance_category = true
     force_view_description         = true
     description                    = "This applicaton is managed by Jamf Pro"
-    categories {
-      id       = jamfplatform_pro_category.category_microsoft_365.id
-      featured = true
-    }
   }
 }
-resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_word_365" {
+
+resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_word_365" {
   app_title_name  = "Microsoft Word 365"
   name            = "Microsoft Word 365"
-  enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
   category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
   smart_group_id  = jamfplatform_device_group.group_msft_word.jamf_pro_id
-  install_predefined_config_profiles = false
-  trigger_admin_notifications        = false
-  notification_settings {
+
+
+
+  notification_settings = {
     notification_message  = "A new update is available"
     notification_interval = 1
     deadline_message      = "Update deadline approaching"
@@ -290,29 +278,26 @@ resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_micros
     relaunch              = true
     suppress              = false
   }
-  self_service_settings {
+  self_service_settings = {
     include_in_featured_category   = true
     include_in_compliance_category = true
     force_view_description         = true
     description                    = "This applicaton is managed by Jamf Pro"
-    categories {
-      id       = jamfplatform_pro_category.category_microsoft_365.id
-      featured = true
-    }
   }
 }
-resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_microsoft_teams_365" {
+
+resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_teams_365" {
   app_title_name  = "Microsoft Teams"
   name            = "Microsoft Teams"
-  enabled         = true
   deployment_type = "SELF_SERVICE"
   update_behavior = "AUTOMATIC"
   category_id     = jamfplatform_pro_category.category_microsoft_365.id
   site_id         = "-1"
   smart_group_id  = jamfplatform_device_group.group_msft_teams.jamf_pro_id
-  install_predefined_config_profiles = false
-  trigger_admin_notifications        = false
-  notification_settings {
+
+
+
+  notification_settings = {
     notification_message  = "A new update is available"
     notification_interval = 1
     deadline_message      = "Update deadline approaching"
@@ -322,14 +307,11 @@ resource "jamfplatform_pro_app_installer" "jamfplatform_pro_app_installer_micros
     relaunch              = true
     suppress              = false
   }
-  self_service_settings {
+  self_service_settings = {
     include_in_featured_category   = true
     include_in_compliance_category = true
     force_view_description         = true
     description                    = "This applicaton is managed by Jamf Pro"
-    categories {
-      id       = jamfplatform_pro_category.category_microsoft_365.id
-      featured = true
-    }
   }
 }
+

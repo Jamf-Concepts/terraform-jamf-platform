@@ -15,13 +15,13 @@ variable "jamfplatform_client_secret" {
   sensitive   = true
 }
 
-variable "jamfplatform_pro_username" {
+variable "jamfpro_username" {
   description = "Jamf Pro username used for authentication."
   type        = string
   default     = ""
 }
 
-variable "jamfplatform_pro_password" {
+variable "jamfpro_password" {
   description = "Jamf Pro password used for authentication."
   type        = string
   sensitive   = true

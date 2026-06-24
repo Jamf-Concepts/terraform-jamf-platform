@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
@@ -28,21 +28,21 @@ resource "jsc_ap" "ztna" {
 }
 
 resource "jamfplatform_pro_macos_configuration_profile" "ztna_macos" {
+
+
+  depends_on = [jsc_ap.ztna]
   general = {
     name                = "Jamf Connect ZTNA - macOS (Supervised)"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     level               = "System"
-    payloads         = jsc_ap.ztna.macosplist
+    payloads            = jsc_ap.ztna.macosplist
   }
-
   scope = {
     targets = {
       all_computers = false
     }
   }
-
-  depends_on = [jsc_ap.ztna]
 }
 
 output "enable_jsc_uemc_output" {

@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -16,10 +16,9 @@ resource "jamfplatform_pro_category" "google_chrome_cloud_management" {
 
 ## Create Smart Computer Groups
 resource "jamfplatform_device_group" "google_chrome_cloud_management" {
-  name = "Google Chrome Cloud Management Devices"
+  name        = "Google Chrome Cloud Management Devices"
   group_type  = "smart"
   device_type = "computer"
-
   criteria = [
     {
       criteria = "Serial Number"
@@ -41,6 +40,7 @@ locals {
 
 ## Create Google Chrome Cloud Management Configuration Profile
 resource "jamfplatform_pro_macos_configuration_profile" "google_chrome_cloud_management" {
+
   general = {
     name                = "Google Chrome Cloud Management Settings"
     description         = "To customize Google Chrome Enterprise for your organization, check out the Google documentation: https://support.google.com/chrome/a/answer/9771882?hl=en"
@@ -51,10 +51,9 @@ resource "jamfplatform_pro_macos_configuration_profile" "google_chrome_cloud_man
     payloads            = local.google_chrome_cloud_management_profile_payload
     user_removable      = false
   }
-
   scope = {
     targets = {
-      all_computers = false
+      all_computers      = false
       computer_group_ids = [jamfplatform_device_group.google_chrome_cloud_management.jamf_pro_id]
     }
   }
@@ -65,17 +64,15 @@ resource "jamfplatform_pro_app_installer" "google_chrome" {
   count           = var.include_google_chrome == true || contains(var.app_installers, "Google Chrome") ? 0 : 1
   name            = "Google Chrome"
   app_title_name  = "Google Chrome"
-  enabled         = true
   deployment_type = "INSTALL_AUTOMATICALLY"
   update_behavior = "AUTOMATIC"
   category_id     = jamfplatform_pro_category.google_chrome_cloud_management.id
   site_id         = "-1"
   smart_group_id  = jamfplatform_device_group.google_chrome_cloud_management.jamf_pro_id
 
-  install_predefined_config_profiles = true
-  trigger_admin_notifications        = true
 
-  notification_settings {
+
+  notification_settings = {
     notification_message  = "A new update is available"
     notification_interval = 1
     deadline_message      = "Update deadline approaching"
@@ -85,8 +82,7 @@ resource "jamfplatform_pro_app_installer" "google_chrome" {
     relaunch              = true
     suppress              = false
   }
-
-  self_service_settings {
+  self_service_settings = {
     include_in_featured_category   = true
     include_in_compliance_category = false
     force_view_description         = false

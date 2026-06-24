@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
@@ -12,7 +12,7 @@ terraform {
   }
 }
 
-resource "jamfplatform_pro_api_role" "jamfplatform_pro_api_role_sync" {
+resource "jamfplatform_pro_api_role" "jamfpro_api_role_sync" {
   display_name = "JSC API Role Device Sync"
   privileges = [
     "Read Mac Applications",
@@ -27,7 +27,7 @@ resource "jamfplatform_pro_api_role" "jamfplatform_pro_api_role_sync" {
   ]
 }
 
-resource "jamfplatform_pro_api_role" "jamfplatform_pro_api_role_signalling" {
+resource "jamfplatform_pro_api_role" "jamfpro_api_role_signalling" {
   display_name = "JSC API Role Signalling"
   privileges = [
     "Create Computer Extension Attributes",
@@ -44,7 +44,7 @@ resource "jamfplatform_pro_api_role" "jamfplatform_pro_api_role_signalling" {
   ]
 }
 
-resource "jamfplatform_pro_api_role" "jamfplatform_pro_api_role_deploy" {
+resource "jamfplatform_pro_api_role" "jamfpro_api_role_deploy" {
   display_name = "JSC API Role Deploy"
   privileges = [
     "Create iOS Configuration Profiles",
@@ -60,16 +60,16 @@ resource "jamfplatform_pro_api_role" "jamfplatform_pro_api_role_deploy" {
   ]
 }
 
-resource "jamfplatform_pro_api_client" "jamfplatform_pro_api_integration_jsc" {
+resource "jamfplatform_pro_api_client" "jamfpro_api_integration_jsc" {
   display_name                  = "JSC API Client"
   enabled                       = true
-  credential_rotation           = "1"
   access_token_lifetime_seconds = 6000
-  api_roles                     = [jamfplatform_pro_api_role.jamfplatform_pro_api_role_sync.display_name, jamfplatform_pro_api_role.jamfplatform_pro_api_role_signalling.display_name, jamfplatform_pro_api_role.jamfplatform_pro_api_role_deploy.display_name]
+  api_roles                     = [jamfplatform_pro_api_role.jamfpro_api_role_sync.display_name, jamfplatform_pro_api_role.jamfpro_api_role_signalling.display_name, jamfplatform_pro_api_role.jamfpro_api_role_deploy.display_name]
+  credential_rotation           = "1"
 }
 
-data "jamfplatform_pro_api_client" "jamf_pro_api_integration_001_data" {
-  id = jamfplatform_pro_api_client.jamfplatform_pro_api_integration_jsc.id
+data "jamfpro_api_integration" "jamf_pro_api_integration_001_data" {
+  id = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.id
 }
 
 output "jp_client_id" {
@@ -81,7 +81,7 @@ output "jp_client_secret" {
 }
 
 /* resource "time_sleep" "wait_60_seconds" {
-  depends_on = [jamfplatform_pro_api_client.jamfplatform_pro_api_integration_jsc]
+  depends_on = [jamfplatform_pro_api_client.jamfpro_api_integration_jsc]
 
   create_duration = "60s"
 } */

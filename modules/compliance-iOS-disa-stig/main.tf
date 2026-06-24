@@ -1,8 +1,8 @@
 ## Call Terraform provider
 terraform {
   required_providers {
-    jamfpro = {
-      source                = "deploymenttheory/jamfpro"
+    jamfplatform = {
+      source                = "Jamf-Concepts/jamfplatform"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -21,9 +21,10 @@ resource "jamfplatform_pro_category" "category_ios18_cis_benchmarks" {
 
 resource "jamfplatform_device_group" "group_ios17" {
   name = "iOS 17 - DISA STIG"
+
+
   group_type  = "smart"
   device_type = "mobile"
-
   criteria = [
     {
       criteria = "OS Version"
@@ -40,9 +41,10 @@ resource "jamfplatform_device_group" "group_ios17" {
 
 resource "jamfplatform_device_group" "group_ios18" {
   name = "iOS 18 - DISA STIG"
+
+
   group_type  = "smart"
   device_type = "mobile"
-
   criteria = [
     {
       criteria = "OS Version"
@@ -68,21 +70,21 @@ locals {
 }
 
 resource "jamfplatform_pro_mobile_device_configuration_profile" "config_ios17" {
-  for_each           = local.ios17_stig_dict
+  for_each = local.ios17_stig_dict
+
 
   general = {
-    name               = "iOS 17 DISA STIG - ${each.key}"
-    description        = "To scope this configuration profile, navigate to Smart Device Groups, select the 'iOS 17 - DISA STIG' Smart Group and remove the placeholder serial number criteria."
-    distribution_method  = "Install Automatically"
-    level              = "Device Level"
-    redeploy_on_update = "Newly Assigned"
-    category_id        = jamfplatform_pro_category.category_ios17_stig_benchmarks.id
-    payloads         = file("${each.value}")
+    name                = "iOS 17 DISA STIG - ${each.key}"
+    description         = "To scope this configuration profile, navigate to Smart Device Groups, select the 'iOS 17 - DISA STIG' Smart Group and remove the placeholder serial number criteria."
+    distribution_method = "Install Automatically"
+    level               = "Device Level"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_ios17_stig_benchmarks.id
+    payloads            = file("${each.value}")
   }
-
   scope = {
     targets = {
-      all_mobile_devices = false
+      all_mobile_devices      = false
       mobile_device_group_ids = [jamfplatform_device_group.group_ios17.jamf_pro_id]
     }
   }
@@ -99,20 +101,20 @@ locals {
 }
 
 resource "jamfplatform_pro_mobile_device_configuration_profile" "config_ios18" {
-  for_each           = local.ios18_stig_dict
+  for_each = local.ios18_stig_dict
+
 
   general = {
-    name               = "iOS 18 DISA STIG - ${each.key}"
-    distribution_method  = "Install Automatically"
-    level              = "Device Level"
-    redeploy_on_update = "Newly Assigned"
-    category_id        = jamfplatform_pro_category.category_ios18_cis_benchmarks.id
-    payloads         = file("${each.value}")
+    name                = "iOS 18 DISA STIG - ${each.key}"
+    distribution_method = "Install Automatically"
+    level               = "Device Level"
+    redeploy_on_update  = "Newly Assigned"
+    category_id         = jamfplatform_pro_category.category_ios18_cis_benchmarks.id
+    payloads            = file("${each.value}")
   }
-
   scope = {
     targets = {
-      all_mobile_devices = false
+      all_mobile_devices      = false
       mobile_device_group_ids = [jamfplatform_device_group.group_ios18.jamf_pro_id]
     }
   }
