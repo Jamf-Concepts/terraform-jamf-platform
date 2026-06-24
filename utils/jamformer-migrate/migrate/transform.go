@@ -181,11 +181,14 @@ func rewriteGroupReferences(tokens hclwrite.Tokens) hclwrite.Tokens {
 var deviceGroupIDRe = regexp.MustCompile(`(jamfplatform_device_group\.[a-zA-Z0-9_-]+)\.id\b`)
 
 // rewriteFileText does text-level substitution of cross-references after AST rewriting.
-func rewriteFileText(src []byte) []byte {
+// It rewrites every jamfpro_<type>. expression prefix that the registry maps to a new type.
+// This handles references in attribute expressions even when the resource declaration is
+// in a different file (which the AST pass never sees).
+func rewriteFileText(src []byte, registry map[string]*ResourceMapping) []byte {
 	s := string(src)
 
-	// Rewrite group type prefixes in expressions (longest first to avoid partial matches)
-	oldPrefixes := []string{
+	// Rewrite group type prefixes in expressions (longest first to avoid partial matches).
+	oldGroupPrefixes := []string{
 		"jamfpro_smart_computer_group_v2",
 		"jamfpro_smart_computer_group",
 		"jamfpro_static_computer_group",
@@ -193,12 +196,42 @@ func rewriteFileText(src []byte) []byte {
 		"jamfpro_smart_mobile_device_group",
 		"jamfpro_static_mobile_device_group",
 	}
-	for _, prefix := range oldPrefixes {
+	for _, prefix := range oldGroupPrefixes {
 		s = strings.ReplaceAll(s, prefix+".", "jamfplatform_device_group.")
 	}
 
 	// .id → .jamf_pro_id for all device group references
 	s = deviceGroupIDRe.ReplaceAllString(s, "$1.jamf_pro_id")
+
+	// Rewrite all other registered type prefixes in expressions.
+	// We sort by length descending to apply longest-first (avoid partial matches).
+	type typeRename struct {
+		from string
+		to   string
+	}
+	var renames []typeRename
+	for fromType, m := range registry {
+		if m.ToType == "" || m.ToType == "jamfplatform_device_group" {
+			continue // device groups handled above; skip types
+		}
+		renames = append(renames, typeRename{from: fromType, to: m.ToType})
+	}
+	// Sort longest-first to prevent shorter prefix matching inside a longer one.
+	for i := 0; i < len(renames); i++ {
+		for j := i + 1; j < len(renames); j++ {
+			if len(renames[j].from) > len(renames[i].from) {
+				renames[i], renames[j] = renames[j], renames[i]
+			}
+		}
+	}
+	for _, r := range renames {
+		s = strings.ReplaceAll(s, r.from+".", r.to+".")
+	}
+
+	// Also rewrite data.<fromType>. → data.<toType>. for data source references.
+	for _, r := range renames {
+		s = strings.ReplaceAll(s, "data."+r.from+".", "data."+r.to+".")
+	}
 
 	return []byte(s)
 }
@@ -1229,9 +1262,13 @@ func transformAdvancedMobileSearch(body *hclwrite.Body, label string, report *Re
 // for advanced computer/mobile device searches. Unlike device group criteria, the attribute
 // names `name` and `search_type` stay unchanged (only `priority` is dropped, and
 // `opening_paren`/`closing_paren` are renamed).
+//
+// The `name` attribute is preserved as raw tokens (not re-quoted) because it can be
+// an expression reference (e.g. jamfpro_computer_extension_attribute.ea.name), not just
+// a string literal.
 func transformAdvancedSearchCriteria(body *hclwrite.Body) {
 	type criteriaItem struct {
-		name       string
+		nameRaw    string // raw token string — may be a reference or a quoted string
 		searchType string
 		value      string
 		andOr      string
@@ -1243,7 +1280,10 @@ func transformAdvancedSearchCriteria(body *hclwrite.Body) {
 	for _, block := range body.Blocks() {
 		if block.Type() == "criteria" {
 			item := criteriaItem{}
-			item.name = getAttrStringValue(block.Body(), "name")
+			// Preserve name as raw tokens to handle expression references.
+			if tok := getAttrRawTokens(block.Body(), "name"); tok != nil {
+				item.nameRaw = tokensString(tok)
+			}
 			item.searchType = getAttrStringValue(block.Body(), "search_type")
 			item.value = getAttrStringValue(block.Body(), "value")
 			item.andOr = getAttrStringValue(block.Body(), "and_or")
@@ -1262,7 +1302,7 @@ func transformAdvancedSearchCriteria(body *hclwrite.Body) {
 	listHCL.WriteString("[\n")
 	for i, item := range items {
 		listHCL.WriteString("    {\n")
-		listHCL.WriteString(fmt.Sprintf("      name        = %q\n", item.name))
+		listHCL.WriteString(fmt.Sprintf("      name        = %s\n", item.nameRaw))
 		listHCL.WriteString(fmt.Sprintf("      search_type = %q\n", item.searchType))
 		listHCL.WriteString(fmt.Sprintf("      value       = %q\n", item.value))
 		if i > 0 && item.andOr != "" {
@@ -1282,9 +1322,12 @@ func transformAdvancedSearchCriteria(body *hclwrite.Body) {
 
 // transformCriteriaBlocks converts old criteria { } blocks to criteria = [ { } ] list.
 // Used for Tier 4 device groups where `name` → `criteria` and `search_type` → `operator`.
+//
+// The `name` attribute is preserved as raw tokens to handle expression references
+// (e.g. jamfpro_computer_extension_attribute.ea.name → expression, not a string literal).
 func transformCriteriaBlocks(body *hclwrite.Body) {
 	type criteriaItem struct {
-		name       string
+		nameRaw    string // raw token string — may be a reference or a quoted string
 		searchType string
 		value      string
 		andOr      string
@@ -1298,7 +1341,9 @@ func transformCriteriaBlocks(body *hclwrite.Body) {
 	for _, block := range body.Blocks() {
 		if block.Type() == "criteria" {
 			item := criteriaItem{index: idx}
-			item.name = getAttrStringValue(block.Body(), "name")
+			if tok := getAttrRawTokens(block.Body(), "name"); tok != nil {
+				item.nameRaw = tokensString(tok)
+			}
 			item.searchType = getAttrStringValue(block.Body(), "search_type")
 			item.value = getAttrStringValue(block.Body(), "value")
 			item.andOr = getAttrStringValue(block.Body(), "and_or")
@@ -1324,7 +1369,7 @@ func transformCriteriaBlocks(body *hclwrite.Body) {
 		if item.openParen == "true" {
 			listHCL.WriteString("      has_opening_parenthesis = true\n")
 		}
-		listHCL.WriteString(fmt.Sprintf("      criteria = %q\n", item.name))
+		listHCL.WriteString(fmt.Sprintf("      criteria = %s\n", item.nameRaw))
 		listHCL.WriteString(fmt.Sprintf("      operator = %q\n", item.searchType))
 		listHCL.WriteString(fmt.Sprintf("      value    = %q\n", item.value))
 		if item.closeParen == "true" {

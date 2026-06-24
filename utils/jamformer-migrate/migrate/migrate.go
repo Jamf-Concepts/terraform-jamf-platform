@@ -128,13 +128,14 @@ func processFile(path string, registry map[string]*ResourceMapping, filterSet ma
 		changed = true
 	}
 
-	if changed {
-		// Rewrite cross-references at text level.
-		out := rewriteFileText(file.Bytes())
-		if !dryRun {
-			if err := os.WriteFile(path, out, 0o644); err != nil {
-				return err
-			}
+	// Rewrite cross-references at text level. Run unconditionally — a file may
+	// reference resources declared in another file, so even files with no
+	// resource blocks of their own need their expression references updated.
+	out := rewriteFileText(file.Bytes(), registry)
+	textChanged := string(out) != string(src)
+	if (changed || textChanged) && !dryRun {
+		if err := os.WriteFile(path, out, 0o644); err != nil {
+			return err
 		}
 	}
 
