@@ -233,13 +233,10 @@ func buildRegistry() []ResourceMapping {
 	})
 
 	r = append(r, ResourceMapping{
-		FromType: "jamfpro_smtp_server",
-		ToType:   "jamfplatform_pro_smtp_server",
-		Tier:     2,
-		WriteOnlyFields: map[string]string{
-			"password":      "password_wo_version",
-			"client_secret": "client_secret_wo_version",
-		},
+		FromType:            "jamfpro_smtp_server",
+		ToType:              "jamfplatform_pro_smtp_server",
+		Tier:                2,
+		StructuralTransform: transformSMTPServer,
 	})
 
 	r = append(r, ResourceMapping{

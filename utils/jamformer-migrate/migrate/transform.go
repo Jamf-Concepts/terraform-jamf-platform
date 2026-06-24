@@ -298,11 +298,56 @@ func transformIcon(body *hclwrite.Body, label string, report *Report, file strin
 	}
 }
 
-// transformAppInstaller injects app_title_name = name.
+// transformAppInstaller injects app_title_name = name and converts sub-blocks to objects.
 func transformAppInstaller(body *hclwrite.Body, label string, report *Report, file string, line int) {
 	nameTokens := getAttrRawTokens(body, "name")
 	if nameTokens != nil && body.GetAttribute("app_title_name") == nil {
 		body.SetAttributeRaw("app_title_name", nameTokens)
+	}
+	// Convert notification_settings and self_service_settings blocks → object attrs.
+	for _, block := range body.Blocks() {
+		switch block.Type() {
+		case "notification_settings", "self_service_settings":
+			objLit := blockBodyToObjectLiteral(block.Body(), "  ")
+			body.SetAttributeRaw(block.Type(), hclTokensForLiteral(objLit))
+			body.RemoveBlock(block)
+		}
+	}
+}
+
+// transformSMTPServer converts connection/credential sub-blocks to object attrs
+// and injects WriteOnly version fields inside the credential objects.
+func transformSMTPServer(body *hclwrite.Body, label string, report *Report, file string, line int) {
+	blockNames := []string{
+		"connection_settings", "sender_settings",
+		"basic_auth_credentials", "graph_api_credentials", "google_mail_credentials",
+	}
+	for _, block := range body.Blocks() {
+		found := false
+		for _, n := range blockNames {
+			if block.Type() == n {
+				found = true
+				break
+			}
+		}
+		if !found {
+			continue
+		}
+		bBody := block.Body()
+		// Inject WriteOnly version fields inside the credential blocks.
+		if block.Type() == "basic_auth_credentials" {
+			if bBody.GetAttribute("password") != nil && bBody.GetAttribute("password_wo_version") == nil {
+				bBody.SetAttributeValue("password_wo_version", cty.NumberIntVal(1))
+			}
+		}
+		if block.Type() == "graph_api_credentials" {
+			if bBody.GetAttribute("client_secret") != nil && bBody.GetAttribute("client_secret_wo_version") == nil {
+				bBody.SetAttributeValue("client_secret_wo_version", cty.NumberIntVal(1))
+			}
+		}
+		objLit := blockBodyToObjectLiteral(bBody, "  ")
+		body.SetAttributeRaw(block.Type(), hclTokensForLiteral(objLit))
+		body.RemoveBlock(block)
 	}
 }
 
@@ -1295,10 +1340,15 @@ func tokensString(tokens hclwrite.Tokens) string {
 }
 
 // blockBodyToObjectLiteral serializes a body's attributes as a { } object literal.
+// Attribute order is document order (via orderedAttrNames) for deterministic output.
 func blockBodyToObjectLiteral(b *hclwrite.Body, indent string) string {
 	var buf bytes.Buffer
 	buf.WriteString("{\n")
-	for name, attr := range b.Attributes() {
+	for _, name := range orderedAttrNames(b) {
+		attr := b.GetAttribute(name)
+		if attr == nil {
+			continue
+		}
 		val := tokensString(attr.Expr().BuildTokens(nil))
 		buf.WriteString(fmt.Sprintf("%s  %s = %s\n", indent, name, val))
 	}

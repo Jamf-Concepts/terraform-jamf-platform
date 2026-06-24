@@ -160,8 +160,12 @@ func applyMapping(file *hclwrite.File, block *hclwrite.Block, m *ResourceMapping
 		return
 	}
 
-	// Tier 3: delegate fully to StructuralTransform.
+	// Tier 3: delegate fully to StructuralTransform, but apply any simple attr
+	// mappings first (some Tier 2 resources have both Attrs/DropAttrs and a
+	// StructuralTransform — applyAttrMappings is a no-op for pure Tier 3 resources
+	// that don't define Attrs/DropAttrs).
 	if m.StructuralTransform != nil {
+		applyAttrMappings(body, m)
 		m.StructuralTransform(body, label, report, path, line)
 		// Structural transforms add their own report items; add clean if no review added.
 		// We add a base clean item; StructuralTransform may override with review items.
