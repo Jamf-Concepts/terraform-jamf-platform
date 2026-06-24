@@ -373,14 +373,12 @@ func transformConfigProfile(body *hclwrite.Body, label string, report *Report, f
 		generalAttrs["redeploy_days_before_certificate_expires"] = true
 	}
 
-	// Collect general attrs and scope block children before modifying the body.
 	type savedAttr struct {
 		name   string
 		tokens hclwrite.Tokens
 	}
 	var generalSaved []savedAttr
 
-	// Use orderedAttrNames to collect in document order (deterministic output).
 	for _, attrName := range orderedAttrNames(body) {
 		if attrName == "payload_validate" || attrName == "site_id" {
 			body.RemoveAttribute(attrName)
@@ -400,16 +398,60 @@ func transformConfigProfile(body *hclwrite.Body, label string, report *Report, f
 		}
 	}
 
-	// Collect scope block.
+	// Collect scope block: direct attrs → targets, exclusions block → exclusions.
+	// limitations block is silently dropped (no equivalent in new provider).
 	var scopeTargetAttrs []savedAttr
+	var scopeExclusionAttrs []savedAttr
 	for _, block := range body.Blocks() {
 		if block.Type() == "scope" {
 			scopeBody := block.Body()
-			// Use orderedAttrNames for deterministic scope attr order.
 			for _, name := range orderedAttrNames(scopeBody) {
+				if name == "all_jss_users" {
+					continue
+				}
 				attr := scopeBody.GetAttribute(name)
 				if attr != nil {
 					scopeTargetAttrs = append(scopeTargetAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+				}
+			}
+			for _, subBlock := range scopeBody.Blocks() {
+				if subBlock.Type() == "exclusions" {
+					for _, name := range orderedAttrNames(subBlock.Body()) {
+						attr := subBlock.Body().GetAttribute(name)
+						if attr != nil {
+							scopeExclusionAttrs = append(scopeExclusionAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+						}
+					}
+				}
+				// limitations: dropped (no equivalent)
+			}
+			body.RemoveBlock(block)
+			break
+		}
+	}
+
+	// Collect self_service block: rename force_users_to_view_description →
+	// ensure_users_view_description, convert self_service_category blocks →
+	// categories = [ { ... } ] list.
+	var ssAttrs []savedAttr
+	var ssCategories []string
+	for _, block := range body.Blocks() {
+		if block.Type() == "self_service" {
+			ssBody := block.Body()
+			for _, name := range orderedAttrNames(ssBody) {
+				attr := ssBody.GetAttribute(name)
+				if attr == nil {
+					continue
+				}
+				outName := name
+				if name == "force_users_to_view_description" {
+					outName = "ensure_users_view_description"
+				}
+				ssAttrs = append(ssAttrs, savedAttr{outName, attr.Expr().BuildTokens(nil)})
+			}
+			for _, subBlock := range ssBody.Blocks() {
+				if subBlock.Type() == "self_service_category" {
+					ssCategories = append(ssCategories, blockBodyToObjectLiteral(subBlock.Body(), "      "))
 				}
 			}
 			body.RemoveBlock(block)
@@ -417,39 +459,55 @@ func transformConfigProfile(body *hclwrite.Body, label string, report *Report, f
 		}
 	}
 
-	// Remove self_service block — will re-add as object attr later.
-	// (self_service restructuring is complex; for now copy as-is and flag)
-	// TODO: full self_service restructuring
-
-	// Drop all_jss_users from scope.
-	var filteredScope []savedAttr
-	for _, sa := range scopeTargetAttrs {
-		if sa.name != "all_jss_users" {
-			filteredScope = append(filteredScope, sa)
-		}
-	}
-
-	// Build general = { ... } block as HCL text.
+	// Build general = { ... }.
 	var generalHCL bytes.Buffer
 	generalHCL.WriteString("{\n")
 	for _, sa := range generalSaved {
-		valStr := tokensString(sa.tokens)
-		generalHCL.WriteString(fmt.Sprintf("    %s = %s\n", sa.name, valStr))
+		generalHCL.WriteString(fmt.Sprintf("    %s = %s\n", sa.name, tokensString(sa.tokens)))
 	}
 	generalHCL.WriteString("  }")
 	body.SetAttributeRaw("general", hclTokensForLiteral(generalHCL.String()))
 
-	// Build scope = { targets = { ... } } if we have scope attrs.
-	if len(filteredScope) > 0 {
+	// Build scope = { targets = { ... }, exclusions = { ... } }.
+	if len(scopeTargetAttrs) > 0 || len(scopeExclusionAttrs) > 0 {
 		var scopeHCL bytes.Buffer
-		scopeHCL.WriteString("{\n    targets = {\n")
-		for _, sa := range filteredScope {
-			// Rewrite group refs: .id → .jamf_pro_id
-			valStr := tokensString(rewriteGroupReferences(sa.tokens))
-			scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+		scopeHCL.WriteString("{\n")
+		if len(scopeTargetAttrs) > 0 {
+			scopeHCL.WriteString("    targets = {\n")
+			for _, sa := range scopeTargetAttrs {
+				valStr := tokensString(rewriteGroupReferences(sa.tokens))
+				scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+			}
+			scopeHCL.WriteString("    }\n")
 		}
-		scopeHCL.WriteString("    }\n  }")
+		if len(scopeExclusionAttrs) > 0 {
+			scopeHCL.WriteString("    exclusions = {\n")
+			for _, sa := range scopeExclusionAttrs {
+				valStr := tokensString(rewriteGroupReferences(sa.tokens))
+				scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+			}
+			scopeHCL.WriteString("    }\n")
+		}
+		scopeHCL.WriteString("  }")
 		body.SetAttributeRaw("scope", hclTokensForLiteral(scopeHCL.String()))
+	}
+
+	// Build self_service = { ... categories = [ { ... } ] }.
+	if len(ssAttrs) > 0 || len(ssCategories) > 0 {
+		var ssHCL bytes.Buffer
+		ssHCL.WriteString("{\n")
+		for _, sa := range ssAttrs {
+			ssHCL.WriteString(fmt.Sprintf("    %s = %s\n", sa.name, tokensString(sa.tokens)))
+		}
+		if len(ssCategories) > 0 {
+			ssHCL.WriteString("    categories = [\n")
+			for _, cat := range ssCategories {
+				ssHCL.WriteString("      " + cat + ",\n")
+			}
+			ssHCL.WriteString("    ]\n")
+		}
+		ssHCL.WriteString("  }")
+		body.SetAttributeRaw("self_service", hclTokensForLiteral(ssHCL.String()))
 	}
 }
 
@@ -459,9 +517,11 @@ func transformPolicy(body *hclwrite.Body, label string, report *Report, file str
 		"name": true, "enabled": true, "frequency": true,
 		"trigger_checkin": true, "trigger_enrollment_complete": true,
 		"trigger_login": true, "trigger_logout": true, "trigger_network_state_change": true,
+		"trigger_network_state_changed": true,
 		"trigger_other": true, "trigger_startup": true,
 		"category_id": true, "site_id": true, "offline": true,
 		"network_requirement": true, "override_default_settings": true,
+		// non-general attrs that live at top level in old provider (not mapped to general)
 	}
 
 	type savedAttr struct {
@@ -484,20 +544,49 @@ func transformPolicy(body *hclwrite.Body, label string, report *Report, file str
 
 	// Process top-level blocks.
 	var scopeTargetAttrs []savedAttr
-	var selfServiceAttrs []savedAttr
+	var scopeExclusionAttrs []savedAttr
+	var ssAttrs []savedAttr
+	var ssCategories []string
 	var payloadsBlock *hclwrite.Block
 
 	for _, block := range body.Blocks() {
 		switch block.Type() {
 		case "scope":
-			for name, attr := range block.Body().Attributes() {
-				scopeTargetAttrs = append(scopeTargetAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+			scopeBody := block.Body()
+			for _, name := range orderedAttrNames(scopeBody) {
+				if name == "all_jss_users" {
+					continue
+				}
+				attr := scopeBody.GetAttribute(name)
+				if attr != nil {
+					scopeTargetAttrs = append(scopeTargetAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+				}
+			}
+			for _, subBlock := range scopeBody.Blocks() {
+				if subBlock.Type() == "exclusions" {
+					for _, name := range orderedAttrNames(subBlock.Body()) {
+						attr := subBlock.Body().GetAttribute(name)
+						if attr != nil {
+							scopeExclusionAttrs = append(scopeExclusionAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+						}
+					}
+				}
+				// limitations: dropped (no equivalent in new provider)
 			}
 			body.RemoveBlock(block)
 
 		case "self_service":
-			for name, attr := range block.Body().Attributes() {
-				selfServiceAttrs = append(selfServiceAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+			ssBody := block.Body()
+			for _, name := range orderedAttrNames(ssBody) {
+				attr := ssBody.GetAttribute(name)
+				if attr != nil {
+					ssAttrs = append(ssAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+				}
+			}
+			for _, subBlock := range ssBody.Blocks() {
+				if subBlock.Type() == "self_service_category" {
+					ssCategories = append(ssCategories, blockBodyToObjectLiteral(subBlock.Body(), "      "))
+				}
 			}
 			body.RemoveBlock(block)
 
@@ -524,24 +613,43 @@ func transformPolicy(body *hclwrite.Body, label string, report *Report, file str
 		body.SetAttributeRaw("general", hclTokensForLiteral(generalHCL.String()))
 	}
 
-	// Build scope = { targets = { ... } }.
-	if len(scopeTargetAttrs) > 0 {
+	// Build scope = { targets = { ... }, exclusions = { ... } }.
+	if len(scopeTargetAttrs) > 0 || len(scopeExclusionAttrs) > 0 {
 		var scopeHCL bytes.Buffer
-		scopeHCL.WriteString("{\n    targets = {\n")
-		for _, sa := range scopeTargetAttrs {
-			valStr := tokensString(rewriteGroupReferences(sa.tokens))
-			scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+		scopeHCL.WriteString("{\n")
+		if len(scopeTargetAttrs) > 0 {
+			scopeHCL.WriteString("    targets = {\n")
+			for _, sa := range scopeTargetAttrs {
+				valStr := tokensString(rewriteGroupReferences(sa.tokens))
+				scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+			}
+			scopeHCL.WriteString("    }\n")
 		}
-		scopeHCL.WriteString("    }\n  }")
+		if len(scopeExclusionAttrs) > 0 {
+			scopeHCL.WriteString("    exclusions = {\n")
+			for _, sa := range scopeExclusionAttrs {
+				valStr := tokensString(rewriteGroupReferences(sa.tokens))
+				scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+			}
+			scopeHCL.WriteString("    }\n")
+		}
+		scopeHCL.WriteString("  }")
 		body.SetAttributeRaw("scope", hclTokensForLiteral(scopeHCL.String()))
 	}
 
-	// Build self_service = { ... }.
-	if len(selfServiceAttrs) > 0 {
+	// Build self_service = { ... categories = [ { ... } ] }.
+	if len(ssAttrs) > 0 || len(ssCategories) > 0 {
 		var ssHCL bytes.Buffer
 		ssHCL.WriteString("{\n")
-		for _, sa := range selfServiceAttrs {
+		for _, sa := range ssAttrs {
 			ssHCL.WriteString(fmt.Sprintf("    %s = %s\n", sa.name, tokensString(sa.tokens)))
+		}
+		if len(ssCategories) > 0 {
+			ssHCL.WriteString("    categories = [\n")
+			for _, cat := range ssCategories {
+				ssHCL.WriteString("      " + cat + ",\n")
+			}
+			ssHCL.WriteString("    ]\n")
 		}
 		ssHCL.WriteString("  }")
 		body.SetAttributeRaw("self_service", hclTokensForLiteral(ssHCL.String()))
@@ -554,12 +662,10 @@ func transformPolicy(body *hclwrite.Body, label string, report *Report, file str
 }
 
 // transformPolicyPayloads unwraps the payloads block into top-level attrs.
+//
+// Old provider note: `scripts`, `printers`, and `dock_items` are direct blocks
+// (each block IS one item); `packages` uses a `package {}` sub-block per item.
 func transformPolicyPayloads(body *hclwrite.Body, payloads *hclwrite.Block, label string, report *Report, file string, line int) {
-	type savedAttr struct {
-		name   string
-		tokens hclwrite.Tokens
-	}
-
 	for _, sub := range payloads.Body().Blocks() {
 		switch sub.Type() {
 		case "packages":
@@ -590,21 +696,12 @@ func transformPolicyPayloads(body *hclwrite.Body, payloads *hclwrite.Block, labe
 			body.SetAttributeRaw("packages", hclTokensForLiteral(pkgHCL.String()))
 
 		case "scripts":
-			var scriptItems []string
-			for _, sBlock := range sub.Body().Blocks() {
-				if sBlock.Type() == "script" {
-					scriptItems = append(scriptItems, blockToObjectLiteral(sBlock.Body(), "      "))
-				}
-			}
-			if len(scriptItems) > 0 {
-				var scrHCL bytes.Buffer
-				scrHCL.WriteString("{\n    scripts = [\n")
-				for _, item := range scriptItems {
-					scrHCL.WriteString(item + ",\n")
-				}
-				scrHCL.WriteString("    ]\n  }")
-				body.SetAttributeRaw("scripts", hclTokensForLiteral(scrHCL.String()))
-			}
+			// Old: each `scripts {}` block is one script item (not a container).
+			var scrHCL bytes.Buffer
+			scrHCL.WriteString("{\n    scripts = [\n")
+			scrHCL.WriteString(blockToObjectLiteral(sub.Body(), "      ") + ",\n")
+			scrHCL.WriteString("    ]\n  }")
+			body.SetAttributeRaw("scripts", hclTokensForLiteral(scrHCL.String()))
 
 		case "maintenance":
 			objLit := blockBodyToObjectLiteral(sub.Body(), "  ")
@@ -626,38 +723,20 @@ func transformPolicyPayloads(body *hclwrite.Body, payloads *hclwrite.Block, labe
 			body.SetAttributeRaw("disk_encryption", hclTokensForLiteral(objLit))
 
 		case "printers":
-			var items []string
-			for _, pBlock := range sub.Body().Blocks() {
-				if pBlock.Type() == "printer" {
-					items = append(items, blockToObjectLiteral(pBlock.Body(), "      "))
-				}
-			}
-			if len(items) > 0 {
-				var hcl bytes.Buffer
-				hcl.WriteString("{\n    printers = [\n")
-				for _, item := range items {
-					hcl.WriteString(item + ",\n")
-				}
-				hcl.WriteString("    ]\n  }")
-				body.SetAttributeRaw("printers", hclTokensForLiteral(hcl.String()))
-			}
+			// Old: each `printers {}` block is one printer item (not a container).
+			var hclBuf bytes.Buffer
+			hclBuf.WriteString("{\n    printers = [\n")
+			hclBuf.WriteString(blockToObjectLiteral(sub.Body(), "      ") + ",\n")
+			hclBuf.WriteString("    ]\n  }")
+			body.SetAttributeRaw("printers", hclTokensForLiteral(hclBuf.String()))
 
 		case "dock_items":
-			var items []string
-			for _, dBlock := range sub.Body().Blocks() {
-				if dBlock.Type() == "dock_item" {
-					items = append(items, blockToObjectLiteral(dBlock.Body(), "      "))
-				}
-			}
-			if len(items) > 0 {
-				var hcl bytes.Buffer
-				hcl.WriteString("{\n    dock_items = [\n")
-				for _, item := range items {
-					hcl.WriteString(item + ",\n")
-				}
-				hcl.WriteString("    ]\n  }")
-				body.SetAttributeRaw("dock_items", hclTokensForLiteral(hcl.String()))
-			}
+			// Old: each `dock_items {}` block is one dock item (not a container).
+			var hclBuf bytes.Buffer
+			hclBuf.WriteString("{\n    dock_items = [\n")
+			hclBuf.WriteString(blockToObjectLiteral(sub.Body(), "      ") + ",\n")
+			hclBuf.WriteString("    ]\n  }")
+			body.SetAttributeRaw("dock_items", hclTokensForLiteral(hclBuf.String()))
 
 		case "user_interaction":
 			objLit := blockBodyToObjectLiteral(sub.Body(), "  ")
@@ -720,7 +799,7 @@ func transformPolicyAccountMaintenance(body *hclwrite.Body, am *hclwrite.Body, l
 				body.SetAttributeRaw("directory_bindings", hclTokensForLiteral(hcl.String()))
 			}
 
-		case "efi_password":
+		case "efi_password", "open_firmware_efi_password":
 			efiBody := sub.Body()
 			if efiBody.GetAttribute("of_password") != nil && efiBody.GetAttribute("of_password_wo_version") == nil {
 				efiBody.SetAttributeValue("of_password_wo_version", cty.NumberIntVal(1))
@@ -845,7 +924,7 @@ func transformPrivileges(body *hclwrite.Body, report *Report, label string, file
 func transformLDAPServer(body *hclwrite.Body, label string, report *Report, file string, line int) {
 	// Collect connection-related attrs
 	connAttrs := []string{
-		"hostname", "port", "use_ssl", "authentication_type", "open_close_timeout",
+		"name", "hostname", "port", "use_ssl", "authentication_type", "open_close_timeout",
 		"search_timeout", "referral_response", "use_wildcards", "server_type",
 	}
 	type savedAttr struct {
@@ -857,7 +936,9 @@ func transformLDAPServer(body *hclwrite.Body, label string, report *Report, file
 		tok := getAttrRawTokens(body, a)
 		if tok != nil {
 			outName := a
-			if a == "open_close_timeout" {
+			if a == "name" {
+				outName = "display_name"
+			} else if a == "open_close_timeout" {
 				outName = "connection_timeout"
 			} else if a == "server_type" {
 				outName = "directory_service"
@@ -867,19 +948,22 @@ func transformLDAPServer(body *hclwrite.Body, label string, report *Report, file
 		}
 	}
 
-	// Collect account block
+	// Collect account block (use orderedAttrNames for deterministic output).
 	var acctAttrs []savedAttr
 	for _, block := range body.Blocks() {
 		if block.Type() == "account" {
-			for name, attr := range block.Body().Attributes() {
-				acctAttrs = append(acctAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+			for _, name := range orderedAttrNames(block.Body()) {
+				attr := block.Body().GetAttribute(name)
+				if attr != nil {
+					acctAttrs = append(acctAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+				}
 			}
 			body.RemoveBlock(block)
 			break
 		}
 	}
 
-	// Collect mapping blocks
+	// Collect mapping blocks (use orderedAttrNames for deterministic output).
 	type mappingBlock struct {
 		blockType string
 		attrs     []savedAttr
@@ -889,7 +973,11 @@ func transformLDAPServer(body *hclwrite.Body, label string, report *Report, file
 		switch block.Type() {
 		case "user_mappings", "user_group_mappings", "user_group_membership_mappings":
 			var attrs []savedAttr
-			for name, attr := range block.Body().Attributes() {
+			for _, name := range orderedAttrNames(block.Body()) {
+				attr := block.Body().GetAttribute(name)
+				if attr == nil {
+					continue
+				}
 				outName := name
 				if name == "map_object_class_to_any_or_all" {
 					outName = "object_class_limitation"
@@ -946,7 +1034,7 @@ func transformLDAPServer(body *hclwrite.Body, label string, report *Report, file
 // transformRestrictedSoftware restructures jamfpro_restricted_software.
 func transformRestrictedSoftware(body *hclwrite.Body, label string, report *Report, file string, line int) {
 	generalAttrNames := map[string]bool{
-		"name": true, "process_name": true, "display_message": true, "site_id": true,
+		"name": true, "process_name": true, "display_message": true,
 		"match_exact_process_name": true, "send_notification": true,
 		"delete_executable": true, "kill_process": true,
 	}
@@ -976,8 +1064,17 @@ func transformRestrictedSoftware(body *hclwrite.Body, label string, report *Repo
 		}
 	}
 
+	// Drop site_id whether it appears as an attr or as a block.
+	body.RemoveAttribute("site_id")
+
 	var scopeTargetAttrs []savedAttr
+	var scopeExclusionAttrs []savedAttr
 	for _, block := range body.Blocks() {
+		if block.Type() == "site_id" {
+			// Old provider uses site_id { id = ... } block — drop it.
+			body.RemoveBlock(block)
+			continue
+		}
 		if block.Type() == "scope" {
 			scopeBody := block.Body()
 			for _, name := range orderedAttrNames(scopeBody) {
@@ -986,8 +1083,17 @@ func transformRestrictedSoftware(body *hclwrite.Body, label string, report *Repo
 					scopeTargetAttrs = append(scopeTargetAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
 				}
 			}
+			for _, subBlock := range scopeBody.Blocks() {
+				if subBlock.Type() == "exclusions" {
+					for _, name := range orderedAttrNames(subBlock.Body()) {
+						attr := subBlock.Body().GetAttribute(name)
+						if attr != nil {
+							scopeExclusionAttrs = append(scopeExclusionAttrs, savedAttr{name, attr.Expr().BuildTokens(nil)})
+						}
+					}
+				}
+			}
 			body.RemoveBlock(block)
-			break
 		}
 	}
 
@@ -1003,14 +1109,26 @@ func transformRestrictedSoftware(body *hclwrite.Body, label string, report *Repo
 	}
 
 	// Build scope = { targets = { ... }, exclusions = { ... } }
-	if len(scopeTargetAttrs) > 0 {
+	if len(scopeTargetAttrs) > 0 || len(scopeExclusionAttrs) > 0 {
 		var scopeHCL bytes.Buffer
-		scopeHCL.WriteString("{\n    targets = {\n")
-		for _, sa := range scopeTargetAttrs {
-			valStr := tokensString(rewriteGroupReferences(sa.tokens))
-			scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+		scopeHCL.WriteString("{\n")
+		if len(scopeTargetAttrs) > 0 {
+			scopeHCL.WriteString("    targets = {\n")
+			for _, sa := range scopeTargetAttrs {
+				valStr := tokensString(rewriteGroupReferences(sa.tokens))
+				scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+			}
+			scopeHCL.WriteString("    }\n")
 		}
-		scopeHCL.WriteString("    }\n  }")
+		if len(scopeExclusionAttrs) > 0 {
+			scopeHCL.WriteString("    exclusions = {\n")
+			for _, sa := range scopeExclusionAttrs {
+				valStr := tokensString(rewriteGroupReferences(sa.tokens))
+				scopeHCL.WriteString(fmt.Sprintf("      %s = %s\n", sa.name, valStr))
+			}
+			scopeHCL.WriteString("    }\n")
+		}
+		scopeHCL.WriteString("  }")
 		body.SetAttributeRaw("scope", hclTokensForLiteral(scopeHCL.String()))
 	}
 }
@@ -1035,7 +1153,12 @@ func transformInventoryCollection(body *hclwrite.Body, label string, report *Rep
 		if block.Type() == "computer_inventory_collection_preferences" {
 			prefBody := block.Body()
 			// Move attrs out of nested block to top level with renames.
-			for oldName, newName := range renames {
+			// Use orderedAttrNames so output is deterministic (range over map is not).
+			for _, oldName := range orderedAttrNames(prefBody) {
+				newName, ok := renames[oldName]
+				if !ok {
+					newName = oldName // unknown attrs pass through unchanged
+				}
 				if tok := getAttrRawTokens(prefBody, oldName); tok != nil {
 					body.SetAttributeRaw(newName, tok)
 				}
@@ -1069,11 +1192,9 @@ func transformInventoryCollection(body *hclwrite.Body, label string, report *Rep
 
 // transformSSOSettings handles SSO settings restructuring.
 func transformSSOSettings(body *hclwrite.Body, label string, report *Report, file string, line int) {
-	// For SSO settings, convert sub-blocks to object attrs and inject WO versions.
 	for _, block := range body.Blocks() {
 		switch block.Type() {
 		case "oidc_settings", "saml_settings":
-			// keystore_password_wo_version injection
 			samlBody := block.Body()
 			if samlBody.GetAttribute("keystore_password") != nil && samlBody.GetAttribute("keystore_password_wo_version") == nil {
 				samlBody.SetAttributeValue("keystore_password_wo_version", cty.NumberIntVal(1))
@@ -1081,17 +1202,19 @@ func transformSSOSettings(body *hclwrite.Body, label string, report *Report, fil
 			objLit := blockBodyToObjectLiteral(samlBody, "  ")
 			body.SetAttributeRaw(block.Type(), hclTokensForLiteral(objLit))
 			body.RemoveBlock(block)
+		case "enrollment_sso_config":
+			// No equivalent in new provider — drop silently.
+			body.RemoveBlock(block)
 		}
 	}
 }
 
 // transformAdvancedComputerSearch restructures criteria blocks → list.
 func transformAdvancedComputerSearch(body *hclwrite.Body, label string, report *Report, file string, line int) {
-	// Drop view_as, sort1, sort2, sort3
 	for _, d := range []string{"view_as", "sort1", "sort2", "sort3"} {
 		body.RemoveAttribute(d)
 	}
-	transformCriteriaBlocks(body)
+	transformAdvancedSearchCriteria(body)
 }
 
 // transformAdvancedMobileSearch restructures criteria blocks → list.
@@ -1099,19 +1222,75 @@ func transformAdvancedMobileSearch(body *hclwrite.Body, label string, report *Re
 	for _, d := range []string{"view_as", "sort1", "sort2", "sort3"} {
 		body.RemoveAttribute(d)
 	}
-	transformCriteriaBlocks(body)
+	transformAdvancedSearchCriteria(body)
+}
+
+// transformAdvancedSearchCriteria converts old criteria { } blocks to criteria = [ { } ] list
+// for advanced computer/mobile device searches. Unlike device group criteria, the attribute
+// names `name` and `search_type` stay unchanged (only `priority` is dropped, and
+// `opening_paren`/`closing_paren` are renamed).
+func transformAdvancedSearchCriteria(body *hclwrite.Body) {
+	type criteriaItem struct {
+		name       string
+		searchType string
+		value      string
+		andOr      string
+		openParen  string
+		closeParen string
+	}
+
+	var items []criteriaItem
+	for _, block := range body.Blocks() {
+		if block.Type() == "criteria" {
+			item := criteriaItem{}
+			item.name = getAttrStringValue(block.Body(), "name")
+			item.searchType = getAttrStringValue(block.Body(), "search_type")
+			item.value = getAttrStringValue(block.Body(), "value")
+			item.andOr = getAttrStringValue(block.Body(), "and_or")
+			item.openParen = getAttrStringValue(block.Body(), "opening_paren")
+			item.closeParen = getAttrStringValue(block.Body(), "closing_paren")
+			items = append(items, item)
+			body.RemoveBlock(block)
+		}
+	}
+
+	if len(items) == 0 {
+		return
+	}
+
+	var listHCL bytes.Buffer
+	listHCL.WriteString("[\n")
+	for i, item := range items {
+		listHCL.WriteString("    {\n")
+		listHCL.WriteString(fmt.Sprintf("      name        = %q\n", item.name))
+		listHCL.WriteString(fmt.Sprintf("      search_type = %q\n", item.searchType))
+		listHCL.WriteString(fmt.Sprintf("      value       = %q\n", item.value))
+		if i > 0 && item.andOr != "" {
+			listHCL.WriteString(fmt.Sprintf("      and_or      = %q\n", item.andOr))
+		}
+		if item.openParen == "true" {
+			listHCL.WriteString("      has_opening_parenthesis = true\n")
+		}
+		if item.closeParen == "true" {
+			listHCL.WriteString("      has_closing_parenthesis = true\n")
+		}
+		listHCL.WriteString("    },\n")
+	}
+	listHCL.WriteString("  ]")
+	body.SetAttributeRaw("criteria", hclTokensForLiteral(listHCL.String()))
 }
 
 // transformCriteriaBlocks converts old criteria { } blocks to criteria = [ { } ] list.
+// Used for Tier 4 device groups where `name` → `criteria` and `search_type` → `operator`.
 func transformCriteriaBlocks(body *hclwrite.Body) {
 	type criteriaItem struct {
-		name         string
-		searchType   string
-		value        string
-		andOr        string
-		openParen    string
-		closeParen   string
-		index        int
+		name       string
+		searchType string
+		value      string
+		andOr      string
+		openParen  string
+		closeParen string
+		index      int
 	}
 
 	var items []criteriaItem
@@ -1180,6 +1359,14 @@ func transformDeviceGroup(body *hclwrite.Body, groupType, deviceType string, lab
 
 // transformEnrollmentCustomization restructures enrollment customization.
 func transformEnrollmentCustomization(body *hclwrite.Body, label string, report *Report, file string, line int) {
+	// enrollment_customization_image_source is a top-level attr → icon_source
+	if tok := getAttrRawTokens(body, "enrollment_customization_image_source"); tok != nil {
+		body.RemoveAttribute("enrollment_customization_image_source")
+		body.SetAttributeRaw("icon_source", tok)
+	}
+	// site_id dropped (not in new provider)
+	body.RemoveAttribute("site_id")
+
 	for _, block := range body.Blocks() {
 		switch block.Type() {
 		case "branding_settings":
@@ -1188,11 +1375,6 @@ func transformEnrollmentCustomization(body *hclwrite.Body, label string, report 
 			if tok := getAttrRawTokens(bsBody, "text_color"); tok != nil {
 				bsBody.RemoveAttribute("text_color")
 				bsBody.SetAttributeRaw("body_text_color", tok)
-			}
-			// enrollment_customization_image_source → icon_source
-			if tok := getAttrRawTokens(bsBody, "enrollment_customization_image_source"); tok != nil {
-				bsBody.RemoveAttribute("enrollment_customization_image_source")
-				bsBody.SetAttributeRaw("icon_source", tok)
 			}
 			objLit := blockBodyToObjectLiteral(bsBody, "  ")
 			body.SetAttributeRaw("branding_settings", hclTokensForLiteral(objLit))
@@ -1252,8 +1434,7 @@ func transformEnrollmentCustomization(body *hclwrite.Body, label string, report 
 
 // transformComputerPrestage handles computer prestage enrollment restructuring.
 func transformComputerPrestage(body *hclwrite.Body, label string, report *Report, file string, line int) {
-	transformPrestageCommon(body, false)
-	// admin_password_wo_version
+	// Inject admin_password_wo_version BEFORE block→object conversion (transformPrestageCommon).
 	for _, block := range body.Blocks() {
 		if block.Type() == "account_settings" {
 			asBody := block.Body()
@@ -1262,6 +1443,7 @@ func transformComputerPrestage(body *hclwrite.Body, label string, report *Report
 			}
 		}
 	}
+	transformPrestageCommon(body, false)
 	// Drop computer-specific attrs
 	for _, d := range []string{
 		"prestage_installed_profile_ids", "custom_package_ids",
