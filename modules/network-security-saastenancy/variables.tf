@@ -52,12 +52,6 @@ variable "jsc_password" {
 }
 
 
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "us-west-2"
-}
-
 variable "Domain" {
   description = "internal domain to add to the header if multiple seperated by space"
   type        = string

@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -19,7 +20,7 @@ resource "jamfplatform_pro_script" "script_ssoe-okta" {
   name     = "SSOe-(Okta)"
   priority = "AFTER"
   info     = "This script will check for the presence of the Okta Verify App. If not present, it will download and install the latest version. It will then launch the app with the the URL of the Experience Jamf Okta tenant."
-  script   = file("${path.module}/support_files/computer_scripts/SSOe-(Okta).zsh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/SSOe-(Okta).zsh")
 }
 
 ## Create Smart Computer Groups
@@ -64,7 +65,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "ssoe-okta" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_ssoe.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {

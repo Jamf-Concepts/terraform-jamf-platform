@@ -7,6 +7,7 @@ terraform {
     }
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
     aws = {

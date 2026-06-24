@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -24,14 +25,14 @@ resource "jamfplatform_pro_script" "script_sonoma_stig_compliance" {
   name     = "Sonoma - DISA STIG Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sonoma"
-  script   = file("${path.module}/support_files/computer_scripts/sonoma_stig_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/sonoma_stig_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_stig_compliance" {
   name     = "Sequoia - DISA STIG Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sequoia"
-  script   = file("${path.module}/support_files/computer_scripts/sequoia_stig_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/sequoia_stig_compliance.sh")
 }
 
 ## Create computer extension attributes
@@ -349,7 +350,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_stig" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -369,7 +370,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_stig_smart_card"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_stig_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${path.module}/support_files/computer_config_profiles/Sonoma_stig-security.smartcard.mobileconfig")
   }
   scope = {
@@ -418,7 +419,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_stig" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -438,7 +439,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_stig_smart_card
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_stig_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${path.module}/support_files/computer_config_profiles/Sequoia_stig-security.smartcard.mobileconfig")
   }
   scope = {

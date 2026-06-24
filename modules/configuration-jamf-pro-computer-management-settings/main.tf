@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -13,15 +14,9 @@ resource "jamfplatform_pro_computer_inventory_collection_settings" "example" {
   collect_application_usage_information            = true
   collect_package_receipts                         = true
   collect_available_software_updates               = true
-  include_software_id                              = true
   collect_local_user_accounts                      = true
   include_home_directory_sizes                     = true
-  collect_active_directory_mobile_account_info     = true
-  include_printers                                 = true
-  include_services                                 = true
-  collect_synced_mobile_device_info                = true
   collect_user_and_location_from_directory_service = true
-  collect_beacons                                  = true
   allow_jamf_binary_user_and_location_changes      = true
   use_unix_user_paths                              = true
   collect_unmanaged_certificates                   = true

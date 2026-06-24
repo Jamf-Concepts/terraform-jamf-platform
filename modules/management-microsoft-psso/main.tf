@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -53,6 +54,7 @@ resource "jamfplatform_device_group" "microsoft_psso_exclusion" {
 
 resource "jamfplatform_pro_package" "microsoft_company_portal" {
   package_file_source = "https://go.microsoft.com/fwlink/?linkid=862280"
+  file_name           = "CompanyPortal-Installer.pkg"
   category_id         = jamfplatform_pro_category.microsoft_psso.id
   priority            = 1
   reboot_required     = false
@@ -94,7 +96,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "microsoft_psso_settings
   general = {
     name                = "Microsoft Entra PSSO Settings"
     description         = "Configuration Profile to set Microsoft Entra PSSO settings"
-    level               = "System"
+    level               = "Computer Level"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     payloads            = file("${path.module}/support_files/Microsoft Entra PSSO Settings.mobileconfig")

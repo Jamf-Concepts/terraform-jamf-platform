@@ -25,7 +25,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
   general = {
     name                = "SaaS Tenancy Cert"
     description         = "An example mobile device configuration profile."
-    level               = "System"
+    level               = "Computer Level"
     distribution_method = "Install Automatically"
     payloads            = trimspace(data.http.profile.response_body)
     redeploy_on_update  = "Newly Assigned"

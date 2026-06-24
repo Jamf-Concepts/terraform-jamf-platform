@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
@@ -68,27 +69,17 @@ resource "jamfplatform_pro_api_client" "jamfpro_api_integration_jsc" {
   credential_rotation           = "1"
 }
 
-data "jamfpro_api_integration" "jamf_pro_api_integration_001_data" {
-  id = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.id
-}
-
 output "jp_client_id" {
-  value = data.jamfplatform_pro_api_client.jamf_pro_api_integration_001_data.client_id
+  value = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_id
 }
 
 output "jp_client_secret" {
-  value = data.jamfplatform_pro_api_client.jamf_pro_api_integration_001_data.client_secret
+  value     = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_secret
+  sensitive = true
 }
-
-/* resource "time_sleep" "wait_60_seconds" {
-  depends_on = [jamfplatform_pro_api_client.jamfpro_api_integration_jsc]
-
-  create_duration = "60s"
-} */
 
 resource "jsc_uemc" "initial_uemc" {
   domain       = var.jamfplatform_base_url
-  clientid     = data.jamfplatform_pro_api_client.jamf_pro_api_integration_001_data.client_id
-  clientsecret = data.jamfplatform_pro_api_client.jamf_pro_api_integration_001_data.client_secret
-  /* depends_on   = [time_sleep.wait_60_seconds] */
+  clientid     = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_id
+  clientsecret = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_secret
 }

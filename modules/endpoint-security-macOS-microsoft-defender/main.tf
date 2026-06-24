@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -45,7 +46,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
   general = {
     name                = "Microsoft Defender MacOS Settings"
     description         = "This will configure all necessary settings for Microsoft Defender for Endpoint on macOS including Content Filtering, Notifications, PPPC, Allowed System Extensions and Managed Login Items. For more information, please see: https://learn.microsoft.com/en-us/defender-endpoint/mac-jamfpro-policies#step-2-create-and-deploy-microsoft-defender-for-endpoint-configuration-profiles"
-    level               = "System"
+    level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_defender.id
     redeploy_on_update  = "Newly Assigned"
     distribution_method = "Install Automatically"
@@ -64,7 +65,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
   general = {
     name                = "Microsoft Defender Auto Update Settings"
     description         = "Configuration profile to manage Microsoft Defender for Endpoint auto update settings on macOS devices."
-    level               = "System"
+    level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_defender.id
     redeploy_on_update  = "Newly Assigned"
     distribution_method = "Install Automatically"
@@ -83,7 +84,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
   general = {
     name                = "Microsoft Defender Onboarding Settings"
     description         = "This profile contains the Microsoft Defender for Endpoint onboarding configuration for macOS devices."
-    level               = "System"
+    level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_defender.id
     redeploy_on_update  = "Newly Assigned"
     distribution_method = "Install Automatically"
@@ -111,7 +112,7 @@ resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_defen
 
 
   notification_settings = {
-    notification_message  = ""
+    notification_message  = "An update is available"
     notification_interval = 1
     deadline_message      = "Update deadline approaching"
     deadline              = 1

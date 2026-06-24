@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
@@ -35,7 +36,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "ztna_dp" {
     name                = "Jamf Connect ZTNA and Content Filtering - macOS (Supervised)"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
-    level               = "System"
+    level               = "Computer Level"
     payloads            = jsc_ap.ztna_dp_only.macosplist
   }
   scope = {

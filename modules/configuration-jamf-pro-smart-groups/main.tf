@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -133,7 +134,7 @@ resource "jamfplatform_device_group" "ios_18" {
   ]
 }
 
-resource "jamfplatform_device_group" "group_last_checkin" {
+resource "jamfplatform_device_group" "group_last_checkin_mobile" {
   name = "*Last Check-In More Than a Week Ago"
 
   group_type  = "smart"

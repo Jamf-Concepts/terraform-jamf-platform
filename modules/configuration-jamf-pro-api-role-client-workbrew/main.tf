@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -23,9 +24,4 @@ resource "jamfplatform_pro_api_client" "workbrew_api_integeration" {
   enabled             = true
   api_roles           = [jamfplatform_pro_api_role.workbrew_api_role.display_name]
   credential_rotation = "1"
-}
-
-# Data source to retrieve the full API integration details including client_secret
-data "jamfpro_api_integration" "workbrew_api_integeration_data" {
-  id = jamfplatform_pro_api_client.workbrew_api_integeration.id
 }

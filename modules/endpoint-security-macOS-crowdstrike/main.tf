@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -21,7 +22,7 @@ resource "jamfplatform_pro_script" "scripts_falconpkg" {
   priority        = "AFTER"
   info            = "Source: https://github.com/franton/Crowdstrike-API-Scripts/blob/main/install-csf.sh"
   notes           = ""
-  script          = file("${path.module}/support_files/scripts/falconinstall.sh")
+  script_contents          = file("${path.module}/support_files/scripts/falconinstall.sh")
   parameter_4     = "FALCON API CLIENT ID"
   parameter_5     = "FALCON API SECRET"
   parameter_6     = ""
@@ -34,7 +35,7 @@ resource "jamfplatform_pro_script" "scripts_falconcid" {
   priority        = "AFTER"
   info            = ""
   notes           = ""
-  script          = file("${path.module}/support_files/scripts/falconcid.sh")
+  script_contents          = file("${path.module}/support_files/scripts/falconcid.sh")
   parameter_4     = "FALCON CUSTOMER ID"
   parameter_5     = ""
   parameter_6     = ""
@@ -48,7 +49,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
   general = {
     name                = "Crowdstrike Falcon Settings"
     description         = ""
-    level               = "System"
+    level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_crowdstrike.id
     redeploy_on_update  = "Newly Assigned"
     distribution_method = "Install Automatically"

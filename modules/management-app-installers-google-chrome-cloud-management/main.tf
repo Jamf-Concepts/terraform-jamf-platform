@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -44,7 +45,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "google_chrome_cloud_man
   general = {
     name                = "Google Chrome Cloud Management Settings"
     description         = "To customize Google Chrome Enterprise for your organization, check out the Google documentation: https://support.google.com/chrome/a/answer/9771882?hl=en"
-    level               = "System"
+    level               = "Computer Level"
     category_id         = jamfplatform_pro_category.google_chrome_cloud_management.id
     redeploy_on_update  = "Newly Assigned"
     distribution_method = "Install Automatically"

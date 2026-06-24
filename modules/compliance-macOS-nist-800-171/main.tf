@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -29,21 +30,21 @@ resource "jamfplatform_pro_script" "script_sonoma_800_171_compliance" {
   name     = "Sonoma - NIST 800-171 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sonoma"
-  script   = file("${path.module}/support_files/computer_scripts/sonoma_800-171_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/sonoma_800-171_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_800_171_compliance" {
   name     = "Sequoia - NIST 800-171 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sequoia"
-  script   = file("${path.module}/support_files/computer_scripts/sequoia_800-171_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/sequoia_800-171_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_tahoe_800_171_compliance" {
   name     = "Tahoe - NIST 800-171 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Tahoe"
-  script   = file("${path.module}/support_files/computer_scripts/tahoe_800-171_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/tahoe_800-171_compliance.sh")
 }
 
 ## Create computer extension attributes
@@ -488,7 +489,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -508,7 +509,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171_smart_ca
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_800_171_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${path.module}/support_files/computer_config_profiles/Sonoma_800-171-security.smartcard.mobileconfig")
   }
   scope = {
@@ -560,7 +561,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -580,7 +581,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171_smart_c
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_800_171_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${path.module}/support_files/computer_config_profiles/Sequoia_800-171-security.smartcard.mobileconfig")
   }
   scope = {
@@ -632,7 +633,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -652,7 +653,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171_smart_car
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_tahoe_800_171_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${path.module}/support_files/computer_config_profiles/Tahoe_800-171-security.smartcard.mobileconfig")
   }
   scope = {

@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -29,21 +30,21 @@ resource "jamfplatform_pro_script" "script_sonoma_cis_lvl1_compliance" {
   name     = "Sonoma - CIS Level 1 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Sonoma"
-  script   = file("${path.module}/support_files/computer_scripts/sonoma_cis_lvl1_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/sonoma_cis_lvl1_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_cis_lvl1_compliance" {
   name     = "Sequoia - CIS Level 1 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Sequoia"
-  script   = file("${path.module}/support_files/computer_scripts/sequoia_cis_lvl1_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/sequoia_cis_lvl1_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_tahoe_cis_lvl1_compliance" {
   name     = "Tahoe - CIS Level 1 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Tahoe"
-  script   = file("${path.module}/support_files/computer_scripts/tahoe_cis_lvl1_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/tahoe_cis_lvl1_compliance.sh")
 }
 
 ## Create computer extension attributes
@@ -478,7 +479,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_cis_lvl1" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_cis_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -524,7 +525,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_cis_lvl1" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_cis_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -567,7 +568,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "tahoe_cis_lvl1" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_tahoe_cis_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {

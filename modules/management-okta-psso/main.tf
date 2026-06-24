@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -53,6 +54,7 @@ resource "jamfplatform_device_group" "okta_psso_exclusion" {
 
 resource "jamfplatform_pro_package" "okta_verify" {
   package_file_source = "https://sso.tryjamf.com/api/v1/artifacts/OKTA_VERIFY_MACOS/download?releaseChannel=%OKTA_RELEASE_CHANNEL%"
+  file_name           = "OktaVerify.pkg"
   category_id         = jamfplatform_pro_category.okta_psso.id
   priority            = 1
   reboot_required     = false
@@ -93,7 +95,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "okta_device_access_scep
   general = {
     name                = "Okta Device Access SCEP"
     description         = ""
-    level               = "System"
+    level               = "Computer Level"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     payloads            = local.okta_device_access_scep
@@ -113,7 +115,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "okta_verify_psso" {
   general = {
     name                = "Okta Verify for PSSO at Setup"
     description         = ""
-    level               = "System"
+    level               = "Computer Level"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     payloads            = local.okta_verify_psso_setup
@@ -133,7 +135,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "okta_verify_psso_app_co
   general = {
     name                = "Okta Verify App Configuration"
     description         = ""
-    level               = "System"
+    level               = "Computer Level"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     payloads            = local.okta_verify_psso_app_config

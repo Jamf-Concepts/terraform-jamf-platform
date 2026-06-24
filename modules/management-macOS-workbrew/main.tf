@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
     null = {
@@ -24,7 +25,7 @@ resource "jamfplatform_pro_script" "workbrew_script" {
   priority        = "BEFORE"
   info            = "Script to activate Workbrew agent on macOS devices."
   notes           = ""
-  script          = file("${path.module}/support_files/Workbrew Activation.sh")
+  script_contents          = file("${path.module}/support_files/Workbrew Activation.sh")
   parameter_4     = "Workbrew Workspace API Key"
   parameter_5     = ""
   parameter_6     = ""
@@ -58,6 +59,7 @@ locals {
 
 resource "jamfplatform_pro_package" "workbrew_package" {
   package_file_source = "https://console.workbrew.com/downloads/macos"
+  file_name           = "workbrew.pkg"
   category_id         = jamfplatform_pro_category.workbrew_category.id
   priority            = 1
   reboot_required     = false
@@ -100,7 +102,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "workbrew_managed_login_
   general = {
     name                = "Workbrew Managed Login Item"
     description         = ""
-    level               = "System"
+    level               = "Computer Level"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     payloads            = file("${path.module}/support_files/Workbrew Managed Login Item.mobileconfig")

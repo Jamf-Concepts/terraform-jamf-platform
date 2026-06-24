@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -29,21 +30,21 @@ resource "jamfplatform_pro_script" "script_sonoma_cmmc_lvl1_compliance" {
   name     = "Sonoma - US CMMC 2.0 Level 1 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the US CMMC 2.0 Level 1 benchmark for macOS Sonoma"
-  script   = file("${path.module}/support_files/computer_scripts/sonoma_cmmc_lvl1_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/sonoma_cmmc_lvl1_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_cmmc_lvl1_compliance" {
   name     = "Sequoia - US CMMC 2.0 Level 1 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the US CMMC 2.0 Level 1 benchmark for macOS Sequoia"
-  script   = file("${path.module}/support_files/computer_scripts/sequoia_cmmc_lvl1_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/sequoia_cmmc_lvl1_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_tahoe_cmmc_lvl1_compliance" {
   name     = "Tahoe - US CMMC 2.0 Level 1 Compliance"
   priority = "AFTER"
   info     = "This script will apply a set of rules related to the US CMMC 2.0 Level 1 benchmark for macOS Tahoe"
-  script   = file("${path.module}/support_files/computer_scripts/tahoe_cmmc_lvl1_compliance.sh")
+  script_contents   = file("${path.module}/support_files/computer_scripts/tahoe_cmmc_lvl1_compliance.sh")
 }
 
 ## Create computer extension attributes
@@ -478,7 +479,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_cmmc_lvl1" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_cmmc_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -497,7 +498,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_cmmc_lvl1_smart_
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sonoma_cmmc_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${path.module}/support_files/computer_config_profiles/Sonoma_cmmc_lvl1-security.smartcard.mobileconfig")
   }
   scope = {
@@ -539,7 +540,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_cmmc_lvl1" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_cmmc_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -558,7 +559,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_cmmc_lvl1_smart
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_sequoia_cmmc_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${path.module}/support_files/computer_config_profiles/Sequoia_cmmc_lvl1-security.smartcard.mobileconfig")
   }
   scope = {
@@ -600,7 +601,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "tahoe_cmmc_lvl1" {
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_tahoe_cmmc_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${each.value}")
   }
   scope = {
@@ -619,7 +620,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "tahoe_cmmc_lvl1_smart_c
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     category_id         = jamfplatform_pro_category.category_tahoe_cmmc_lvl1_benchmarks.id
-    level               = "System"
+    level               = "Computer Level"
     payloads            = file("${path.module}/support_files/computer_config_profiles/Tahoe_cmmc_lvl1-security.smartcard.mobileconfig")
   }
   scope = {

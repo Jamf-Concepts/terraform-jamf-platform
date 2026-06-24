@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
     jsc = {
@@ -63,7 +64,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "all_services_macos" {
     description         = "This configuration profile contains all the pieces you'll need to deploy and enforce Network Security and Content Control. We have also created a Smart Group called 'All Computers' and scoped this configuration profile to it. To finalize scoping and get this onto devices, navigate to Smart Computer Groups, click on the 'All Computers' group and remove the serial number criteria with the 111222333444555 serial number."
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
-    level               = "System"
+    level               = "Computer Level"
     category_id         = jamfplatform_pro_category.jsc_all_services_profiles.id
     payloads            = jsc_ap.all_services.macosplist
   }

@@ -1,9 +1,10 @@
 ## Root provider requirements
 terraform {
+  required_version = ">= 1.11"
   required_providers {
     jamfplatform = {
       source  = "Jamf-Concepts/jamfplatform"
-      version = ">= 0.1.0"
+      version = "0.18.0-rc.2"
     }
     jsc = {
       source  = "Jamf-Concepts/jsctfprovider"

@@ -1,8 +1,10 @@
 ## Call Terraform provider
 terraform {
+  required_version = ">= 1.11"
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -13,17 +15,17 @@ resource "jamfplatform_pro_jamf_protect" "protect_integration" {
   client_id    = var.jamfprotect_client_id
   password     = var.jamfprotect_client_password
   auto_install = true
-
-  timeouts {
-    create = "90s"
-  }
   api_url             = var.jamfprotect_url
   password_wo_version = 1
+  timeouts = {
+    create = "90s"
+  }
 }
 
 ## Create Category
 resource "jamfplatform_pro_category" "category_jamfprotect_security" {
-  name = "Security - Jamf Protect"
+  name     = "Security - Jamf Protect"
+  priority = 9
 }
 
 # Create Smart Group and Congfiguration Profile to identify Sequoia Macs and make Jamf Protect a non removable system extension
@@ -46,7 +48,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
   general = {
     name                = "Jamf Protect System Extension Enforcement"
     description         = "This configuration profile prevents users from disabling the Jamf Protect System Extension"
-    level               = "System"
+    level               = "Computer Level"
     redeploy_on_update  = "Newly Assigned"
     distribution_method = "Install Automatically"
     payloads            = file("${path.module}/support_files/non_removable_system_extension_jamf_protect.mobileconfig")

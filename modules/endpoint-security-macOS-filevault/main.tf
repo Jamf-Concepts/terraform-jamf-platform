@@ -3,6 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
+      version               = "0.18.0-rc.2"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -19,7 +20,7 @@ resource "jamfplatform_pro_script" "script_reissuekey" {
   name     = "Reissue FileVault 2 Key"
   priority = "AFTER"
   info     = "Source: https://github.com/jamf/FileVault2_Scripts/blob/master/reissueKey.sh"
-  script   = file("${path.module}/support_files/reissuekey.sh")
+  script_contents   = file("${path.module}/support_files/reissuekey.sh")
 }
 
 ## Create Smart Computer Groups - Scoping
@@ -112,7 +113,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
   general = {
     name                = "Enable FileVault 2"
     description         = "This configuration profile enforces FileVault 2 encryption. Prompts at next login"
-    level               = "System"
+    level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_disk_encrpytion.id
     redeploy_on_update  = "Newly Assigned"
     distribution_method = "Install Automatically"

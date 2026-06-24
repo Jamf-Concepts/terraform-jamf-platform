@@ -99,5 +99,6 @@ output "PublicIP" {
 }
 
 output "userdata" {
-  value = local.init_script
+  value     = local.init_script
+  sensitive = true
 }
