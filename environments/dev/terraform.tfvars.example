@@ -1,0 +1,30 @@
+# Copy this file to terraform.tfvars and fill in the values for your dev tenant.
+#
+#     cp terraform.tfvars.example terraform.tfvars
+#
+# terraform.tfvars is gitignored so your credentials stay local.
+# Do NOT commit terraform.tfvars under any circumstances.
+
+# ----- Jamf Platform API integration -----
+# Create an API integration at account.jamf.com (Integrations) to obtain the
+# client ID, client secret, and tenant ID. Pick the base_url for your region:
+#   US:   https://us.apigw.jamf.com
+#   EU:   https://eu.apigw.jamf.com
+#   APAC: https://apac.apigw.jamf.com
+jamfplatform_base_url      = "https://us.apigw.jamf.com"
+jamfplatform_client_id     = "00000000-0000-0000-0000-000000000000"
+jamfplatform_client_secret = "replace-with-your-client-secret"
+jamfplatform_tenant_id     = "00000000-0000-0000-0000-000000000000"
+
+# ----- Apple-issued tokens -----
+# Place token files in:
+#   support_files/device_enrollment_tokens/your-ade-token.p7m
+#   support_files/volume_purchasing_tokens/your-vpp-token.vpptoken
+ade_token_path_default = "support_files/device_enrollment_tokens/dev-ade.p7m"
+vpp_token_path_default = "support_files/volume_purchasing_tokens/dev-vpp.vpptoken"
+
+# ----- Wi-Fi profile -----
+# wifi_ssid has a default ("Pretend Co Wi-Fi") in modules/jamfplatform/variables.tf.
+# wifi_password has no default and MUST be set here or via TF_VAR_wifi_password.
+# wifi_ssid     = "Your Corporate Wi-Fi"
+wifi_password = "replace-with-your-wifi-password"

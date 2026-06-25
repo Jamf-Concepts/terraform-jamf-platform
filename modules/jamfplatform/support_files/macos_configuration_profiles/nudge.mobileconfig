@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadContent</key>
+			<dict>
+				<key>com.github.macadmins.Nudge</key>
+				<dict>
+					<key>Forced</key>
+					<array>
+						<dict>
+							<key>mcx_preference_settings</key>
+							<dict>
+								<key>optionalFeatures</key>
+								<dict>
+									<key>attemptToFetchMajorUpgrade</key>
+									<false/>
+									<key>disableSoftwareUpdateWorkflow</key>
+									<true/>
+									<key>utilizeSOFAFeed</key>
+									<true/>
+								</dict>
+								<key>osVersionRequirements</key>
+								<array>
+									<dict>
+										<key>aboutUpdateURL</key>
+										<string>sofa</string>
+										<key>activelyExploitedCVEsMajorUpgradeSLA</key>
+										<integer>14</integer>
+										<key>activelyExploitedCVEsMinorUpdateSLA</key>
+										<integer>14</integer>
+										<key>nonActivelyExploitedCVEsMajorUpgradeSLA</key>
+										<integer>21</integer>
+										<key>nonActivelyExploitedCVEsMinorUpdateSLA</key>
+										<integer>21</integer>
+										<key>requiredMinimumOSVersion</key>
+										<string>latest-supported</string>
+										<key>standardMajorUpgradeSLA</key>
+										<integer>28</integer>
+										<key>standardMinorUpdateSLA</key>
+										<integer>28</integer>
+									</dict>
+								</array>
+								<key>userInterface</key>
+								<dict>
+									<key>updateElements</key>
+									<array>
+										<dict>
+											<key>_language</key>
+											<string>en</string>
+											<key>mainContentHeaderUnsupported</key>
+											<string>**Your device is no longer capable of receiving critical security updates from Apple**</string>
+											<key>mainContentNote</key>
+											<string>Important Notice</string>
+											<key>mainContentNoteUnsupported</key>
+											<string>**Important Notice**</string>
+											<key>mainContentSubHeaderUnsupported</key>
+											<string></string>
+											<key>mainContentText</key>
+											<string>Apple have released an important security update to MacOS to ensure it continues to be fully protected.\n\nPlease update your device as soon as you can by clicking the “Update Device” button.\n\nHowever, you may defer the update to a time that suits you by clicking on the “Defer” drop down menu.\n\nPlease contact your IT Administrator team if you have any questions.\n\nYou will need to have applied the update before the “Days Remaining To Update” reaches 0.</string>
+											<key>mainContentTextUnsupported</key>
+											<string>Apple have stopped providing critical security updates for this device and therefore it can no longer be supported.\n\nPlease contact your IT Administrator team for further instructions.</string>
+											<key>subHeader</key>
+											<string>Automatic security update</string>
+											<key>subHeaderUnsupported</key>
+											<string></string>
+										</dict>
+									</array>
+								</dict>
+							</dict>
+						</dict>
+					</array>
+				</dict>
+			</dict>
+			<key>PayloadDisplayName</key>
+			<string>Custom Settings</string>
+			<key>PayloadIdentifier</key>
+			<string>7fa099db-ac29-42b5-9ef2-2671f3d42728</string>
+			<key>PayloadOrganization</key>
+			<string>JAMF Software</string>
+			<key>PayloadType</key>
+			<string>com.apple.ManagedClient.preferences</string>
+			<key>PayloadUUID</key>
+			<string>7fa099db-ac29-42b5-9ef2-2671f3d42728</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Applies settings for Nudge.</string>
+	<key>PayloadDisplayName</key>
+	<string>Nudge</string>
+	<key>PayloadEnabled</key>
+	<true/>
+	<key>PayloadIdentifier</key>
+	<string>09937861-84de-4a02-97c2-46b220b5beca</string>
+	<key>PayloadOrganization</key>
+	<string>AutoPkg</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>09937861-84de-4a02-97c2-46b220b5beca</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

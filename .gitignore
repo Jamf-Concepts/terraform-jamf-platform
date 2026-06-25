@@ -1,0 +1,23 @@
+# Terraform state
+*.tfstate
+*.tfstate.*
+
+# Terraform variables (may contain secrets)
+*.tfvars
+
+# Terraform internals
+.terraform/
+.terraform.lock.hcl
+
+# Apple-issued tokens
+# Gitignored by default to prevent accidental exposure when forking this
+# repository. See README "Apple-issued tokens (ADE and VPP)" for handling
+# options in your own private repo.
+*.p7m
+*.vpptoken
+
+# OS
+.DS_Store
+
+# Local agent / tooling files
+CLAUDE.md

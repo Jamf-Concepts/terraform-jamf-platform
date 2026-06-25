@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadDisplayName</key>
+			<string>MCX</string>
+			<key>PayloadIdentifier</key>
+			<string>252FC5DB-81DB-4E19-B8BE-45D4F0127268</string>
+			<key>PayloadOrganization</key>
+			<string>JAMF Software</string>
+			<key>PayloadType</key>
+			<string>com.apple.MCX</string>
+			<key>PayloadUUID</key>
+			<string>252FC5DB-81DB-4E19-B8BE-45D4F0127268</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>dontAllowFDEDisable</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>PayloadDisplayName</key>
+			<string>ScreenSaver</string>
+			<key>PayloadIdentifier</key>
+			<string>5E1EEA44-A3DE-44E2-8ED2-489BC4EC916F</string>
+			<key>PayloadOrganization</key>
+			<string>JAMF Software</string>
+			<key>PayloadType</key>
+			<string>com.apple.screensaver</string>
+			<key>PayloadUUID</key>
+			<string>5E1EEA44-A3DE-44E2-8ED2-489BC4EC916F</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>askForPassword</key>
+			<true/>
+			<key>askForPasswordDelay</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>AutoSubmit</key>
+			<false/>
+			<key>PayloadDisplayName</key>
+			<string>SubmitDiagInfo</string>
+			<key>PayloadIdentifier</key>
+			<string>397A01BB-490C-4A2F-A0B1-E10FBB9EC2B2</string>
+			<key>PayloadOrganization</key>
+			<string>JAMF Software</string>
+			<key>PayloadType</key>
+			<string>com.apple.SubmitDiagInfo</string>
+			<key>PayloadUUID</key>
+			<string>397A01BB-490C-4A2F-A0B1-E10FBB9EC2B2</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>AllowIdentifiedDevelopers</key>
+			<true/>
+			<key>EnableAssessment</key>
+			<true/>
+			<key>PayloadDisplayName</key>
+			<string>SystemPolicyControl</string>
+			<key>PayloadIdentifier</key>
+			<string>9A1C6635-5A28-4C9A-BCC9-33D4BA0B67C8</string>
+			<key>PayloadOrganization</key>
+			<string>JAMF Software</string>
+			<key>PayloadType</key>
+			<string>com.apple.systempolicy.control</string>
+			<key>PayloadUUID</key>
+			<string>9A1C6635-5A28-4C9A-BCC9-33D4BA0B67C8</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string></string>
+	<key>PayloadDisplayName</key>
+	<string>Security and Privacy - Desktops</string>
+	<key>PayloadEnabled</key>
+	<true/>
+	<key>PayloadIdentifier</key>
+	<string>0988FE97-B61E-4334-8786-7ABA429F0A50</string>
+	<key>PayloadOrganization</key>
+	<string>JAMF Software</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>0988FE97-B61E-4334-8786-7ABA429F0A50</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

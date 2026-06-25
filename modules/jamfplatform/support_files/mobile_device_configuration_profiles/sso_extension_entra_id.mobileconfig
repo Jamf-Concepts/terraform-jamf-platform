@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>PayloadContent</key>
+		<array>
+			<dict>
+				<key>ExtensionData</key>
+				<dict>
+					<key>AppPrefixAllowList</key>
+					<string>com.microsoft.,com.apple.,com.jamf.,com.jamfsoftware.</string>
+					<key>browser_sso_interaction_enabled</key>
+					<integer>1</integer>
+					<key>disable_explicit_app_prompt</key>
+					<integer>1</integer>
+				</dict>
+				<key>ExtensionIdentifier</key>
+				<string>com.microsoft.azureauthenticator.ssoextension</string>
+				<key>Hosts</key>
+				<array/>
+				<key>PayloadDisplayName</key>
+				<string>Single Sign-On Extensions Payload</string>
+				<key>PayloadIdentifier</key>
+				<string>DB7A800B-0CF3-47AE-BD62-2850C3E4F693</string>
+				<key>PayloadOrganization</key>
+				<string>JAMF Software</string>
+				<key>PayloadType</key>
+				<string>com.apple.extensiblesso</string>
+				<key>PayloadUUID</key>
+				<string>DB7A800B-0CF3-47AE-BD62-2850C3E4F693</string>
+				<key>PayloadVersion</key>
+				<integer>1</integer>
+				<key>Type</key>
+				<string>Redirect</string>
+				<key>URLs</key>
+				<array>
+					<string>https://login.microsoftonline.com</string>
+					<string>https://login.microsoft.com</string>
+					<string>https://sts.windows.net</string>
+					<string>https://login.partner.microsoftonline.cn</string>
+					<string>https://login.chinacloudapi.cn</string>
+					<string>https://login.microsoftonline.us</string>
+					<string>https://login-us.microsoftonline.com</string>
+				</array>
+			</dict>
+		</array>
+		<key>PayloadDescription</key>
+		<string></string>
+		<key>PayloadDisplayName</key>
+		<string>Single Sign-on Extension - Entra ID</string>
+		<key>PayloadEnabled</key>
+		<true/>
+		<key>PayloadIdentifier</key>
+		<string>3299F723-C9C8-430E-9AED-26B6603A1F4E</string>
+		<key>PayloadOrganization</key>
+		<string>JAMF Software</string>
+		<key>PayloadRemovalDisallowed</key>
+		<true/>
+		<key>PayloadScope</key>
+		<string>System</string>
+		<key>PayloadType</key>
+		<string>Configuration</string>
+		<key>PayloadUUID</key>
+		<string>3299F723-C9C8-430E-9AED-26B6603A1F4E</string>
+		<key>PayloadVersion</key>
+		<integer>1</integer>
+	</dict>
+</plist>
