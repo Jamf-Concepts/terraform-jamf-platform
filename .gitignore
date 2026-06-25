@@ -8,3 +8,14 @@ catalog-info.yaml
 plan.json
 plan.out
 *.terraformrc
+
+# Generated migration reports
+migration-report.md
+*_migrate_import.tf
+removed_jamfpro.tf
+
+# Internal planning and working docs
+utils/*.md
+
+# AI maturity assessments
+ai-maturity-assessment-*.md
