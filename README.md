@@ -511,13 +511,6 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
   description        = "Managed by Terraform"
   source_baseline_id = "cis_lvl1"
 
-  sources = [
-    for s in data.jamfplatform_cbengine_rules.cis_lvl1.sources : {
-      branch   = s.branch
-      revision = s.revision
-    }
-  ]
-
   rules = [
     { id = "os_firewall_log_enable",                      enabled = true },
     { id = "os_gatekeeper_enable",                        enabled = true },
@@ -526,8 +519,15 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
     { id = "system_settings_screensaver_timeout_enforce", enabled = true, odv_value = "300" },
   ]
 
-  target_device_group = jamfplatform_device_group.test_machines.id
-  enforcement_mode    = "MONITOR"
+  # Optional: scope the benchmark to specific major OS versions. Omit this to
+  # target every version the baseline supports. Valid values come from
+  # data.jamfplatform_cbengine_rules.cis_lvl1.available_os_versions.
+  selected_os_versions = [
+    { os_type = "MAC_OS", os_version = 26 }, # 26 = Tahoe, 15 = Sequoia, 14 = Sonoma
+  ]
+
+  target_device_groups = [jamfplatform_device_group.test_machines.id]
+  enforcement_mode      = "MONITOR"
 }
 ```
 
@@ -538,16 +538,15 @@ resource "jamfplatform_cbengine_benchmark" "cis_lvl1" {
 - Rules that appeared with `[ODV: ...]` in the output accept an `odv_value` —
   a parameter like a password length or a timeout in seconds. Rules without
   an ODV hint don't need one.
-- `sources` still uses the data source because it pins a specific commit of
-  the [macOS Security Compliance Project (mSCP)](https://github.com/usnistgov/macos_security)
-  — the open-source NIST project the CIS and STIG baselines are built on. The
-  `branch` is the macOS version branch (e.g. `sequoia`) and `revision` is the
-  exact mSCP git commit SHA Jamf has ingested. Pulling these from the data
-  source means Terraform always references the revision Jamf currently serves,
-  rather than a SHA you hard-coded that may no longer match.
-- `target_device_group = jamfplatform_device_group.test_machines.id` references
-  the same device group as the blueprints. Terraform resolves all dependencies
-  from the reference graph — no manual ordering required.
+- `selected_os_versions` is optional. Omit it and the benchmark targets every
+  OS version the baseline supports; supply a subset of `{ os_type, os_version }`
+  pairs to scope it to specific major versions (e.g. macOS 26 = Tahoe). The
+  valid values are listed in the data source's `available_os_versions`
+  attribute — inspect it the same way you inspected the rules.
+- `target_device_groups = [jamfplatform_device_group.test_machines.id]`
+  references the same device group as the blueprints. It takes a set, so one
+  benchmark can target several groups at once. Terraform resolves all
+  dependencies from the reference graph — no manual ordering required.
 - `enforcement_mode = "MONITOR"` reports compliance without enforcing
   remediation. Change to `"MONITOR_AND_ENFORCE"` to also apply corrective
   configuration.
