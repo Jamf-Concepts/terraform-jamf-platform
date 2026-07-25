@@ -55,7 +55,7 @@ By the end of this session you will be able to:
 | File | Resource | Teaches |
 | --- | --- | --- |
 | `device_groups.tf` | Device group | Standalone resource, no dependencies |
-| `blueprints.tf` | Blueprint (software update settings) | Resource references, the `deployed` flag, DDM overview |
+| `blueprints.tf` | Blueprint (software update settings) | Resource references, the `deployed` flag, `component_blocks`, DDM overview |
 | `blueprints.tf` | Blueprint (Safari restrictions) | `legacy_payloads`, inline MDM payload syntax |
 | `compliance_benchmarks.tf` | Compliance Benchmark | Data sources, hand-picked rules, ODV values, async resource creation |
 
@@ -308,6 +308,10 @@ Apple's Declarative Device Management (DDM) framework. Unlike classic MDM
 profiles, DDM is stateful — the device maintains the configuration and reports
 compliance continuously.
 
+A blueprint is authored with `component_blocks` — an ordered list where each
+block appears as a step in the Jamf Blueprints editor, with its own name and
+its own set of component payloads. Blocks are applied in the order listed.
+
 Open `blueprints.tf` and replace its contents with:
 
 ```hcl
@@ -318,13 +322,18 @@ resource "jamfplatform_blueprints_blueprint" "software_update" {
 
   device_groups = [jamfplatform_device_group.test_machines.id]
 
-  software_update_settings = {
-    automatic_download                 = "AlwaysOn"
-    automatic_install_os_updates       = "AlwaysOn"
-    automatic_install_security_updates = "AlwaysOn"
-    notifications_enabled              = true
-    rapid_security_response_enabled    = true
-  }
+  component_blocks = [
+    {
+      name = "Software Update Settings"
+      software_update_settings = {
+        automatic_download                 = "AlwaysOn"
+        automatic_install_os_updates       = "AlwaysOn"
+        automatic_install_security_updates = "AlwaysOn"
+        notifications_enabled              = true
+        rapid_security_response_enabled    = true
+      }
+    },
+  ]
 }
 ```
 
@@ -340,9 +349,12 @@ resource "jamfplatform_blueprints_blueprint" "software_update" {
 - `deployed = true` tells the provider to deploy the blueprint immediately after
   creation. Set to `false` to create the blueprint without pushing it to
   devices — useful for drafting configuration before it goes live.
-- `software_update_settings` is one of many optional payload blocks available
-  on a blueprint. Each maps to a specific DDM component. Only include blocks
-  you need — omitted blocks do not appear in the deployed blueprint.
+- `component_blocks` is a list of blocks. Each block takes an optional `name`
+  and one or more component payloads — here, `software_update_settings`, which
+  maps to a DDM component. A block may carry more than one component, and a
+  blueprint may list several blocks; each block is a separate step applied in
+  order. Only include the components you need — omitted components do not appear
+  in the deployed blueprint.
 - The valid values for `automatic_*` attributes are `"AlwaysOn"`, `"AlwaysOff"`,
   and `"Allowed"`. The Jamf UI displays `"AlwaysOff"` as **Never** —
   use the API values in HCL, not the UI labels.
@@ -375,28 +387,36 @@ resource "jamfplatform_blueprints_blueprint" "safari_restrictions" {
 
   device_groups = [jamfplatform_device_group.test_machines.id]
 
-  legacy_payloads = [
+  component_blocks = [
     {
-      payload_type = "com.apple.applicationaccess"
-      settings = {
-        allowSafariHistoryClearing = false
-        allowSafariPrivateBrowsing = false
-      }
-    }
+      name = "Safari Restrictions"
+      legacy_payloads = [
+        {
+          payload_type = "com.apple.applicationaccess"
+          settings = jsonencode({
+            allowSafariHistoryClearing = false
+            allowSafariPrivateBrowsing = false
+          })
+        }
+      ]
+    },
   ]
 }
 ```
 
 **Key points:**
 
-- `legacy_payloads` takes a list of objects. Each object requires a
-  `payload_type` (the Apple reverse-domain identifier for the MDM payload) and
-  an optional `settings` map. The keys and values match Apple's MDM protocol
+- `legacy_payloads` lives inside a component block and takes a list of objects.
+  Each object requires a `payload_type` (the Apple reverse-domain identifier for
+  the MDM payload) and an optional `settings` — a JSON object string authored
+  with `jsonencode({ ... })`. The keys and values match Apple's MDM protocol
   specification for that payload type.
-- Boolean values are HCL booleans (`true`/`false`), not strings.
-- You can combine `legacy_payloads` with first-class DDM blocks like
-  `software_update_settings` in a single blueprint. Group related settings
-  together — one blueprint per configuration boundary.
+- Inside `jsonencode({ ... })`, boolean values are HCL booleans (`true`/`false`),
+  not strings.
+- You can combine `legacy_payloads` with first-class DDM components like
+  `software_update_settings` — either in the same block or across several blocks
+  in one blueprint. Group related settings together — one blueprint per
+  configuration boundary.
 
 ```bash
 terraform plan
@@ -588,18 +608,24 @@ Terraform shows a modification:
 
 ```text
 ~ jamfplatform_blueprints_blueprint.software_update
-    ~ software_update_settings = {
-        ~ automatic_install_security_updates = "AlwaysOn" -> "AlwaysOff"
-          # (4 unchanged attributes hidden)
-      }
+    ~ component_blocks = [
+        ~ {
+              name                     = "Software Update Settings"
+            ~ software_update_settings = {
+                ~ automatic_install_security_updates = "AlwaysOn" -> "AlwaysOff"
+                  # (4 unchanged attributes hidden)
+              }
+          },
+      ]
 ```
 
 The `~` symbol means an in-place update. The plan will also show computed
 fields like `created`, `updated`, and `deployment_state` changing to
 `(known after apply)` — these are read-only attributes Terraform refreshes on
 every apply and are not configuration drift. Focus on the
-`software_update_settings` diff. To see Terraform revert it, change the value
-back to `"AlwaysOn"` and apply — the plan will show the reverse diff.
+`software_update_settings` diff nested inside `component_blocks`. To see
+Terraform revert it, change the value back to `"AlwaysOn"` and apply — the plan
+will show the reverse diff.
 
 ### Change 2: modifying a payload setting
 
