@@ -481,7 +481,7 @@ find-and-replace step and let Terraform manage the state rewrite.
 
 | Provider | Source | Minimum version |
 |---|---|---|
-| jamfplatform | `Jamf-Concepts/jamfplatform` | 0.18.0 |
+| jamfplatform | `Jamf-Concepts/jamfplatform` | 0.25.0 |
 | time | `hashicorp/time` | 0.13.0 |
 | itunessearchapi | `neilmartin83/itunessearchapi` | 0.1.0 |
 
