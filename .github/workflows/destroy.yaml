@@ -1,0 +1,148 @@
+name: Terraform Destroy
+
+# -----------------------------------------------------------------------------
+# Destroys every managed resource in one customer's Jamf Protect tenant, then
+# removes their Terraform state object.
+#
+# This is the one workflow with no automatic trigger and no way back. It is
+# manual dispatch only, it validates the customer name twice, and it requires
+# the operator to retype that name as confirmation — because a mis-selected
+# dropdown should not be able to empty a live tenant.
+#
+# Destroying is step one of offboarding. Step two is scripts/offboard-customer.sh,
+# which deletes the GitHub Environment and removes the customer directory.
+#
+# If the customer is KEEPING their console and only leaving your management,
+# this is the wrong workflow. Use handover.yaml, which removes state without
+# touching any Jamf resource.
+# -----------------------------------------------------------------------------
+
+on:
+  workflow_dispatch:
+    inputs:
+      customer:
+        description: 'Customer name to destroy (e.g. example-customer)'
+        required: true
+        type: string
+      confirm:
+        description: 'Retype the customer name exactly to confirm destruction'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      # Scopes credentials to this customer, and is where a GitHub Environment
+      # required-reviewer rule would add a second human gate. Strongly worth
+      # configuring for this workflow specifically.
+      name: ${{ github.event.inputs.customer }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Validate input
+        # Everything is checked here, before anything is destroyed. In
+        # particular STATE_BUCKET is verified up front: a destroy that succeeds
+        # and then cannot clean up its state leaves an orphaned state object,
+        # which is the worst outcome available.
+        env:
+          CUSTOMER: ${{ github.event.inputs.customer }}
+          CONFIRM: ${{ github.event.inputs.confirm }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+        run: |
+          set -euo pipefail
+
+          # The customer name reaches a shell and an S3 key below, so constrain
+          # it before it goes anywhere.
+          if ! [[ "${CUSTOMER}" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            echo "Error: invalid customer name '${CUSTOMER}' (must match ^[a-zA-Z0-9._-]+\$)"
+            exit 1
+          fi
+
+          if [ "${CUSTOMER}" != "${CONFIRM}" ]; then
+            echo "Error: confirmation does not match the customer name. Nothing was destroyed."
+            exit 1
+          fi
+
+          if [ ! -d "customers/${CUSTOMER}" ]; then
+            echo "Error: customer directory customers/${CUSTOMER} does not exist"
+            exit 1
+          fi
+
+          if [ -z "${STATE_BUCKET:-}" ]; then
+            echo "Error: the STATE_BUCKET repository variable is not set."
+            echo "       It must match the bucket in customers/<name>/terraform.tf."
+            exit 1
+          fi
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: customers/${{ github.event.inputs.customer }}
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve -no-color -parallelism=1
+        working-directory: customers/${{ github.event.inputs.customer }}
+        env:
+          TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
+          TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
+          TF_VAR_protect_client_password: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
+          TF_VAR_jpro_url: ${{ secrets.JPRO_URL }}
+          TF_VAR_jpro_client_id: ${{ secrets.JPRO_CLIENT_ID }}
+          TF_VAR_jpro_client_secret: ${{ secrets.JPRO_CLIENT_SECRET }}
+          TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
+
+      - name: Delete Terraform state from S3
+        env:
+          CUSTOMER: ${{ github.event.inputs.customer }}
+          # Must match the `bucket` literal in customers/<name>/terraform.tf.
+          # Backend blocks cannot read variables, which is why this is declared
+          # in two places.
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+        run: |
+          set -euo pipefail
+
+          # Re-validate: this step interpolates the customer into an S3 key, so
+          # do not trust it unchecked just because an earlier step ran.
+          if ! [[ "${CUSTOMER}" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            echo "Error: invalid customer name '${CUSTOMER}'"
+            exit 1
+          fi
+
+          aws s3 rm "s3://${STATE_BUCKET}/customers/${CUSTOMER}/terraform.tfstate"
+          # The lock object may legitimately not exist.
+          aws s3 rm "s3://${STATE_BUCKET}/customers/${CUSTOMER}/terraform.tfstate.tflock" || true
+
+      - name: Record outcome in run summary
+        if: always()
+        run: |
+          {
+            echo "## Destroy — ${{ github.event.inputs.customer }}"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| Customer | \`${{ github.event.inputs.customer }}\` |"
+            echo "| Result | ${{ job.status }} |"
+            echo "| Triggered by | @${{ github.actor }} |"
+            echo ""
+            echo "Next: run \`scripts/offboard-customer.sh ${{ github.event.inputs.customer }}\` to remove the GitHub Environment and the customer directory."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # --- Notifications ------------------------------------------------------
+      # A destroy is the event most worth announcing. Add your own step here.
+      # See README "Notifications".

@@ -1,0 +1,268 @@
+name: Drift Remediation
+
+# -----------------------------------------------------------------------------
+# Reverts drift by re-applying the code. Deliberately boring: because the
+# repository is the source of truth, "fixing" drift is just `terraform apply`.
+#
+# Two things make this safe rather than reckless:
+#
+#   1. It is triggered by a human. Applying the `auto-remediate` label to a
+#      drift issue is a person deciding the change should not exist. Nothing
+#      reverts on a schedule.
+#   2. It checks who that human is before doing anything. Labels are cheap to
+#      apply and a label must not be a way to trigger a production apply
+#      without authorisation.
+#
+# The customer name is parsed out of the issue title, which drift.yaml wrote.
+# The two title formats must stay in step.
+#
+# Authorisation has two modes, so this works with or without a GitHub org:
+#   - Set the ADMIN_TEAM_ORG and ADMIN_TEAM_SLUG repository variables, plus an
+#     ORG_READ_TOKEN secret with `read:org` scope, to gate on team membership.
+#   - Leave them unset to fall back on repository permission: only users with
+#     `admin` or `maintain` can remediate. No extra token needed.
+# -----------------------------------------------------------------------------
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event.label.name == 'auto-remediate'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    outputs:
+      customer: ${{ steps.parse.outputs.customer }}
+    steps:
+      - name: Validate issue title and parse customer
+        id: parse
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const title = context.payload.issue.title;
+            // Only issues drift.yaml created are actionable. Anything else
+            // labelled `auto-remediate` is ignored rather than guessed at.
+            const match = title.match(/^Drift detected:\s*(.+)$/);
+            if (!match) {
+              core.info(`Issue title "${title}" does not match drift pattern — skipping`);
+              core.setOutput('customer', '');
+              return;
+            }
+            const customer = match[1].trim();
+            core.setOutput('customer', customer);
+            core.info(`Parsed customer: ${customer}`);
+
+      # --- Authorisation ------------------------------------------------------
+      # Two modes, one of which runs. Each uses the token that can actually
+      # answer its question: team membership needs an org-scoped token, and
+      # repository permission is answerable by the default GITHUB_TOKEN.
+
+      - name: Authorise sender (team membership)
+        if: steps.parse.outputs.customer != '' && vars.ADMIN_TEAM_SLUG != ''
+        uses: actions/github-script@v9
+        env:
+          ADMIN_TEAM_ORG: ${{ vars.ADMIN_TEAM_ORG }}
+          ADMIN_TEAM_SLUG: ${{ vars.ADMIN_TEAM_SLUG }}
+        with:
+          # A repository-scoped token cannot read org team membership. This
+          # needs a PAT or app token with `read:org`.
+          github-token: ${{ secrets.ORG_READ_TOKEN }}
+          script: |
+            const sender = context.payload.sender.login;
+            const org = process.env.ADMIN_TEAM_ORG || context.repo.owner;
+            const team = process.env.ADMIN_TEAM_SLUG;
+            try {
+              await github.rest.teams.getMembershipForUserInOrg({
+                org, team_slug: team, username: sender
+              });
+              core.info(`${sender} is a member of ${org}/${team}`);
+            } catch (error) {
+              core.setFailed(`Unauthorized: ${sender} is not a member of ${org}/${team}`);
+            }
+
+      - name: Authorise sender (repository permission)
+        if: steps.parse.outputs.customer != '' && vars.ADMIN_TEAM_SLUG == ''
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const sender = context.payload.sender.login;
+            const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: sender
+            });
+            // maintain and admin only. write is not enough: anyone who can push
+            // a branch should not thereby be able to apply to production.
+            if (!['admin', 'maintain'].includes(data.permission)) {
+              core.setFailed(`Unauthorized: ${sender} has '${data.permission}' on this repository, needs 'admin' or 'maintain'`);
+              return;
+            }
+            core.info(`${sender} has ${data.permission} on this repository`);
+
+      - name: Explain and revoke label on unauthorised attempt
+        # Runs only when an authorisation step above failed. Uses the default
+        # token, which can always write to this repository's issues.
+        if: failure()
+        uses: actions/github-script@v9
+        env:
+          ADMIN_TEAM_ORG: ${{ vars.ADMIN_TEAM_ORG }}
+          ADMIN_TEAM_SLUG: ${{ vars.ADMIN_TEAM_SLUG }}
+        with:
+          script: |
+            const sender = context.payload.sender.login;
+            const team = process.env.ADMIN_TEAM_SLUG;
+            const org = process.env.ADMIN_TEAM_ORG || context.repo.owner;
+            const requirement = team
+              ? `Only members of \`${org}/${team}\` can remediate drift.`
+              : `This requires \`admin\` or \`maintain\` permission on this repository.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `@${sender} is not authorised to trigger drift remediation. ${requirement}`
+            });
+
+            // Strip the label so the issue returns to a clean state rather than
+            // sitting there looking as though remediation is under way.
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              name: 'auto-remediate'
+            });
+
+  remediate:
+    needs: validate
+    permissions:
+      contents: read
+      issues: write
+    if: needs.validate.outputs.customer != ''
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.validate.outputs.customer }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: customers/${{ needs.validate.outputs.customer }}
+
+      - name: Terraform Apply
+        id: apply
+        # Output is captured to a file so it can be attached to the issue, and
+        # the exit code is preserved so a failed apply fails the job.
+        run: |
+          set +e
+          terraform apply -auto-approve -no-color -parallelism=1 > apply_output.txt 2>&1
+          EXIT_CODE=$?
+          set -e
+          cat apply_output.txt
+          exit $EXIT_CODE
+        working-directory: customers/${{ needs.validate.outputs.customer }}
+        env:
+          TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
+          TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
+          TF_VAR_protect_client_password: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
+          TF_VAR_jpro_url: ${{ secrets.JPRO_URL }}
+          TF_VAR_jpro_client_id: ${{ secrets.JPRO_CLIENT_ID }}
+          TF_VAR_jpro_client_secret: ${{ secrets.JPRO_CLIENT_SECRET }}
+          TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
+
+      - name: Comment and close issue on success
+        if: success()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync(
+              `customers/${{ needs.validate.outputs.customer }}/apply_output.txt`, 'utf8'
+            );
+            const maxLen = 60000;
+            const truncated = output.length > maxLen
+              ? output.substring(0, maxLen) + '\n\n... (truncated)'
+              : output;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: `## Drift remediated for \`${{ needs.validate.outputs.customer }}\`\n\n` +
+                    `<details><summary>Terraform Apply Output</summary>\n\n\`\`\`\n${truncated}\n\`\`\`\n\n</details>`
+            });
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              state: 'closed',
+              state_reason: 'completed'
+            });
+
+      - name: Comment on issue on failure
+        # The issue stays OPEN on failure. A remediation that did not work must
+        # not look resolved.
+        if: failure()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            let output = 'No output captured';
+            try {
+              output = fs.readFileSync(
+                `customers/${{ needs.validate.outputs.customer }}/apply_output.txt`, 'utf8'
+              );
+            } catch (e) {
+              // The file will not exist if init failed before apply ran.
+            }
+            const maxLen = 60000;
+            const truncated = output.length > maxLen
+              ? output.substring(0, maxLen) + '\n\n... (truncated)'
+              : output;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: `## Remediation failed for \`${{ needs.validate.outputs.customer }}\`\n\n` +
+                    `**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n\n` +
+                    `<details><summary>Terraform Apply Output</summary>\n\n\`\`\`\n${truncated}\n\`\`\`\n\n</details>`
+            });
+
+      - name: Record outcome in run summary
+        if: always()
+        run: |
+          {
+            echo "## Drift remediation — ${{ needs.validate.outputs.customer }}"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| Customer | \`${{ needs.validate.outputs.customer }}\` |"
+            echo "| Result | ${{ job.status }} |"
+            echo "| Triggered by | @${{ github.event.sender.login }} |"
+            echo "| Issue | ${{ github.event.issue.html_url }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # --- Notifications ------------------------------------------------------
+      # Add your own outbound notification here. Worth including who triggered
+      # it: a production apply initiated by a label click deserves an audit line
+      # somewhere other than the run log. See README "Notifications".

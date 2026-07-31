@@ -1,0 +1,87 @@
+name: Terraform Force Unlock
+
+# -----------------------------------------------------------------------------
+# Releases a stale Terraform state lock for one customer workspace.
+#
+# When a run is interrupted — a cancelled job, a runner that died — the S3 lock
+# object (terraform.tfstate.tflock) can be left behind. Every subsequent run for
+# that customer then fails with "Error acquiring the state lock". Take the Lock
+# ID from the failed run's log and dispatch this workflow.
+#
+# Only ever run this when you are certain no apply is actually in progress.
+# Force-unlocking a live operation is how state gets corrupted — the thing the
+# lock exists to prevent.
+#
+# Note this touches only the backend lock, so it needs no Jamf credentials at
+# all. That is why there are no TF_VAR_* values here.
+# -----------------------------------------------------------------------------
+
+on:
+  workflow_dispatch:
+    inputs:
+      customer:
+        description: 'Customer name whose state lock to release (e.g. example-customer)'
+        required: true
+        type: string
+      lock_id:
+        description: 'Lock ID from the "Error acquiring the state lock" message'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  force-unlock:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Validate input
+        env:
+          CUSTOMER: ${{ github.event.inputs.customer }}
+        run: |
+          set -euo pipefail
+          if ! [[ "${CUSTOMER}" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            echo "Error: invalid customer name '${CUSTOMER}' (must match ^[a-zA-Z0-9._-]+\$)"
+            exit 1
+          fi
+          if [ ! -d "customers/${CUSTOMER}" ]; then
+            echo "Error: customer directory customers/${CUSTOMER} does not exist"
+            exit 1
+          fi
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: customers/${{ github.event.inputs.customer }}
+
+      - name: Terraform Force Unlock
+        run: terraform force-unlock -force "${{ github.event.inputs.lock_id }}"
+        working-directory: customers/${{ github.event.inputs.customer }}
+
+      - name: Record outcome in run summary
+        if: always()
+        run: |
+          {
+            echo "## Force unlock — ${{ github.event.inputs.customer }}"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| Customer | \`${{ github.event.inputs.customer }}\` |"
+            echo "| Lock ID | \`${{ github.event.inputs.lock_id }}\` |"
+            echo "| Result | ${{ job.status }} |"
+            echo "| Triggered by | @${{ github.actor }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

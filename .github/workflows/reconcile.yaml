@@ -1,0 +1,285 @@
+name: Out-of-Band Resource Detection
+
+# -----------------------------------------------------------------------------
+# Catches what drift detection cannot see.
+#
+# Drift detection compares managed resources against the code. It is blind to
+# resources Terraform never created: something built directly in the console has
+# no state entry, so it never appears in a plan and never registers as drift.
+# Terraform simply does not know it exists.
+#
+# This workflow closes that gap using Terraform list resources, which query
+# existing infrastructure whether or not it is in state:
+#
+#   1. `terraform query -json`  — everything the provider can see in the tenant
+#   2. `terraform show -json`   — everything Terraform manages in state
+#   3. diff the two             — anything in (1) but not (2) is out of band
+#   4. attribute each finding   — who created it and when, from the Jamf Protect
+#                                 audit log via jamf-cli
+#   5. open or update an issue  — one per customer, so the decision to import or
+#                                 delete is recorded somewhere
+#
+# The list blocks live in scripts/reconcile.tfquery.hcl, which is copied into
+# the customer directory at run time because `terraform query` reads
+# *.tfquery.hcl from the working directory.
+#
+# Runs after drift detection, so the week's findings arrive together.
+# -----------------------------------------------------------------------------
+
+on:
+  schedule:
+    # Monday 07:00 UTC — an hour after drift detection.
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      customers: ${{ steps.find.outputs.customers }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Find all customer directories
+        id: find
+        run: |
+          # Exclude only `_template`, which is a skeleton with no tenant and no
+          # GitHub Environment. `staging` IS reconciled: it is a real tenant with
+          # real state, so out-of-band resources there matter just as much. Note
+          # this differs from drift.yaml, which excludes staging deliberately.
+          CUSTOMERS=$(ls -d customers/*/ | grep -v '_template' | xargs -n1 basename)
+          CUSTOMERS=$(echo "$CUSTOMERS" | while read -r c; do [ -d "customers/$c" ] && echo "$c" || true; done)
+          JSON=$(echo "$CUSTOMERS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "customers=${JSON}" >> "$GITHUB_OUTPUT"
+          echo "Discovered customers: ${JSON}"
+
+  reconcile:
+    needs: discover
+    if: needs.discover.outputs.customers != '[]'
+    permissions:
+      contents: read
+      issues: write
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        customer: ${{ fromJSON(needs.discover.outputs.customers) }}
+    environment:
+      name: ${{ matrix.customer }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_wrapper: false
+
+      - name: Setup Jamf CLI
+        # Used only for audit-log attribution. Best-effort by design: if the CLI
+        # cannot be installed, detection still works and the report shows dashes
+        # in the "created by" columns instead of failing the run.
+        continue-on-error: true
+        uses: jamf-concepts/setup-jamf-cli@ae1e91ac97113e86f261c811556ae80d2c0c12ee # v1.1.0
+        with:
+          version: "1.22.0"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init -input=false
+        working-directory: customers/${{ matrix.customer }}
+
+      - name: Enumerate tenant resources (terraform query)
+        working-directory: customers/${{ matrix.customer }}
+        run: |
+          # `terraform query` reads *.tfquery.hcl from the working directory, so
+          # the shared query definition is copied in rather than duplicated into
+          # every customer directory in the repo.
+          cp "$GITHUB_WORKSPACE/scripts/reconcile.tfquery.hcl" .
+          terraform query -json > "$GITHUB_WORKSPACE/query.json" || {
+            echo "terraform query failed:"; cat "$GITHUB_WORKSPACE/query.json"; exit 1;
+          }
+        env:
+          # The root-level `list` blocks use the ROOT default provider, which is
+          # configured from these environment variables — not from the module's
+          # provider block. This is why customers/<name>/terraform.tf declares
+          # jamfprotect in required_providers.
+          JAMFPROTECT_URL: ${{ vars.PROTECT_URL }}
+          JAMFPROTECT_CLIENT_ID: ${{ secrets.PROTECT_CLIENT_ID }}
+          JAMFPROTECT_CLIENT_SECRET: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
+          # The module block still has to evaluate for the configuration to load,
+          # even though the query never touches module resources — so its inputs
+          # must be present.
+          TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
+          TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
+          TF_VAR_protect_client_password: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
+          TF_VAR_jpro_url: ${{ secrets.JPRO_URL }}
+          TF_VAR_jpro_client_id: ${{ secrets.JPRO_CLIENT_ID }}
+          TF_VAR_jpro_client_secret: ${{ secrets.JPRO_CLIENT_SECRET }}
+          TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
+
+      - name: Dump Terraform state
+        working-directory: customers/${{ matrix.customer }}
+        run: terraform show -json > "$GITHUB_WORKSPACE/state.json"
+        env:
+          TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
+          TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
+          TF_VAR_protect_client_password: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
+          TF_VAR_jpro_url: ${{ secrets.JPRO_URL }}
+          TF_VAR_jpro_client_id: ${{ secrets.JPRO_CLIENT_ID }}
+          TF_VAR_jpro_client_secret: ${{ secrets.JPRO_CLIENT_SECRET }}
+          TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
+
+      - name: Detect out-of-band resources
+        id: detect
+        env:
+          # Name of the bootstrap API client that exists in every tenant and is
+          # deliberately not managed by Terraform (see api_client.tf). Without
+          # this exclusion it would be reported on every run for every customer.
+          # Set it to whatever you named yours during onboarding.
+          RECONCILE_SKIP_API_CLIENT_NAME: ${{ vars.BOOTSTRAP_API_CLIENT_NAME }}
+        run: |
+          COUNT=$(bash scripts/reconcile-out-of-band.sh \
+            "$GITHUB_WORKSPACE/query.json" \
+            "$GITHUB_WORKSPACE/state.json" \
+            "$GITHUB_WORKSPACE/oob.json")
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Out-of-band resources for ${{ matrix.customer }}: $COUNT"
+
+      - name: Fetch audit logs for attribution
+        id: audit
+        if: steps.detect.outputs.count != '0'
+        # Lazily fetches the most recent 7-day audit window and only pages older
+        # windows if out-of-band resources remain unattributed — one API call in
+        # steady state, deeper history on a first run against an existing tenant.
+        # Best-effort: never fails the job. Attribution degrades to dashes if the
+        # audit API is unavailable.
+        run: |
+          bash scripts/fetch-audit-logs.sh \
+            "$GITHUB_WORKSPACE/oob.json" \
+            "$GITHUB_WORKSPACE/audit.json" \
+            "${RECONCILE_AUDIT_LOOKBACK_DAYS}"
+        env:
+          JAMFPROTECT_URL: ${{ vars.PROTECT_URL }}
+          JAMFPROTECT_CLIENT_ID: ${{ secrets.PROTECT_CLIENT_ID }}
+          JAMFPROTECT_CLIENT_SECRET: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
+          # How far back to page the audit log when attributing findings. Raise
+          # it for a one-off backfill of long-standing resources; the cost is
+          # API calls, one per additional 7-day window.
+          RECONCILE_AUDIT_LOOKBACK_DAYS: "30"
+
+      - name: Build issue report
+        id: report
+        if: steps.detect.outputs.count != '0'
+        env:
+          # Optional @mention added to the issue body, e.g. "@your-org/your-team"
+          # or "@username". Left unset, no mention is added.
+          REPORT_MENTION: ${{ vars.REPORT_MENTION }}
+        run: |
+          bash scripts/build-out-of-band-report.sh \
+            "$GITHUB_WORKSPACE/oob.json" \
+            "$GITHUB_WORKSPACE/audit.json" \
+            "${{ matrix.customer }}" \
+            "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            > "$GITHUB_WORKSPACE/reconcile-body.md"
+
+      - name: Check for existing issue
+        id: check-issue
+        if: steps.detect.outputs.count != '0'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['out-of-band'],
+              per_page: 100
+            });
+
+            const title = `Out-of-band resources detected: ${{ matrix.customer }}`;
+            const existing = issues.data.find(issue => issue.title === title);
+
+            if (existing) {
+              core.setOutput('issue-number', String(existing.number));
+              core.setOutput('issue-url', existing.html_url);
+              core.setOutput('issue-exists', 'true');
+            } else {
+              core.setOutput('issue-exists', 'false');
+            }
+
+      - name: Create new issue
+        id: create-issue
+        if: steps.detect.outputs.count != '0' && steps.check-issue.outputs.issue-exists == 'false'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            let body = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/reconcile-body.md`, 'utf8');
+            const maxLen = 60000;
+            if (body.length > maxLen) {
+              body = body.substring(0, maxLen) + '\n\n... (truncated)';
+            }
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Out-of-band resources detected: ${{ matrix.customer }}`,
+              body,
+              labels: ['out-of-band']
+            });
+            core.setOutput('issue-url', issue.data.html_url);
+
+      - name: Comment on existing issue
+        if: steps.detect.outputs.count != '0' && steps.check-issue.outputs.issue-exists == 'true'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            let body = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/reconcile-body.md`, 'utf8');
+            const maxLen = 60000;
+            if (body.length > maxLen) {
+              body = body.substring(0, maxLen) + '\n\n... (truncated)';
+            }
+
+            const now = new Date().toISOString();
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(${{ steps.check-issue.outputs.issue-number }}),
+              body: `## :repeat: Out-of-band resources still present — ${now}\n\n` +
+                    `This is a subsequent detection run, not a new event.\n\n` +
+                    body
+            });
+
+      - name: Record outcome in run summary
+        if: always()
+        run: |
+          {
+            echo "## Out-of-band detection — ${{ matrix.customer }}"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| Customer | \`${{ matrix.customer }}\` |"
+            echo "| Out-of-band resources | ${{ steps.detect.outputs.count || 'unknown' }} |"
+            echo "| Result | ${{ job.status }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # --- Notifications ------------------------------------------------------
+      # Add your own outbound notification here. The issue URL is available as
+      # steps.create-issue.outputs.issue-url (new) or
+      # steps.check-issue.outputs.issue-url (recurring), and the count as
+      # steps.detect.outputs.count. See README "Notifications".

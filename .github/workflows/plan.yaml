@@ -1,0 +1,214 @@
+name: Terraform Plan
+
+# -----------------------------------------------------------------------------
+# Runs on every pull request and posts the plan as a PR comment, so the reviewer
+# approves a diff rather than a promise.
+#
+# Three jobs:
+#   detect — works out which customers this PR actually affects
+#   lint   — fmt, tflint and validate, once for the whole repo
+#   plan   — one matrix job per affected customer, each scoped to that
+#            customer's GitHub Environment and therefore only that customer's
+#            credentials
+#
+# plan-result aggregates the matrix into a single status check, which is what
+# branch protection should require. Requiring the matrix jobs directly does not
+# work: their names change as customers are added and removed.
+# -----------------------------------------------------------------------------
+
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      customers: ${{ steps.find.outputs.customers }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Find affected customers
+        id: find
+        run: |
+          CHANGED=$(gh pr diff ${{ github.event.pull_request.number }} --name-only) || {
+            echo "::warning::gh pr diff failed — no customers will be planned"
+            CHANGED=""
+          }
+
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+
+          if [ "$BASE_BRANCH" = "staging" ]; then
+            # Pull requests into staging only ever touch the staging workspace.
+            CUSTOMERS="staging"
+          else
+            if echo "$CHANGED" | grep -q '^modules/'; then
+              # A shared module change reaches every tenant, so plan every
+              # tenant. This is the case that stops a "small" module edit
+              # surprising you on customer 43.
+              CUSTOMERS=$(ls -d customers/*/ | grep -v '_template' | xargs -n1 basename)
+            else
+              CUSTOMERS=$(echo "$CHANGED" | grep '^customers/' | grep -v '_template' | cut -d/ -f2 | sort -u || true)
+            fi
+          fi
+
+          # Drop customers whose directories no longer exist: an offboarding PR
+          # deletes the directory, and planning a deleted workspace fails.
+          CUSTOMERS=$(echo "$CUSTOMERS" | while read -r c; do [ -d "customers/$c" ] && echo "$c" || true; done)
+
+          JSON=$(echo "$CUSTOMERS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "customers=${JSON}" >> "$GITHUB_OUTPUT"
+          echo "Affected customers: ${JSON}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  lint:
+    needs: detect
+    if: needs.detect.outputs.customers != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+
+      - name: Install tflint
+        run: |
+          TFLINT_VERSION=$(gh api repos/terraform-linters/tflint/releases/latest --jq '.tag_name')
+          ASSET="tflint_linux_amd64.zip"
+          BASE_URL="https://github.com/terraform-linters/tflint/releases/download/${TFLINT_VERSION}"
+
+          curl --proto '=https' --proto-redir '=https' -sSLo "$ASSET" "${BASE_URL}/${ASSET}"
+          curl --proto '=https' --proto-redir '=https' -sSLo checksums.txt "${BASE_URL}/checksums.txt"
+
+          # Verify the download before running it.
+          grep " ${ASSET}\$" checksums.txt | sha256sum -c -
+
+          unzip -q "$ASSET"
+          chmod +x tflint
+          sudo mv tflint /usr/local/bin/tflint
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: tflint
+        run: tflint --recursive --config "$GITHUB_WORKSPACE/.tflint.hcl"
+
+      - name: Terraform Validate
+        # -backend=false skips backend initialisation: validation is a
+        # configuration check and needs no state and no AWS credentials.
+        run: |
+          CUSTOMERS='${{ needs.detect.outputs.customers }}'
+          for customer in $(echo "$CUSTOMERS" | jq -r '.[]'); do
+            echo "==> Validating customers/${customer}"
+            terraform -chdir="customers/${customer}" init -backend=false
+            terraform -chdir="customers/${customer}" validate
+          done
+
+  plan:
+    needs: [detect, lint]
+    if: needs.detect.outputs.customers != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    strategy:
+      # fail-fast: false — one customer's plan failing must not cancel the
+      # others. You want the whole picture in the PR, not the first error.
+      fail-fast: false
+      matrix:
+        customer: ${{ fromJson(needs.detect.outputs.customers) }}
+    environment:
+      # This single line is the credential isolation boundary. The job can only
+      # read secrets from this customer's Environment; no other customer's
+      # secrets are present in the runner at all.
+      name: ${{ matrix.customer }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+
+      - name: Configure AWS credentials
+        # Static keys are used here for portability. If your state bucket is in
+        # AWS, prefer OIDC role assumption instead — no long-lived keys in
+        # GitHub at all. See README "State backend".
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: customers/${{ matrix.customer }}
+
+      - name: Terraform Plan
+        id: plan
+        # -parallelism=1 is not optional. The Jamf Protect GraphQL API rate
+        # limits concurrent requests; parallel graph walks produce spurious
+        # failures. Every Terraform invocation in this repo is single-threaded.
+        run: terraform plan -no-color -parallelism=1
+        working-directory: customers/${{ matrix.customer }}
+        env:
+          TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
+          TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
+          TF_VAR_protect_client_password: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
+          TF_VAR_jpro_url: ${{ secrets.JPRO_URL }}
+          TF_VAR_jpro_client_id: ${{ secrets.JPRO_CLIENT_ID }}
+          TF_VAR_jpro_client_secret: ${{ secrets.JPRO_CLIENT_SECRET }}
+          TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
+
+      - name: Comment plan on PR
+        # Skipped when there is nothing to say, so a PR touching ten customers
+        # does not post ten "No changes." comments.
+        if: "!contains(steps.plan.outputs.stdout, 'No changes.')"
+        uses: actions/github-script@v9
+        env:
+          PLAN_OUTPUT: ${{ steps.plan.outputs.stdout }}
+        with:
+          script: |
+            const output = `#### Customer: \`${{ matrix.customer }}\`
+            \`\`\`
+            ${process.env.PLAN_OUTPUT}
+            \`\`\``;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: output
+            });
+
+  plan-result:
+    # Aggregates the matrix into one stable status check name for branch
+    # protection. `if: always()` so it still runs — and still reports failure —
+    # when an upstream job failed or was skipped.
+    needs: [detect, lint, plan]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check plan outcome
+        run: |
+          if [ "${{ needs.lint.result }}" = "failure" ]; then
+            echo "Lint checks failed"
+            exit 1
+          fi
+          if [ "${{ needs.plan.result }}" = "failure" ]; then
+            echo "One or more plans failed"
+            exit 1
+          fi

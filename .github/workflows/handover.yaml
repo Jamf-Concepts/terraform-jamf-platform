@@ -1,0 +1,135 @@
+name: Handover
+
+# -----------------------------------------------------------------------------
+# For when a customer keeps their Jamf Protect console and simply stops being
+# managed by you. Nothing in the tenant is touched: no `terraform destroy`, no
+# resources removed, no configuration changed. The only thing that goes is that
+# customer's Terraform state object, which is what takes them out of the
+# pipeline.
+#
+# Contrast with destroy.yaml, which empties the tenant. Choosing the wrong one
+# is unrecoverable in one direction, so the two are separate workflows with
+# separate names rather than a flag.
+#
+# Dispatched by scripts/offboard-customer.sh --handover, which then waits for
+# this run, reads the confirmed state key back out of the log, deletes the
+# GitHub Environment and opens a pull request removing the directory.
+#
+# The delete sequence is deliberately paranoid, because `aws s3 rm` on a key
+# that does not exist exits 0 and deletes nothing:
+#   1. Confirm the state object exists.
+#   2. Delete it.
+#   3. Delete the lock object, tolerating absence.
+#   4. Verify it is gone.
+#   5. Only then print the marker the offboard script anchors on.
+# A missing state must fail loudly here, not pass silently and leave the
+# operator believing a handover completed.
+# -----------------------------------------------------------------------------
+
+on:
+  workflow_dispatch:
+    inputs:
+      customer:
+        description: 'Customer name to hand over (e.g. example-customer)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  state-teardown:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: ${{ inputs.customer }}
+    outputs:
+      state_key: ${{ steps.delete_state.outputs.state_key }}
+    steps:
+      - name: Validate input
+        env:
+          CUSTOMER: ${{ inputs.customer }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+        run: |
+          set -euo pipefail
+          if ! [[ "${CUSTOMER}" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            echo "Error: invalid customer name '${CUSTOMER}' (must match ^[a-zA-Z0-9._-]+\$)"
+            exit 1
+          fi
+          if [ -z "${STATE_BUCKET:-}" ]; then
+            echo "Error: the STATE_BUCKET repository variable is not set."
+            echo "       It must match the bucket in customers/<name>/terraform.tf."
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Delete Terraform state from S3 (state object only)
+        id: delete_state
+        env:
+          CUSTOMER: ${{ inputs.customer }}
+          STATE_BUCKET: ${{ vars.STATE_BUCKET }}
+        run: |
+          set -euo pipefail
+
+          # Re-validate here too: this step interpolates the customer into an S3
+          # key, so never trust it unchecked even though a prior step ran.
+          if ! [[ "${CUSTOMER}" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            echo "Error: invalid customer name '${CUSTOMER}'"
+            exit 1
+          fi
+
+          PREFIX="customers/${CUSTOMER}"
+          STATE_KEY="${PREFIX}/terraform.tfstate"
+          LOCK_KEY="${PREFIX}/terraform.tfstate.tflock"
+
+          # 1. Confirm the state object exists BEFORE deleting. `aws s3 rm` on a
+          #    missing key exits 0 and deletes nothing, so a missing state must
+          #    fail loudly here rather than pass silently.
+          echo "==> Confirming state object exists: s3://${STATE_BUCKET}/${STATE_KEY}"
+          aws s3api head-object --bucket "${STATE_BUCKET}" --key "${STATE_KEY}"
+
+          # 2. Delete the state object. No --recursive: one pinned key.
+          echo "==> Deleting state object..."
+          aws s3 rm "s3://${STATE_BUCKET}/${STATE_KEY}"
+
+          # 3. Delete the lock object; it may not exist, so tolerate failure
+          #    HERE ONLY.
+          echo "==> Deleting lock object (if present)..."
+          aws s3 rm "s3://${STATE_BUCKET}/${LOCK_KEY}" || true
+
+          # 4. Verify the state object is actually gone.
+          echo "==> Verifying state object is gone..."
+          if aws s3api head-object --bucket "${STATE_BUCKET}" --key "${STATE_KEY}" >/dev/null 2>&1; then
+            echo "Error: state object still present after delete: s3://${STATE_BUCKET}/${STATE_KEY}"
+            exit 1
+          fi
+
+          # 5. Only now emit success and the confirmed key. The stdout marker is
+          #    printed ONLY on this path — after the second head-object passes —
+          #    so the offboard script can anchor on it safely.
+          echo "==> Confirmed deleted: s3://${STATE_BUCKET}/${STATE_KEY}"
+          echo "state_key=${STATE_KEY}" >> "$GITHUB_OUTPUT"
+          echo "HANDOVER_STATE_KEY_DELETED=${STATE_KEY}"
+
+      - name: Record outcome in run summary
+        if: always()
+        run: |
+          {
+            echo "## Handover — ${{ inputs.customer }}"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| Customer | \`${{ inputs.customer }}\` |"
+            echo "| State key deleted | \`${{ steps.delete_state.outputs.state_key || 'none' }}\` |"
+            echo "| Result | ${{ job.status }} |"
+            echo "| Triggered by | @${{ github.actor }} |"
+            echo ""
+            echo "No Jamf Protect resources were changed. The console remains as-is."
+          } >> "$GITHUB_STEP_SUMMARY"
