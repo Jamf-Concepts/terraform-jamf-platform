@@ -1,0 +1,63 @@
+# Terraform state — never commit. State can contain secrets in plain text.
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform internals
+.terraform/
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Provider lock file
+# Gitignored deliberately — see CONTRIBUTING.md "Provider version policy".
+# Run `terraform init -upgrade` on each machine to align on the latest
+# version satisfying the constraints in terraform.tf.
+.terraform.lock.hcl
+
+# Customer workspaces — credentials and state must never be committed
+customers/*/.terraform/
+customers/*/terraform.tfstate
+customers/*/terraform.tfstate.backup
+
+# Variable files that may hold credentials.
+# NOTE: customer.auto.tfvars is deliberately NOT ignored — it holds each
+# customer's tier and non-secret overrides and is meant to be committed and
+# reviewed. Every actual secret reaches Terraform via TF_VAR_* environment
+# variables from GitHub Environment secrets.
+terraform.tfvars
+*.auto.tfvars.local
+
+# Workflow scratch files written into a customer directory at run time
+plan_output.txt
+apply_output.txt
+query.json
+state.json
+oob.json
+audit.json
+reconcile-body.md
+reconcile.tfquery.hcl.copy
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Local agent / tooling files
+CLAUDE.md
