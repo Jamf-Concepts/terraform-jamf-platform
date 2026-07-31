@@ -19,10 +19,12 @@
 #                                    legitimately created outside Terraform.
 #                                    Querying them produces only false
 #                                    positives.
-#   - jamfprotect_analytic_managed — the Jamf-provided analytic catalogue. Every
-#                                    entry is a built-in and none is ever in
-#                                    state, so it carries no reconciliation
-#                                    value.
+#   - jamfprotect_analytic_managed — the Jamf-provided analytic catalogue. This
+#                                    module manages none of them, so querying it
+#                                    would report the whole catalogue as out of
+#                                    band. Add it if you start importing managed
+#                                    analytics to override tenant_actions or
+#                                    tenant_severity.
 #
 # `exclude_builtins = true` opts in to filtering Jamf-provided built-in and
 # system instances — the Default plan, Full Admin and Read Only roles, and so

@@ -1,10 +1,6 @@
 # -----------------------------------------------------------------------------
 # Analytics — Custom Analytic & Analytic Set
 # -----------------------------------------------------------------------------
-# Only custom analytics belong in code. The Jamf-managed analytics ship with every
-# tenant and are maintained by Jamf Threat Labs; managing them here would mean
-# re-asserting Jamf's own detection content on every apply.
-#
 # The custom analytic below watches the Protect quarantine directory and tags the
 # machine in Jamf Pro via a smart group, so a quarantine event becomes something
 # you can scope policies against.
