@@ -31,7 +31,7 @@ Open a GitHub issue with:
 Provider bugs belong on the provider repositories rather than here:
 
 - [Jamf-Concepts/terraform-provider-jamfprotect](https://github.com/Jamf-Concepts/terraform-provider-jamfprotect)
-- [deploymenttheory/terraform-provider-jamfpro](https://github.com/deploymenttheory/terraform-provider-jamfpro)
+- [Jamf-Concepts/terraform-provider-jamfplatform](https://github.com/Jamf-Concepts/terraform-provider-jamfplatform)
 
 ## Proposing changes
 

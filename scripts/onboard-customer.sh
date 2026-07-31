@@ -233,21 +233,21 @@ esac
 # Resolve the Jamf Pro hostname behind the tenant UUID and show it. A UUID typo
 # that still authenticates would otherwise point this customer at the wrong
 # instance, and nothing later would reveal it.
-JPRO_URL=$(JAMF_URL="${PLATFORM_BASE_URL_VAL}" \
+JAMF_PRO_URL=$(JAMF_URL="${PLATFORM_BASE_URL_VAL}" \
   JAMF_TENANT_ID="${PLATFORM_TENANT_ID_VAL}" \
   JAMF_CLIENT_ID="${PLATFORM_CLIENT_ID_VAL}" \
   JAMF_CLIENT_SECRET="${PLATFORM_CLIENT_SECRET_VAL}" \
   jamf-cli pro jamf-pro-server-url get --no-input --no-version-check --field url 2>/dev/null || true)
 
-if [ -n "${JPRO_URL}" ]; then
-  echo "  → This tenant is Jamf Pro: ${JPRO_URL}"
+if [ -n "${JAMF_PRO_URL}" ]; then
+  echo "  → This tenant is Jamf Pro: ${JAMF_PRO_URL}"
   read -r -p "  → Is that the right instance for ${CUSTOMER}? (type 'yes'): " CONFIRM_JPRO
   if [ "${CONFIRM_JPRO}" != "yes" ]; then
     echo "Aborted. Nothing was stored and no directory was created."
     exit 1
   fi
 else
-  JPRO_URL="unresolved"
+  JAMF_PRO_URL="unresolved"
   echo "  ! Could not resolve the Jamf Pro URL (needs read:pro:jss-url). Continuing."
 fi
 
@@ -305,7 +305,7 @@ PR_ARGS=(
 | **Protect URL** | \`${PROTECT_URL_VAL}\` |
 | **Platform base URL** | \`${PLATFORM_BASE_URL_VAL}\` |
 | **Platform tenant ID** | \`${PLATFORM_TENANT_ID_VAL}\` |
-| **Jamf Pro** | \`${JPRO_URL}\` |
+| **Jamf Pro** | \`${JAMF_PRO_URL}\` |
 | **Product tier** | \`${TIER}\` |
 
 Credentials are stored in the \`${CUSTOMER}\` GitHub Environment. Nothing

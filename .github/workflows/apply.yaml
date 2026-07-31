@@ -161,7 +161,7 @@ jobs:
         # the instance the run actually touched. Tolerates failure: on a failed
         # apply there may be no output to read.
         run: |
-          JPRO_URL=$(terraform output -raw jamf_pro_server_url 2>/dev/null || echo "unknown")
+          JAMF_PRO_URL=$(terraform output -raw jamf_pro_server_url 2>/dev/null || echo "unknown")
           {
             echo "## Apply — ${{ matrix.customer }}"
             echo ""
@@ -169,7 +169,7 @@ jobs:
             echo "|-------|-------|"
             echo "| Customer | \`${{ matrix.customer }}\` |"
             echo "| Protect tenant | \`${{ vars.PROTECT_URL }}\` |"
-            echo "| Jamf Pro | \`${JPRO_URL}\` |"
+            echo "| Jamf Pro | \`${JAMF_PRO_URL}\` |"
             echo "| Result | ${{ job.status }} |"
             echo "| Branch | \`${{ github.ref_name }}\` |"
             echo "| Triggered by | @${{ github.actor }} |"
