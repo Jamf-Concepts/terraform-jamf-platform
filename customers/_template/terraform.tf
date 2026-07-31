@@ -7,23 +7,24 @@
 # into the state key, so every customer reads and writes a completely separate
 # state object. A bad apply against one tenant cannot touch another's state.
 #
-#   encrypt      = true  — state encrypted at rest (state holds secrets in
-#                          plain text; treat the bucket accordingly)
-#   use_lockfile = true  — native S3 state locking. Two operations against the
-#                          same customer cannot run at once; the second is
-#                          blocked rather than corrupting state.
+# The backend below is S3, as a working example. Any backend that gives you a
+# per-tenant path and state locking works the same way — swap it for yours. See
+# the README "State backend" section for what else changes if you do.
 #
-# AWS credentials come from environment variables — repository-level secrets in
-# CI/CD, or exported locally before `terraform init`.
+# BEFORE YOUR FIRST ONBOARDING, point this at storage you own. Backend blocks
+# cannot reference variables, so it is a literal edit; use `terraform init
+# -backend-config=...` if you would rather supply values at init time. With S3,
+# the bucket must also be set as the STATE_BUCKET repository variable, which the
+# destroy and handover workflows use to remove state objects.
 #
-# BEFORE YOUR FIRST ONBOARDING you must set `bucket` and `region` below to your
-# own values. Backend blocks cannot use variables or interpolation, so this is
-# a literal edit. The bucket name must also be set as the repository variable
-# STATE_BUCKET, which the destroy and handover workflows use to remove state
-# objects — the two must agree.
+#   encrypt      = true  — state is encrypted at rest. State records credentials
+#                          in plain text, so treat the store as a secret.
+#   use_lockfile = true  — S3-native locking. Two operations against the same
+#                          customer cannot run at once; the second is blocked
+#                          rather than corrupting state.
 #
 # The onboarding script fills the customer name in automatically. However it is
-# set, the S3 key must always match the customer directory name.
+# set, the state key must always match the customer directory name.
 # -----------------------------------------------------------------------------
 
 terraform {

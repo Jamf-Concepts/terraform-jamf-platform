@@ -108,6 +108,9 @@ jobs:
           TF_VAR_platform_client_secret: ${{ secrets.PLATFORM_CLIENT_SECRET }}
           TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
 
+      # BACKEND-SPECIFIC. Terraform destroy empties the state but leaves the
+      # object behind, and there is no portable command to remove it. Replace
+      # this step for your backend.
       - name: Delete Terraform state from S3
         env:
           CUSTOMER: ${{ github.event.inputs.customer }}

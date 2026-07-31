@@ -64,16 +64,14 @@ pipeline manages.
 
 ## Before you start
 
-Nine files reference something you must change. None of them will work as
-shipped, deliberately — a placeholder that looks plausible is worse than one
-that fails.
+Seven things need changing before any of this works. Nothing here is set to a
+plausible-looking default, deliberately — a placeholder that quietly works
+against the wrong thing is worse than one that fails on the first run.
 
 | What | Where | Why |
 |---|---|---|
-| State bucket and region | `customers/_template/terraform.tf` | Backend blocks cannot use variables, so this is a literal edit. Ships as `replace-me-jamfprotect-tfstate` so a first `init` fails rather than pointing somewhere real. |
-| `STATE_BUCKET` repository variable | GitHub repository settings | Used by the destroy and handover workflows to remove state objects. Must match the bucket above. |
-| `AWS_REGION` repository variable | GitHub repository settings | Region of that bucket. |
-| AWS credentials | Repository secrets | See [State backend](#state-backend) — prefer OIDC over static keys if you can. |
+| The backend block | `customers/_template/terraform.tf` | Wired for S3 as a working example. Swap it for whichever backend you use — see [State backend](#state-backend). Ships as `replace-me-jamfprotect-tfstate` so a first `init` fails rather than pointing somewhere real. |
+| State store credentials and location | Repository secrets and variables | For the S3 example: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, and `STATE_BUCKET` matching the bucket above. Different for a different backend. |
 | Console user lists | `modules/protect-baseline/variables.tf` | `full_admin_users` and `read_only_users` default to empty. Populate with your own team. |
 | Global exclusions | `modules/protect-baseline/exception_sets.tf` | Ships with one worked example. Replace it with exclusions you have actually evidenced. |
 | Bootstrap API client name | `BOOTSTRAP_API_CLIENT_NAME` repository variable | The hand-made client Terraform authenticates with. Out-of-band detection excludes it by name, so this must match what you called yours. |
@@ -97,11 +95,11 @@ graph TB
         C3[customers/customer-n]
     end
 
-    subgraph "Remote State"
-        S0[(S3: staging/terraform.tfstate)]
-        S1[(S3: customer-a/terraform.tfstate)]
-        S2[(S3: customer-b/terraform.tfstate)]
-        S3[(S3: customer-n/terraform.tfstate)]
+    subgraph "Remote State (one object per tenant)"
+        S0[(staging/terraform.tfstate)]
+        S1[(customer-a/terraform.tfstate)]
+        S2[(customer-b/terraform.tfstate)]
+        S3[(customer-n/terraform.tfstate)]
     end
 
     subgraph "Jamf Protect Tenants"
@@ -258,9 +256,13 @@ backend "s3" {
 ```
 
 The customer name is in the key, so every tenant reads and writes a completely
-separate object. `use_lockfile = true` is native S3 locking — two operations
+separate object. `use_lockfile = true` is S3-native locking — two operations
 against the same customer cannot run concurrently, so the second is blocked
 rather than corrupting state.
+
+That block is the S3 example; the principle is not S3-specific. Any backend that
+gives you a per-tenant path and locking does the same job — see
+[State backend](#state-backend).
 
 **Separate credentials.** From every workflow that touches a tenant:
 
@@ -289,7 +291,7 @@ cannot apply over each other.
 | [Terraform](https://developer.hashicorp.com/terraform/install) | `>= 1.14.0` | 1.14 introduced `terraform query`, which out-of-band detection depends on. Plan and apply alone work on 1.11+. |
 | [GitHub CLI](https://cli.github.com) (`gh`) | Latest | Environment and secret management, pull request automation |
 | [jamf-cli](https://github.com/jamf-concepts/jamf-cli) | Latest | Clearing the auto-created Protect defaults during onboarding; Protect audit-log retrieval |
-| AWS CLI | v2 | State bucket access. CI/CD handles this itself. |
+| AWS CLI | v2 | Only for the S3 backend example — the destroy and handover workflows use it to remove state objects. Not needed with another backend. |
 | `jq` | Latest | Used throughout the scripts |
 
 You also need:
@@ -775,23 +777,43 @@ reach two tenants, move the provider blocks up into the customer root.
 
 ### State backend
 
-S3 with native lockfile locking, because the pipeline needs remote state with
-locking and this is the least-friction option that provides both. Alternatives,
-with the caveat that each needs workflow changes:
+The pipeline needs **remote state with locking** — per customer, so tenants stay
+isolated and two runs cannot collide. Which backend provides that is your
+choice. Terraform ships twelve, and any of them that locks will do.
 
-- **HCP Terraform** is the lowest-friction remote option for teams without
-  existing cloud infrastructure, and the free tier covers a fair amount. It
-  changes the backend block, the credential handling and the destroy and
-  handover state cleanup, since those currently use `aws s3 rm`.
-- **GCS or Azure Storage** work equally well as backends; same caveat about the
-  state cleanup steps.
+S3 is what this reference is wired for, because it is a concrete working example
+and something had to be. It is not a recommendation.
 
-**Prefer OIDC over static AWS keys.** The workflows use
-`AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` for portability, but long-lived
-keys in GitHub secrets are the weakest link in this setup. If your state bucket
-is in AWS, configure GitHub as an OIDC identity provider and have
-`aws-actions/configure-aws-credentials` assume a role instead — it is a
-per-workflow change and removes the standing credential entirely.
+To use a different one, three things change:
+
+| What | Where |
+|---|---|
+| The backend block | `customers/_template/terraform.tf` |
+| Deleting the state object after a destroy or handover | One step each in `destroy.yaml` and `handover.yaml` — the only backend-coupled code in the pipeline |
+| Authenticating to the state store | The `Configure AWS credentials` step in every workflow |
+
+Nothing else in the repository knows or cares where state lives.
+
+Two things to know going in. A backend block cannot reference variables, locals
+or data sources, so the bucket and key are literal edits — and if you want the
+key to vary per environment without editing the file, that is what [partial
+configuration](https://developer.hashicorp.com/terraform/language/backend#partial-configuration)
+and `terraform init -backend-config=...` are for. And when you change a backend,
+`terraform init` offers to migrate existing state into it rather than stranding it.
+
+- [Backend configuration](https://developer.hashicorp.com/terraform/language/backend)
+- [Remote state](https://developer.hashicorp.com/terraform/language/state/remote)
+
+**Whatever you pick, treat state as a secret.** It records credentials in plain
+text, so encrypt it at rest and keep access to it tight. `sensitive = true` on an
+output keeps a value out of logs and does nothing at all about state.
+
+**If you do use S3, prefer OIDC over static keys.** The workflows use
+`AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` because it works anywhere, but
+long-lived keys in GitHub secrets are the weakest link here. Configuring GitHub
+as an OIDC identity provider and having
+`aws-actions/configure-aws-credentials` assume a role instead is a per-workflow
+change that removes the standing credential entirely.
 
 ---
 

@@ -70,6 +70,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      # BACKEND-SPECIFIC. Replace this step for your backend. The sequence
+      # matters more than the tooling: confirm the object exists, delete it,
+      # verify it is gone, and only then report success.
       - name: Delete Terraform state from S3 (state object only)
         id: delete_state
         env:
