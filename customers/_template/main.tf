@@ -39,21 +39,29 @@ variable "protect_client_password" {
   sensitive   = true
 }
 
-# --- Jamf Pro Credentials ---------------------------------------------------
+# --- Jamf Platform Credentials ----------------------------------------------
+# Reaches this customer's Jamf Pro instance via the Platform API gateway. The
+# base URL is regional and the tenant is identified by UUID, so there is no
+# Jamf Pro hostname here. Validation lives in the module.
 
-variable "jpro_url" {
-  description = "Customer Jamf Pro instance URL"
+variable "platform_base_url" {
+  description = "Jamf Platform API gateway base URL for this customer's region"
   type        = string
 }
 
-variable "jpro_client_id" {
-  description = "Jamf Pro OAuth2 API client ID"
+variable "platform_tenant_id" {
+  description = "Jamf Platform tenant UUID"
+  type        = string
+}
+
+variable "platform_client_id" {
+  description = "Jamf Platform API OAuth client ID"
   type        = string
   sensitive   = true
 }
 
-variable "jpro_client_secret" {
-  description = "Jamf Pro OAuth2 API client secret"
+variable "platform_client_secret" {
+  description = "Jamf Platform API OAuth client secret"
   type        = string
   sensitive   = true
 }
@@ -173,9 +181,10 @@ module "protect" {
   protect_client_id       = var.protect_client_id
   protect_client_password = var.protect_client_password
 
-  jpro_url           = var.jpro_url
-  jpro_client_id     = var.jpro_client_id
-  jpro_client_secret = var.jpro_client_secret
+  platform_base_url      = var.platform_base_url
+  platform_tenant_id     = var.platform_tenant_id
+  platform_client_id     = var.platform_client_id
+  platform_client_secret = var.platform_client_secret
 
   product_tier = var.product_tier
 

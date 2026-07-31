@@ -24,9 +24,9 @@ terraform {
       source  = "Jamf-Concepts/jamfprotect"
       version = ">= 0.10.0"
     }
-    jamfpro = {
-      source  = "deploymenttheory/jamfpro"
-      version = ">= 0.41.0"
+    jamfplatform = {
+      source  = "Jamf-Concepts/jamfplatform"
+      version = ">= 0.25.1"
     }
   }
 }
@@ -59,17 +59,17 @@ provider "jamfprotect" {
   client_secret = var.protect_client_password
 }
 
-provider "jamfpro" {
-  jamfpro_instance_fqdn = var.jpro_url
-  client_id             = var.jpro_client_id
-  client_secret         = var.jpro_client_secret
-  auth_method           = "oauth2"
+# Reaches Jamf Pro through the Platform API gateway, so a customer is identified
+# by a regional base_url (us / eu / apac — shared between customers in the same
+# region) plus a tenant UUID, not by a Jamf Pro hostname.
+provider "jamfplatform" {
+  base_url      = var.platform_base_url
+  client_id     = var.platform_client_id
+  client_secret = var.platform_client_secret
+  tenant_id     = var.platform_tenant_id
 
-  # Refresh the OAuth2 token 30 seconds before it expires.
-  token_refresh_buffer_period_seconds = 30
-
-  jamfpro_load_balancer_lock           = false
-  mandatory_request_delay_milliseconds = 0
+  # Paces outbound requests. The default; raise it if you see 429s.
+  min_request_interval_ms = 100
 }
 
 # --- Feature flags ----------------------------------------------------------

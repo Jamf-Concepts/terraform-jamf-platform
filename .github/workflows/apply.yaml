@@ -7,9 +7,8 @@ name: Terraform Apply
 # Same detect-then-matrix shape as plan.yaml, and for the same reason: each
 # customer applies with only its own credentials, against only its own state.
 #
-# Deliberately absent: a chat notification step. The production version of this
-# pipeline posts to Slack after every apply, but a webhook, channel and message
-# format are the most organisation-specific part of any pipeline. What is left
+# Deliberately absent: a chat notification step. A webhook, channel and message
+# format are the most organisation-specific part of any pipeline, so what you get
 # is the GitHub-native equivalent — a run summary — plus a marked place to add
 # your own. See README "Notifications".
 # -----------------------------------------------------------------------------
@@ -114,9 +113,10 @@ jobs:
           TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
           TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
           TF_VAR_protect_client_password: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
-          TF_VAR_jpro_url: ${{ secrets.JPRO_URL }}
-          TF_VAR_jpro_client_id: ${{ secrets.JPRO_CLIENT_ID }}
-          TF_VAR_jpro_client_secret: ${{ secrets.JPRO_CLIENT_SECRET }}
+          TF_VAR_platform_base_url: ${{ vars.PLATFORM_BASE_URL }}
+          TF_VAR_platform_tenant_id: ${{ vars.PLATFORM_TENANT_ID }}
+          TF_VAR_platform_client_id: ${{ secrets.PLATFORM_CLIENT_ID }}
+          TF_VAR_platform_client_secret: ${{ secrets.PLATFORM_CLIENT_SECRET }}
           TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
 
       - name: Write reporting integration credentials to run summary

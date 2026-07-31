@@ -120,7 +120,7 @@ sandbox tenant and note which feature or fix motivated it.
 In scope:
 
 - Jamf Protect resources via `Jamf-Concepts/jamfprotect`
-- Jamf Pro resources via `deploymenttheory/jamfpro`, where they support the
+- Jamf Pro resources via `Jamf-Concepts/jamfplatform`, where they support the
   Protect deployment
 - The pipeline, the scripts, and the documentation around both
 
@@ -128,8 +128,7 @@ Out of scope:
 
 - General Terraform tutorials
 - Prescriptive CI/CD or remote state architecture beyond what is documented —
-  Jamf does not provide IaC consultancy, and this repository documents one
-  approach rather than recommending it over others
+  this repository documents one approach rather than recommending it over others
 - Other Jamf products, which have their own providers and belong on their own
   reference branches
 

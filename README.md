@@ -20,8 +20,9 @@ tooling, no chat webhooks, no real credentials or state buckets.
 Built on the
 [Jamf-Concepts/jamfprotect](https://registry.terraform.io/providers/Jamf-Concepts/jamfprotect/latest)
 and
-[deploymenttheory/jamfpro](https://registry.terraform.io/providers/deploymenttheory/jamfpro/latest)
-providers.
+[Jamf-Concepts/jamfplatform](https://registry.terraform.io/providers/Jamf-Concepts/jamfplatform/latest)
+providers. Jamf Pro is reached through the Platform API gateway rather than a
+per-instance hostname — see [Jamf Pro via the Platform API](#jamf-pro-via-the-platform-api).
 
 ---
 
@@ -279,7 +280,7 @@ cannot apply over each other.
 |---|---|---|
 | [Terraform](https://developer.hashicorp.com/terraform/install) | `>= 1.14.0` | 1.14 introduced `terraform query`, which out-of-band detection depends on. Plan and apply alone work on 1.11+. |
 | [GitHub CLI](https://cli.github.com) (`gh`) | Latest | Environment and secret management, pull request automation |
-| [jamf-cli](https://github.com/jamf-concepts/jamf-cli) | Latest | Jamf Pro API role and OAuth2 client creation during onboarding; Protect audit-log retrieval |
+| [jamf-cli](https://github.com/jamf-concepts/jamf-cli) | Latest | Clearing the auto-created Protect defaults during onboarding; Protect audit-log retrieval |
 | AWS CLI | v2 | State bucket access. CI/CD handles this itself. |
 | `jq` | Latest | Used throughout the scripts |
 
@@ -291,8 +292,11 @@ You also need:
   their first apply. Terraform cannot create the credential it needs to
   authenticate with in the first place. Once onboarded, the module manages its
   own clients from there.
-- **A Jamf Pro admin account** for each customer's instance, used once during
-  onboarding to bootstrap an OAuth2 client. It is never stored.
+- **A Jamf Platform API client per customer tenant**, granted
+  `read:pro:jamf-protect-deployments`, `read:pro:jamf-protect-settings` and
+  `update:pro:jamf-protect-settings`. The onboarding script does **not** create
+  this — Platform API clients are created in the Jamf Account portal
+  (account.jamf.com), so it is a prerequisite you bring with you.
 
 ---
 
@@ -345,9 +349,10 @@ onboarding script (or by hand for `staging`, see step 5):
 | `PROTECT_URL` | Variable | Tenant URL. Not sensitive, and useful in logs. |
 | `PROTECT_CLIENT_ID` | Secret | Protect API client ID |
 | `PROTECT_CLIENT_PASSWORD` | Secret | Protect API client password |
-| `JPRO_URL` | Secret | Jamf Pro instance URL |
-| `JPRO_CLIENT_ID` | Secret | Jamf Pro OAuth2 client ID |
-| `JPRO_CLIENT_SECRET` | Secret | Jamf Pro OAuth2 client secret |
+| `PLATFORM_BASE_URL` | Variable | Platform API gateway for this customer's region |
+| `PLATFORM_TENANT_ID` | Variable | Platform tenant UUID. An identifier, not a credential. |
+| `PLATFORM_CLIENT_ID` | Secret | Platform API OAuth client ID |
+| `PLATFORM_CLIENT_SECRET` | Secret | Platform API OAuth client secret |
 | `SENTINEL_APP_SECRET` | Secret | Only for customers with SIEM forwarding |
 
 ### 4. Set up branch protection
@@ -380,9 +385,10 @@ gh api repos/OWNER/REPO/environments/staging -X PUT --input - <<< '{}'
 gh variable set PROTECT_URL --env staging --body "https://your-tenant.protect.jamfcloud.com"
 gh secret   set PROTECT_CLIENT_ID       --env staging
 gh secret   set PROTECT_CLIENT_PASSWORD --env staging
-gh secret   set JPRO_URL                --env staging
-gh secret   set JPRO_CLIENT_ID          --env staging
-gh secret   set JPRO_CLIENT_SECRET      --env staging
+gh variable set PLATFORM_BASE_URL  --env staging --body "https://eu.apigw.jamf.com"
+gh variable set PLATFORM_TENANT_ID --env staging --body "00000000-0000-0000-0000-000000000000"
+gh secret   set PLATFORM_CLIENT_ID     --env staging
+gh secret   set PLATFORM_CLIENT_SECRET --env staging
 ```
 
 Then open a pull request into `staging` — the plan runs against that workspace
@@ -391,10 +397,8 @@ only then onboard a real customer with the script.
 
 If you would rather see the script do the whole thing end to end, delete
 `customers/staging/` first and run `./scripts/onboard-customer.sh staging
-standard`. Note that the script creates the Jamf Pro API role and OAuth2 client
-too, which the manual route above does not — so for the manual route you need
-an existing Jamf Pro client, or no `jamfpro_jamf_protect` registration in
-staging at all.
+standard`. The script does the same work as the commands above, plus clearing
+the tenant's auto-created default Protect plan and action configuration.
 
 ### 6. Delete the example
 
@@ -510,7 +514,7 @@ Branch naming that keeps the history readable:
 ## Onboarding a customer
 
 Two manual prerequisites: an API client created in the customer's Protect
-console, and a Jamf Pro admin account for their instance. Then one command:
+console, and a Jamf Platform API client for their tenant. Then one command:
 
 ```bash
 ./scripts/onboard-customer.sh <customer-name> [standard|enhanced]
@@ -523,12 +527,12 @@ Two decisions — the name and the tier. The script:
 3. Deletes the auto-created default plan and action configuration from the
    tenant via jamf-cli — they ship with every new tenant, and the default plan
    syncs an unscoped configuration profile into Jamf Pro if left in place
-4. Prompts for Jamf Pro admin credentials and obtains a bearer token
-5. Confirms Protect is not already registered in that Jamf Pro instance
-6. Creates a least-privilege API role and OAuth2 client in Jamf Pro
-7. Stores all six secrets in the Environment — only after every check passes
-8. Scaffolds the customer directory from `_template`
-9. Commits, pushes, and opens a pull request
+4. Prompts for Jamf Platform API credentials and validates their shape
+5. Asks you to confirm the tenant has no existing Protect registration
+6. Stores the variables and secrets in the Environment — only after every check
+   passes
+7. Scaffolds the customer directory from `_template`
+8. Commits, pushes, and opens a pull request
 
 The ordering is the point: nothing is written to GitHub until every validation
 has passed, so a failure halfway through leaves nothing half-configured.
@@ -685,16 +689,14 @@ Two details worth knowing if you adapt this:
 
 ## Notifications
 
-**There are none, on purpose.** The production version of this pipeline posts
-to Slack after every apply, destroy, drift finding and remediation. Those steps
-have been removed, because a webhook URL, a channel and a message format are
-the most organisation-specific thing in any pipeline, and a half-configured
+**There are none, on purpose.** A webhook URL, a channel and a message format
+are the most organisation-specific thing in any pipeline, and a half-configured
 notification step is worse than none.
 
-What is here instead is the GitHub-native equivalent: every workflow writes a
-run summary, and drift and reconcile findings become GitHub issues, which
-notify whoever is watching the repository or assigned to them. For many teams
-that is genuinely enough.
+What you get instead is the GitHub-native equivalent: every workflow writes a
+run summary, and drift and reconcile findings become GitHub issues, which notify
+whoever is watching the repository or assigned to them. For many teams that is
+genuinely enough.
 
 If you do want outbound notifications, each workflow has a marked
 `# --- Notifications ---` block at the end of its job. The pattern is a single
@@ -749,7 +751,7 @@ versions is the more conservative position and is entirely reasonable.
 | Provider | Source | Minimum |
 |---|---|---|
 | jamfprotect | `Jamf-Concepts/jamfprotect` | 0.10.0 |
-| jamfpro | `deploymenttheory/jamfpro` | 0.41.0 |
+| jamfplatform | `Jamf-Concepts/jamfplatform` | 0.25.1 |
 
 **Providers are configured inside the module, not in each root.** This keeps
 customer workspaces to three files, at the cost of a module that cannot be

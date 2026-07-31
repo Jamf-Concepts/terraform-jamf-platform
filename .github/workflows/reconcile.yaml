@@ -132,9 +132,10 @@ jobs:
           TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
           TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
           TF_VAR_protect_client_password: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
-          TF_VAR_jpro_url: ${{ secrets.JPRO_URL }}
-          TF_VAR_jpro_client_id: ${{ secrets.JPRO_CLIENT_ID }}
-          TF_VAR_jpro_client_secret: ${{ secrets.JPRO_CLIENT_SECRET }}
+          TF_VAR_platform_base_url: ${{ vars.PLATFORM_BASE_URL }}
+          TF_VAR_platform_tenant_id: ${{ vars.PLATFORM_TENANT_ID }}
+          TF_VAR_platform_client_id: ${{ secrets.PLATFORM_CLIENT_ID }}
+          TF_VAR_platform_client_secret: ${{ secrets.PLATFORM_CLIENT_SECRET }}
           TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
 
       - name: Dump Terraform state
@@ -144,9 +145,10 @@ jobs:
           TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
           TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
           TF_VAR_protect_client_password: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
-          TF_VAR_jpro_url: ${{ secrets.JPRO_URL }}
-          TF_VAR_jpro_client_id: ${{ secrets.JPRO_CLIENT_ID }}
-          TF_VAR_jpro_client_secret: ${{ secrets.JPRO_CLIENT_SECRET }}
+          TF_VAR_platform_base_url: ${{ vars.PLATFORM_BASE_URL }}
+          TF_VAR_platform_tenant_id: ${{ vars.PLATFORM_TENANT_ID }}
+          TF_VAR_platform_client_id: ${{ secrets.PLATFORM_CLIENT_ID }}
+          TF_VAR_platform_client_secret: ${{ secrets.PLATFORM_CLIENT_SECRET }}
           TF_VAR_sentinel_app_secret: ${{ secrets.SENTINEL_APP_SECRET }}
 
       - name: Detect out-of-band resources

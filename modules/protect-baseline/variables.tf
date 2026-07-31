@@ -30,21 +30,41 @@ variable "protect_client_password" {
   sensitive   = true
 }
 
-# --- Jamf Pro Credentials ---------------------------------------------------
+# --- Jamf Platform Credentials ----------------------------------------------
+# Used to reach the customer's Jamf Pro instance through the Platform API
+# gateway. Note this is a regional endpoint plus a tenant UUID, not a per-
+# instance hostname — see the provider block in main.tf.
 
-variable "jpro_url" {
-  description = "Customer Jamf Pro instance URL (e.g. https://tenant.jamfcloud.com)"
+variable "platform_base_url" {
+  description = "Jamf Platform API gateway base URL for this customer's region (e.g. https://eu.apigw.jamf.com)"
   type        = string
+
+  validation {
+    # A tenant URL here is the most likely mistake, and it produces a confusing
+    # auth failure rather than an obvious one.
+    condition     = can(regex("^https://[a-z]+\\.(stage\\.)?apigw\\.jamf(nebula)?\\.com/?$", var.platform_base_url))
+    error_message = "platform_base_url must be a Jamf Platform API gateway URL, e.g. https://us.apigw.jamf.com, https://eu.apigw.jamf.com or https://apac.apigw.jamf.com — not a Jamf Pro tenant URL."
+  }
 }
 
-variable "jpro_client_id" {
-  description = "Jamf Pro OAuth2 API client ID"
+variable "platform_tenant_id" {
+  description = "Jamf Platform tenant UUID. Scopes every API request to this customer."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", var.platform_tenant_id))
+    error_message = "platform_tenant_id must be a UUID."
+  }
+}
+
+variable "platform_client_id" {
+  description = "Jamf Platform API OAuth client ID"
   type        = string
   sensitive   = true
 }
 
-variable "jpro_client_secret" {
-  description = "Jamf Pro OAuth2 API client secret"
+variable "platform_client_secret" {
+  description = "Jamf Platform API OAuth client secret"
   type        = string
   sensitive   = true
 }
