@@ -39,11 +39,6 @@ Several things in here are deliberate trade-offs that suited one service and
 may not suit yours — those are called out in comments where they occur rather
 than smoothed over.
 
-Jamf publishes and maintains these providers. We do not deliver Infrastructure
-as Code transformation as a commercial service, and we do not provide guidance
-on architecting CI/CD or remote state beyond what is documented here. This
-repository is a reference and a learning resource; it is not a deliverable.
-
 **The patterns are not Jamf Protect patterns.** Module reuse, state isolation,
 credential scoping, CI/CD, Git as the source of truth — none of that is
 product-specific. Swap the resources inside the module for Jamf Pro resources
