@@ -409,6 +409,37 @@ git rm -r customers/example-customer
 
 ---
 
+## Where these workflows actually run
+
+Worth understanding before you push this anywhere, because the answer is
+counter-intuitive: **on this branch, in this repository, none of these workflows
+run at all.** They are inert until the branch they live on is a repository's
+default branch. That is GitHub Actions behaviour, not a safety catch added here:
+
+| Trigger | Workflows | Behaviour on a non-default branch |
+|---|---|---|
+| `schedule` | drift, reconcile | Never fires. Cron only ever runs from the default branch. |
+| `workflow_dispatch` | destroy, handover, force-unlock | Not dispatchable, and does not appear in the Actions UI. |
+| `issues` | remediate | Never fires. Non-branch events always use the default branch's workflow file. |
+| `push` | apply | Only on a push to `main` or `staging`, and only for changes under `customers/**` or `modules/**`. |
+| `pull_request` | plan | Only for a pull request whose **base** is `main` or `staging`. |
+
+`.github/dependabot.yml` is the same: Dependabot reads its configuration from
+the default branch only.
+
+So to actually run any of this, copy the contents of this branch into a
+repository of your own where it is the default branch. Cloning the reference
+branch and pushing it as a non-default branch somewhere gets you the code and
+none of the automation.
+
+One thing to watch when you do push this branch somewhere as a reference:
+GitHub will offer to open a pull request from it. Do not target `main` or
+`staging` with it — that would make `plan.yaml` eligible, and it will fail on
+credentials and Environments that do not exist. An orphaned branch has no
+shared history with `main` anyway, so the diff is meaningless.
+
+---
+
 ## The pipeline
 
 Every configuration change follows the same path. There is no manual
