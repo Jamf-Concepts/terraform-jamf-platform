@@ -1,0 +1,15 @@
+{
+  "_comment": "Maps each Terraform resource type to the noun used in its Jamf Protect audit-log op names (createPlan/updatePlan/deletePlan -> Plan). Audit entries key only on resourceId, which is unique within a type but NOT across types — small numeric ids collide between plans, roles, action configs and so on — so attribution must match resourceId AND the op noun. This is an ALLOWLIST: a queried type absent from this map is deliberately left unattributed (a dash in the report) rather than matched on resourceId alone, which would confidently mis-attribute it to a same-id event of a different type. The nouns are server-side audit vocabulary and are NOT derivable from the type name (custom_prevent_list -> PreventList, telemetry -> TelemetryV2, removable_storage_control_set -> USBControlSet, action_configuration -> ActionConfigs), so confirm any new noun against live data with `jamf-cli protect audit-logs list` before adding it. The entries below were verified against a live tenant and cover every type in reconcile.tfquery.hcl.",
+  "jamfprotect_plan": "Plan",
+  "jamfprotect_analytic": "Analytic",
+  "jamfprotect_analytic_set": "AnalyticSet",
+  "jamfprotect_exception_set": "ExceptionSet",
+  "jamfprotect_api_client": "ApiClient",
+  "jamfprotect_role": "Role",
+  "jamfprotect_action_configuration": "ActionConfigs",
+  "jamfprotect_removable_storage_control_set": "USBControlSet",
+  "jamfprotect_group": "Group",
+  "jamfprotect_custom_prevent_list": "PreventList",
+  "jamfprotect_telemetry": "TelemetryV2",
+  "jamfprotect_unified_logging_filter": "UnifiedLoggingFilter"
+}
