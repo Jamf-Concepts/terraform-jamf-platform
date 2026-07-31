@@ -111,10 +111,14 @@ graph TB
         T3[customer-n.protect.jamfcloud.com]
     end
 
+    subgraph "Platform API Gateway"
+        G[regional gateway<br/>routes by tenant UUID]
+    end
+
     subgraph "Jamf Pro Instances"
-        P1[customer-a.jamfcloud.com]
-        P2[customer-b.jamfcloud.com]
-        P3[customer-n.jamfcloud.com]
+        P1[customer-a Jamf Pro]
+        P2[customer-b Jamf Pro]
+        P3[customer-n Jamf Pro]
     end
 
     M --> C0
@@ -132,9 +136,13 @@ graph TB
     C2 --> T2
     C3 --> T3
 
-    C1 --> P1
-    C2 --> P2
-    C3 --> P3
+    C1 --> G
+    C2 --> G
+    C3 --> G
+
+    G --> P1
+    G --> P2
+    G --> P3
 ```
 
 One module, many thin workspaces. Change the module once and every tenant
