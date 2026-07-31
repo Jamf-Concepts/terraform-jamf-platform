@@ -756,10 +756,6 @@ the lock object behind. Take the Lock ID from the failed run's log and dispatch
 the Force Unlock workflow. Only do this when you are certain no apply is
 actually in progress.
 
-**`Error: 429 Too Many Requests`** — API rate limiting. Confirm
-`-parallelism=1` is set on the invocation. If it is, re-run; the providers
-retry internally but occasionally surface the error.
-
 **`terraform plan` shows changes nobody made** — that is drift, and it is
 working. Someone changed something in the console. Decide whether the change
 should exist, then either codify it or remediate it.
