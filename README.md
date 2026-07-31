@@ -713,10 +713,12 @@ The pipeline needs **remote state with locking** — per customer, so tenants st
 isolated and two runs cannot collide. Which backend provides that is your
 choice. Terraform ships twelve, and any of them that locks will do.
 
-S3 is what this reference is wired for, because it is a concrete working example
-and something had to be. It is not a recommendation.
+S3 is what this reference is wired for, because it is what the production system
+behind it runs on — proven across a fleet of tenants, not picked to make the
+example work. It is a sound default if you have no existing preference.
 
-To use a different one, three things change:
+It is not a requirement, though. If your team already runs a state backend and
+has the operational habits to go with it, use that instead — three things change:
 
 | What | Where |
 |---|---|
