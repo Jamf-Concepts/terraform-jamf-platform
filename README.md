@@ -21,8 +21,8 @@ Built on the
 [Jamf-Concepts/jamfprotect](https://registry.terraform.io/providers/Jamf-Concepts/jamfprotect/latest)
 and
 [Jamf-Concepts/jamfplatform](https://registry.terraform.io/providers/Jamf-Concepts/jamfplatform/latest)
-providers. Jamf Pro is reached through the Platform API gateway rather than a
-per-instance hostname — see [Jamf Pro via the Platform API](#jamf-pro-via-the-platform-api).
+providers. Jamf Pro is reached through the Platform API gateway — a regional
+endpoint plus a tenant UUID — rather than a per-instance hostname.
 
 ---
 
@@ -302,9 +302,14 @@ You also need:
   own clients from there.
 - **A Jamf Platform API client per customer tenant**, granted
   `read:pro:jamf-protect-deployments`, `read:pro:jamf-protect-settings` and
-  `update:pro:jamf-protect-settings`. The onboarding script does **not** create
-  this — Platform API clients are created in the Jamf Account portal
-  (account.jamf.com), so it is a prerequisite you bring with you.
+  `update:pro:jamf-protect-settings` and `read:pro:jss-url`. The onboarding
+  script does **not** create this — Platform API clients are created in the Jamf
+  Account portal (account.jamf.com), so it is a prerequisite you bring with you.
+
+  `read:pro:jss-url` is only there so the pipeline can resolve which Jamf Pro
+  instance a tenant UUID refers to, for run summaries and outputs. Drop the
+  `jamfplatform_pro_jamf_pro_server_url` data source and its output if you would
+  rather not grant it.
 
 ---
 

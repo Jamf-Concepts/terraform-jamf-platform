@@ -43,6 +43,7 @@
 #         read:pro:jamf-protect-deployments
 #         read:pro:jamf-protect-settings
 #         update:pro:jamf-protect-settings
+#         read:pro:jss-url
 #     NOT created by this script: Platform API clients are created in the Jamf
 #     Account portal (account.jamf.com), so bring one with you.
 #     `jamf-cli platform setup` turns one into a local CLI profile if you also
@@ -144,6 +145,7 @@ echo "    The API client must already exist, with these privileges:"
 echo "      read:pro:jamf-protect-deployments"
 echo "      read:pro:jamf-protect-settings"
 echo "      update:pro:jamf-protect-settings"
+echo "      read:pro:jss-url"
 echo
 read -r -p "  → Platform base URL (https://us.apigw.jamf.com | eu | apac): " PLATFORM_BASE_URL_VAL
 PLATFORM_BASE_URL_VAL="${PLATFORM_BASE_URL_VAL%/}"
@@ -206,7 +208,7 @@ case "${rc}" in
     ;;
   4)
     # not_found — the expected state for a new onboarding.
-    echo "  ✓ No existing Protect registration found — proceeding."
+    echo "  ✓ No existing Protect registration found."
     ;;
   3)
     echo "Error: the Platform API credentials failed to authenticate (exit 3)."
@@ -219,6 +221,7 @@ case "${rc}" in
     echo "         read:pro:jamf-protect-deployments"
     echo "         read:pro:jamf-protect-settings"
     echo "         update:pro:jamf-protect-settings"
+    echo "         read:pro:jss-url"
     exit 1
     ;;
   *)
@@ -226,6 +229,27 @@ case "${rc}" in
     exit 1
     ;;
 esac
+
+# Resolve the Jamf Pro hostname behind the tenant UUID and show it. A UUID typo
+# that still authenticates would otherwise point this customer at the wrong
+# instance, and nothing later would reveal it.
+JPRO_URL=$(JAMF_URL="${PLATFORM_BASE_URL_VAL}" \
+  JAMF_TENANT_ID="${PLATFORM_TENANT_ID_VAL}" \
+  JAMF_CLIENT_ID="${PLATFORM_CLIENT_ID_VAL}" \
+  JAMF_CLIENT_SECRET="${PLATFORM_CLIENT_SECRET_VAL}" \
+  jamf-cli pro jamf-pro-server-url get --no-input --no-version-check --field url 2>/dev/null || true)
+
+if [ -n "${JPRO_URL}" ]; then
+  echo "  → This tenant is Jamf Pro: ${JPRO_URL}"
+  read -r -p "  → Is that the right instance for ${CUSTOMER}? (type 'yes'): " CONFIRM_JPRO
+  if [ "${CONFIRM_JPRO}" != "yes" ]; then
+    echo "Aborted. Nothing was stored and no directory was created."
+    exit 1
+  fi
+else
+  JPRO_URL="unresolved"
+  echo "  ! Could not resolve the Jamf Pro URL (needs read:pro:jss-url). Continuing."
+fi
 
 # --- 5. Store secrets in the GitHub Environment -----------------------------
 # Only now, with everything validated. URLs and the tenant UUID are variables
@@ -281,6 +305,7 @@ PR_ARGS=(
 | **Protect URL** | \`${PROTECT_URL_VAL}\` |
 | **Platform base URL** | \`${PLATFORM_BASE_URL_VAL}\` |
 | **Platform tenant ID** | \`${PLATFORM_TENANT_ID_VAL}\` |
+| **Jamf Pro** | \`${JPRO_URL}\` |
 | **Product tier** | \`${TIER}\` |
 
 Credentials are stored in the \`${CUSTOMER}\` GitHub Environment. Nothing
