@@ -343,7 +343,7 @@ Set `bucket` and `region` in `customers/_template/terraform.tf`, then set the
 | `REPORT_MENTION` | Variable | Optional. An @mention added to out-of-band issues. |
 
 **Environment level** — one GitHub Environment per customer, created by the
-onboarding script:
+onboarding script (or by hand for `staging`, see step 5):
 
 | Name | Type | Purpose |
 |---|---|---|
@@ -373,14 +373,33 @@ names change as customers come and go.
 
 ### 5. Point staging at your own tenant
 
-Onboard `staging` first, against a tenant you own:
+Prove the pipeline against a tenant you own before it ever touches a customer.
+
+`customers/staging/` already exists in this branch, so the onboarding script
+will refuse to scaffold over it — it declines to touch an existing directory by
+design. Create the Environment and its credentials directly instead:
 
 ```bash
-./scripts/onboard-customer.sh staging standard
+gh api repos/OWNER/REPO/environments/staging -X PUT --input - <<< '{}'
+
+gh variable set PROTECT_URL --env staging --body "https://your-tenant.protect.jamfcloud.com"
+gh secret   set PROTECT_CLIENT_ID       --env staging
+gh secret   set PROTECT_CLIENT_PASSWORD --env staging
+gh secret   set JPRO_URL                --env staging
+gh secret   set JPRO_CLIENT_ID          --env staging
+gh secret   set JPRO_CLIENT_SECRET      --env staging
 ```
 
-Merge it, confirm the apply builds what you expect in that console, and only
-then onboard a real customer.
+Then open a pull request into `staging` — the plan runs against that workspace
+only. Merge it, confirm the apply built what you expected in that console, and
+only then onboard a real customer with the script.
+
+If you would rather see the script do the whole thing end to end, delete
+`customers/staging/` first and run `./scripts/onboard-customer.sh staging
+standard`. Note that the script creates the Jamf Pro API role and OAuth2 client
+too, which the manual route above does not — so for the manual route you need
+an existing Jamf Pro client, or no `jamfpro_jamf_protect` registration in
+staging at all.
 
 ### 6. Delete the example
 
