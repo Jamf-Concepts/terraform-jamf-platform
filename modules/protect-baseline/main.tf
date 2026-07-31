@@ -37,8 +37,8 @@ terraform {
 # customer's root module. That is a deliberate trade-off worth understanding
 # before you copy it:
 #
-#   Why it is done this way — every customer workspace is then genuinely
-#   three files (main.tf, terraform.tf, customer.auto.tfvars) with no provider
+#   Why it is done this way — a customer workspace is then four small files
+#   (main.tf, terraform.tf, customer.auto.tfvars, outputs.tf) with no provider
 #   plumbing to keep in sync across fifty directories. Credentials arrive as
 #   module inputs, which the onboarding script wires to GitHub Environment
 #   secrets once.
