@@ -53,7 +53,15 @@ jobs:
           else
             if echo "$CHANGED" | grep -q '^modules/'; then
               # Shared module change: apply to every tenant.
-              CUSTOMERS=$(ls -d customers/*/ | grep -v '_template' | xargs -n1 basename)
+              CUSTOMERS=$(
+                # Glob rather than `ls | grep`: no ls output to parse, and safe for any
+                # directory name.
+                for dir in customers/*/; do
+                  name="$(basename "$dir")"
+                  if [ "$name" = "_template" ]; then continue; fi
+                  echo "$name"
+                done
+              )
             else
               CUSTOMERS=$(echo "$CHANGED" | grep '^customers/' | grep -v '_template' | cut -d/ -f2 | sort -u || true)
             fi

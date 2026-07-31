@@ -53,8 +53,15 @@ jobs:
           # GitHub Environment. `staging` IS reconciled: it is a real tenant with
           # real state, so out-of-band resources there matter just as much. Note
           # this differs from drift.yaml, which excludes staging deliberately.
-          CUSTOMERS=$(ls -d customers/*/ | grep -v '_template' | xargs -n1 basename)
-          CUSTOMERS=$(echo "$CUSTOMERS" | while read -r c; do [ -d "customers/$c" ] && echo "$c" || true; done)
+          CUSTOMERS=$(
+            # Glob rather than `ls | grep`: no ls output to parse, and safe for any
+            # directory name.
+            for dir in customers/*/; do
+              name="$(basename "$dir")"
+              if [ "$name" = "_template" ]; then continue; fi
+              echo "$name"
+            done
+          )
           JSON=$(echo "$CUSTOMERS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "customers=${JSON}" >> "$GITHUB_OUTPUT"
           echo "Discovered customers: ${JSON}"
