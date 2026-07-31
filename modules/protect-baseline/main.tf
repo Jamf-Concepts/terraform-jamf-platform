@@ -67,9 +67,6 @@ provider "jamfplatform" {
   client_id     = var.platform_client_id
   client_secret = var.platform_client_secret
   tenant_id     = var.platform_tenant_id
-
-  # Paces outbound requests. The default; raise it if you see 429s.
-  min_request_interval_ms = 100
 }
 
 # --- Feature flags ----------------------------------------------------------
