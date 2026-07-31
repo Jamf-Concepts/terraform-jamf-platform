@@ -4,9 +4,9 @@
 # Forwards alerts and telemetry to an external SIEM. Opt-in per customer, created
 # only when a destination is configured (see locals in main.tf).
 #
-# Wired for Microsoft Sentinel. The Amazon S3 block is present but disabled so the
-# resource shape matches what the provider expects and enabling S3 later is an
-# edit rather than an addition.
+# Wired for Microsoft Sentinel. The provider requires both destination blocks, so
+# amazon_s3 is present and disabled; enabling S3 later is an edit rather than an
+# addition.
 #
 # The application secret is write-only: sent to the API, never read back into
 # state. Rotation needs a version bump as well as a new value, because the version
@@ -37,8 +37,8 @@ resource "jamfprotect_data_forwarding" "managed_protect_data_forwarding" {
       enabled = false
     }
 
-    # Superseded by the `telemetry` block below. Kept disabled rather than
-    # removed because the provider still expects the attribute.
+    # Superseded by the `telemetry` block below, but required by the provider,
+    # so it is present and disabled rather than omitted.
     telemetry_deprecated = {
       enabled = false
     }

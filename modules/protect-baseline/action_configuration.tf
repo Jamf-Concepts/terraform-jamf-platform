@@ -4,9 +4,9 @@
 # Where alerts go and how much detail travels with them.
 #
 # Collects High, Medium, Low and Informational alerts into the Jamf Protect cloud
-# with minimal data attributes. Every *_included_data_attributes list is
-# explicitly empty rather than omitted, so a future provider default cannot
-# silently start collecting more than the service was scoped for.
+# with no additional data attributes. All twelve *_included_data_attributes sets
+# are required by the provider, so an empty set is how you say "no enrichment".
+# Populate them per the resource documentation if you need richer alerts.
 #
 # Telemetry log collection is attached only when the customer has opted in.
 # -----------------------------------------------------------------------------

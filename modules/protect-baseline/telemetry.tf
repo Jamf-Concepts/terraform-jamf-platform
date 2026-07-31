@@ -8,9 +8,8 @@
 # When created, the configuration ID is attached to every plan (plans.tf) and, if
 # SIEM forwarding is enabled, streamed onward (data_forwarding.tf).
 #
-# File hashing, performance metrics and crash reports are off by default. They are
-# the three settings most likely to change the volume and sensitivity of what you
-# collect, so they should be a conscious decision.
+# Every flag is set explicitly. The provider declares no defaults for them, so
+# anything left out is decided by the server rather than by this file.
 # -----------------------------------------------------------------------------
 
 resource "jamfprotect_telemetry" "managed_protect_telemetry" {
@@ -27,7 +26,13 @@ resource "jamfprotect_telemetry" "managed_protect_telemetry" {
   log_system                     = true
   log_users_and_groups           = true
 
-  # Additional log file paths to collect. Empty means the built-in sources only.
+  # Collect inbound and outbound network connections. Requires Jamf Protect agent
+  # 8.14.0+, macOS 26+, and the Network Content Filter Profile deployed first, so
+  # it is off here rather than silently failing the prerequisites.
+  log_network = false
+
+  # Custom log file paths, on top of the event sources above. Required by the
+  # provider, so an empty set is how you say "none".
   log_file_path = []
 
   file_hashes                          = false

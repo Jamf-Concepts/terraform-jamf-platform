@@ -14,6 +14,13 @@
 #
 # Which computers land on which plan is scoped in Jamf Pro via smart groups
 # against the Jamf Protect extension attribute, not here.
+#
+# Worth knowing before you change threat prevention: analytic_sets,
+# advanced_threat_controls, endpoint_threat_prevention and tamper_prevention are
+# ignored by the agent unless threat_prevention_strategy is "Legacy". That is the
+# default and this module never sets it, so they apply. If you opt into the NGTP
+# beta and switch strategy, everything below stops taking effect and you configure
+# custom_engine_config instead.
 # -----------------------------------------------------------------------------
 
 # --- Standard plan (all tiers) ----------------------------------------------
@@ -47,7 +54,8 @@ resource "jamfprotect_plan" "managed_protect_standard" {
   compliance_baseline_reporting = false
   reporting_interval            = 1440
 
-  # Computer Check-in Information — Select All
+  # Every non-deprecated report_* attribute. report_kernel_version and
+  # report_os_version are deprecated in the provider and deliberately omitted.
   report_architecture  = true
   report_hostname      = true
   report_memory_size   = true
@@ -90,7 +98,7 @@ resource "jamfprotect_plan" "managed_protect_enhanced" {
   compliance_baseline_reporting = false
   reporting_interval            = 1440
 
-  # Computer Check-in Information — Select All
+  # As above: every non-deprecated report_* attribute.
   report_architecture  = true
   report_hostname      = true
   report_memory_size   = true
