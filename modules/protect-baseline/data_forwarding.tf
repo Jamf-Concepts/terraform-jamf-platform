@@ -1,21 +1,19 @@
 # -----------------------------------------------------------------------------
 # SIEM Data Forwarding
 # -----------------------------------------------------------------------------
-# Forwards alerts and telemetry to an external SIEM. Opt-in per customer:
-# created only when a destination is configured (see locals in main.tf).
+# Forwards alerts and telemetry to an external SIEM. Opt-in per customer, created
+# only when a destination is configured (see locals in main.tf).
 #
-# Currently wired for Microsoft Sentinel. The Amazon S3 block is present and
-# explicitly disabled so the shape of the resource matches what the provider
-# expects and enabling S3 later is an edit rather than an addition.
+# Wired for Microsoft Sentinel. The Amazon S3 block is present but disabled so the
+# resource shape matches what the provider expects and enabling S3 later is an
+# edit rather than an addition.
 #
-# The application secret is a write-only argument: it is sent to the API but
-# never read back into state. Rotating it therefore needs a version bump as
-# well as a new value — Terraform has nothing to compare against, so the
-# version number is what tells it something changed. See
-# app_secret_version in the customer's tfvars.
+# The application secret is write-only: sent to the API, never read back into
+# state. Rotation needs a version bump as well as a new value, because the version
+# number is the only thing Terraform can compare. See app_secret_version in the
+# customer's tfvars.
 #
-# depends_on: plans must exist before forwarding is configured, otherwise
-# there is no data source to forward from.
+# depends_on: plans must exist first, or there is no data source to forward from.
 # -----------------------------------------------------------------------------
 
 resource "jamfprotect_data_forwarding" "managed_protect_data_forwarding" {
@@ -66,8 +64,8 @@ resource "jamfprotect_data_forwarding" "managed_protect_data_forwarding" {
 
   lifecycle {
     # Data forwarding is a customer's audit trail into their own SIEM.
-    # prevent_destroy turns an accidental removal into a failed plan that a
-    # human has to unblock, rather than a silent gap in their logging.
+    # prevent_destroy turns an accidental removal into a failed plan a human has
+    # to unblock, rather than a silent gap in their logging.
     prevent_destroy = true
 
     precondition {

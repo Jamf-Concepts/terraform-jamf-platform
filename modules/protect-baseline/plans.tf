@@ -1,21 +1,19 @@
 # -----------------------------------------------------------------------------
 # Plans — Managed Protect
 # -----------------------------------------------------------------------------
-# Standard customers get one plan (threat prevention only).
+# Standard customers get one plan: threat prevention only.
 #
-# Enhanced customers get two plans:
-#   1. Managed Protect - Threat Prevention              — threat prevention only,
-#      assigned to computers excluded from USB controls via the Jamf Protect EA
-#   2. Managed Protect - Threat Prevention and Device Controls — threat prevention
-#      plus the removable storage control set, assigned to all other managed computers
+# Enhanced customers get two, identical except for the name and whether the
+# removable storage control set is attached:
+#   1. Threat Prevention, for computers excluded from USB controls via the Jamf
+#      Protect extension attribute
+#   2. Threat Prevention and Device Controls, for everything else
 #
-# Both plans share identical configuration except name and whether the
-# removable_storage_control_set is attached. The two-plan design exists so a
-# single customer can hold a small carve-out of machines exempt from device
-# controls without weakening the control set itself.
+# Two plans rather than one so a customer can hold a small carve-out of exempt
+# machines without weakening the control set itself.
 #
-# Plan scoping (which computers land on which plan) is done in Jamf Pro via
-# smart groups against the Jamf Protect extension attribute, not here.
+# Which computers land on which plan is scoped in Jamf Pro via smart groups
+# against the Jamf Protect extension attribute, not here.
 # -----------------------------------------------------------------------------
 
 # --- Standard plan (all tiers) ----------------------------------------------
@@ -35,8 +33,8 @@ resource "jamfprotect_plan" "managed_protect_standard" {
     jamfprotect_analytic_set.managed_protect_standard.id,
   ]
 
-  # Order matters less than completeness here: the Jamf-managed defaults, the
-  # exclusions every customer gets, then anything specific to this customer.
+  # Jamf-managed defaults, then the exclusions every customer gets, then anything
+  # specific to this customer.
   exception_sets = concat(
     [local.jamf_managed_default_exceptions_id],
     [jamfprotect_exception_set.global_exclusions.id],

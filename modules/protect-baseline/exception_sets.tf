@@ -3,26 +3,24 @@
 # -----------------------------------------------------------------------------
 # Three kinds of exception set feed every plan:
 #
-# 1. Jamf Managed Default Exceptions — pre-existing in every Protect tenant.
-#    Read via data source so plans can reference its ID without an import
-#    block or a hardcoded UUID that differs per tenant.
+# 1. Jamf Managed Default Exceptions, pre-existing in every tenant. Read via
+#    data source, so plans reference its ID without an import block or a
+#    hardcoded UUID that differs per tenant.
 #
-# 2. Global exclusions — the exceptions every customer gets, defined once here.
-#    This is where a false positive you have confirmed across the fleet goes,
-#    so it is fixed for everyone on the next apply rather than tenant by tenant.
+# 2. Global exclusions, defined once here and applied to everyone. A false
+#    positive confirmed across the fleet goes here and is fixed everywhere on
+#    the next apply.
 #
-# 3. Per-customer exception sets — created dynamically from the exception_sets
-#    variable. This is the "toppings" half of the menu: a customer can ask for
-#    an exclusion, it goes in their tfvars, and it is reviewed like any other
-#    change.
+# 3. Per-customer exception sets, built from the exception_sets variable. A
+#    customer asks for an exclusion, it goes in their tfvars, it gets reviewed.
 # -----------------------------------------------------------------------------
 
 # --- Jamf Managed Default Exceptions (data source) --------------------------
 #
-# A data source reads existing infrastructure rather than creating it.
-# `one()` returns the single element of a list and errors if there are zero or
-# more than one — a deliberate hard failure, because silently getting `null`
-# here would push a plan with no default exceptions attached.
+# A data source reads existing infrastructure rather than creating it. `one()`
+# returns the single element of a list and errors on zero or many. That hard
+# failure is deliberate: a silent `null` here would push a plan with no default
+# exceptions attached.
 
 data "jamfprotect_exception_sets" "all" {}
 
@@ -34,9 +32,9 @@ locals {
 }
 
 # --- Global Exclusions ------------------------------------------------------
-# Baseline exclusions applied to every customer on every tier. Keep this list
-# short and evidenced — each entry is a confirmed false positive, not a
-# convenience. Record why an entry exists next to it.
+# Baseline exclusions applied to every customer on every tier. Keep it short and
+# evidenced: each entry should be a confirmed false positive, not a convenience.
+# Record why next to it.
 
 resource "jamfprotect_exception_set" "global_exclusions" {
   name = "Managed Protect - Global Exclusions"
@@ -60,7 +58,7 @@ resource "jamfprotect_exception_set" "global_exclusions" {
 #
 # The dynamic-resource pattern: `for_each` over a map supplied in the
 # customer's tfvars. One customer with four exception sets and another with
-# none both use this identical block — the module flexes, the code does not
+# none both use this identical block. The module flexes, the code does not
 # fork.
 #
 # Each entry's key becomes the exception set name in the console, so name them

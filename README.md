@@ -12,39 +12,35 @@ across a fleet of customer tenants from one repository: one shared module, one
 directory per tenant, one state file each, and a CI/CD pipeline that plans on
 every pull request and applies on merge.
 
-This is the repository behind the JNUC 2026 session *Managing the Jamf
-Platform at Scale With IaC*. What you have here is the same architecture with
-the organisation-specific parts removed — no customer data, no internal
-tooling, no chat webhooks, no real credentials or state buckets.
+This is the repository behind the JNUC 2026 session *Managing the Jamf Platform
+at Scale With IaC*. Same architecture, with the organisation-specific parts
+removed: no customer data, no internal tooling, no chat webhooks, no real
+credentials or state buckets.
 
 Built on the
 [Jamf-Concepts/jamfprotect](https://registry.terraform.io/providers/Jamf-Concepts/jamfprotect/latest)
 and
 [Jamf-Concepts/jamfplatform](https://registry.terraform.io/providers/Jamf-Concepts/jamfplatform/latest)
-providers. Jamf Pro is reached through the Platform API gateway — a regional
-endpoint plus a tenant UUID — rather than a per-instance hostname.
+providers. Jamf Pro is reached through the Platform API gateway, which means a
+regional endpoint and a tenant UUID instead of a per-instance hostname.
 
 ---
 
 ## What this is, and is not
 
 **It is** a worked example of running Jamf configuration as code across many
-tenants, including the parts people usually have to work out for themselves:
-state isolation, credential scoping, promotion between environments, drift
-detection, and catching resources that were created outside Terraform
-entirely.
+tenants, including the parts you normally have to work out yourself: state
+isolation, credential scoping, promotion between environments, drift detection,
+and catching resources created outside Terraform.
 
-**It is not** a module published for direct consumption, and not a turnkey
-product. Fork it, read it, take the patterns you need, and change the rest.
-Several things in here are deliberate trade-offs that suited one service and
-may not suit yours — those are called out in comments where they occur rather
-than smoothed over.
+**It is not** a published module or a turnkey product. Fork it, read it, take
+what you need, change the rest. Some decisions here suited one service and may
+not suit yours; those are flagged in comments where they occur.
 
-**The patterns are not Jamf Protect patterns.** Module reuse, state isolation,
-credential scoping, CI/CD, Git as the source of truth — none of that is
-product-specific. Swap the resources inside the module for Jamf Pro resources
-and the architecture is unchanged. Protect is simply what this particular
-pipeline manages.
+**The patterns are not Protect-specific.** Module reuse, state isolation,
+credential scoping, CI/CD, Git as the source of truth: none of it depends on the
+product. Swap the resources inside the module for Jamf Pro resources and the
+architecture is unchanged.
 
 ---
 
@@ -64,9 +60,9 @@ pipeline manages.
 
 ## Before you start
 
-Seven things need changing before any of this works. Nothing here is set to a
-plausible-looking default, deliberately — a placeholder that quietly works
-against the wrong thing is worse than one that fails on the first run.
+Seven things need changing before any of this works. None of them are set to
+plausible-looking defaults. A placeholder that quietly works against the wrong
+thing is worse than one that fails on the first run.
 
 | What | Where | Why |
 |---|---|---|
@@ -143,9 +139,9 @@ graph TB
     G --> P3
 ```
 
-One module, many thin workspaces. Change the module once and every tenant
-picks it up on its next apply — nobody logs into fifty consoles to make the
-same change fifty times.
+One module, many thin workspaces. Change the module once and every tenant picks
+it up on its next apply. Nobody logs into fifty consoles to make the same change
+fifty times.
 
 ---
 
@@ -197,46 +193,41 @@ terraform-jamf-platform/
     └── reconcile.tfquery.hcl
 ```
 
-Customers are thin. A customer directory is a module call, a backend, a tfvars
-file and a couple of outputs — the entire tenant. All the substance lives in the
-shared module, and all the operational work lives in the pipeline and the
-scripts.
+A customer directory is a module call, a backend, a tfvars file and a couple of
+outputs. That is the entire tenant. The substance lives in the shared module; the
+operational work lives in the pipeline and the scripts.
 
 ### Why this split
 
-- **One canonical definition of "good".** Every plan, analytic and exception
-  set lives in `modules/protect-baseline/`. There is no copy per tenant, so a
-  fix is written once and inherited everywhere.
-- **One directory per tenant, holding only what is genuinely tenant-specific.**
-  Which tenant to talk to, which credentials, where state lives, and which
-  options that customer has ordered.
-- **Two ways to handle differences.** Something several customers might want
-  becomes a module variable set per tenant in tfvars. Something exactly one
-  customer needs can be declared directly in their `main.tf` next to the module
-  call — but do that sparingly, because it is a snowflake nobody reviewing the
-  module will know about.
+- **One definition of "good".** Every plan, analytic and exception set lives in
+  `modules/protect-baseline/`. No copy per tenant, so a fix is written once and
+  inherited everywhere.
+- **One directory per tenant**, holding only what is tenant-specific: which
+  tenant, which credentials, where state lives, which options they have ordered.
+- **Two ways to handle differences.** Anything several customers might want
+  becomes a module variable, set per tenant in tfvars. Anything exactly one
+  customer needs can go in their `main.tf` beside the module call. Do that
+  sparingly: it is a snowflake nobody reviewing the module will know about.
 
 ### Design the menu before you design the folders
 
-This is the part that matters most and the part no directory structure will
-save you from getting wrong.
+No directory structure will save you from getting this wrong.
 
-Decide what every customer gets and what they are allowed to choose. In this
-reference:
+Decide what every customer gets and what they can choose. In this reference:
 
 | | On the menu |
 |---|---|
 | **Bases** | `standard` — threat prevention. `enhanced` — threat prevention plus removable storage device controls. |
 | **Options** | USB device exceptions, threat prevention exception sets, SIEM data forwarding, telemetry. |
 
-That is everything a customer can vary, and it maps one-to-one onto the
-variables in `modules/protect-baseline/variables.tf`. If it is not there, it
-cannot be ordered — the module does not know how to make it.
+That is everything a customer can vary, and it maps one-to-one onto the variables
+in `modules/protect-baseline/variables.tf`. If it is not there, it cannot be
+ordered.
 
-When a customer asks for something new, it goes on the menu: add the variable,
-apply it through review, and now anyone can order it and it is built the same
-way every time. What you must not do is quietly configure it in their console
-afterwards. That is the drift you built this pipeline to catch.
+When a customer asks for something new, add it to the menu: new variable,
+reviewed like any change. Anyone can then order it and it is built the same way
+every time. What you must not do is configure it in their console afterwards.
+That is the drift this pipeline exists to catch.
 
 ---
 
@@ -245,14 +236,13 @@ afterwards. That is the drift you built this pipeline to catch.
 Two lines of configuration keep tenants apart.
 
 `customers/<name>/terraform.tf` puts the customer name in the state key, so every
-tenant reads and writes a separate state object with its own lock. And every
-workflow job that touches a tenant sets `environment: ${{ matrix.customer }}`,
-scoping secrets to a GitHub Environment named after that customer — when the
-pipeline runs for customer A, customer B's secrets are not present in the runner
-at all.
+tenant reads and writes a separate state object with its own lock. Every workflow
+job that touches a tenant sets `environment: ${{ matrix.customer }}`, scoping
+secrets to a GitHub Environment named after that customer. When the pipeline runs
+for customer A, customer B's secrets are not present in the runner at all.
 
-Separate state, separate credentials, per tenant: a bad apply reaches nobody
-else. This matters at one tenant too — remote state survives a dead laptop, and
+Separate state, separate credentials, per tenant. A bad apply reaches nobody
+else. This matters at one tenant too: remote state survives a dead laptop, and
 locking stops two engineers applying over each other.
 
 ---
@@ -280,7 +270,7 @@ You also need:
   `update:pro:jamf-protect-settings` and `read:pro:jss-url`. Created in the Jamf
   Account portal (account.jamf.com), not by the onboarding script, so bring one
   with you. `read:pro:jss-url` only resolves which Jamf Pro a tenant UUID refers
-  to — drop the `jamfplatform_pro_jamf_pro_server_url` data source and its output
+  to; drop the `jamfplatform_pro_jamf_pro_server_url` data source and its output
   if you would rather not grant it.
 
 ---
@@ -303,9 +293,9 @@ and repository secrets, so it has to run somewhere you control.
 
 ### 2. Set up state storage
 
-Somewhere that supports locking, with versioning enabled — versioning is what
-lets you recover from a bad state write, and state is the one thing here you
-cannot rebuild from the code. See [State backend](#state-backend).
+Somewhere that supports locking, with versioning enabled. Versioning is how you
+recover from a bad state write, and state is the one thing here you cannot
+rebuild from the code. See [State backend](#state-backend).
 
 For the S3 example as shipped: set `bucket` and `region` in
 `customers/_template/terraform.tf`, then set the `STATE_BUCKET` and `AWS_REGION`
@@ -344,8 +334,7 @@ onboarding script (or by hand for `staging`, see step 5):
 ### 4. Set up branch protection
 
 The pipeline's guarantees come from branch protection, not from the workflows.
-Without it, someone can push straight to `main` and the review gate is
-decorative.
+Without it, anyone can push straight to `main` and the review gate is decorative.
 
 On `main` and on `staging`:
 
@@ -354,16 +343,16 @@ On `main` and on `staging`:
 - Require the `plan-result` status check
 - Do not allow a pull request author to approve their own
 
-Require `plan-result` specifically, not the individual matrix jobs — their
-names change as customers come and go.
+Require `plan-result` specifically, not the individual matrix jobs. Their names
+change as customers come and go.
 
 ### 5. Point staging at your own tenant
 
 Prove the pipeline against a tenant you own before it ever touches a customer.
 
-`customers/staging/` already exists in this branch, so the onboarding script
-will refuse to scaffold over it — it declines to touch an existing directory by
-design. Create the Environment and its credentials directly instead:
+`customers/staging/` already exists in this branch, and the onboarding script
+refuses to scaffold over an existing directory. Create the Environment and its
+credentials directly instead:
 
 ```bash
 gh api repos/OWNER/REPO/environments/staging -X PUT --input - <<< '{}'
@@ -377,9 +366,9 @@ gh secret   set PLATFORM_CLIENT_ID     --env staging
 gh secret   set PLATFORM_CLIENT_SECRET --env staging
 ```
 
-Then open a pull request into `staging` — the plan runs against that workspace
-only. Merge it, confirm the apply built what you expected in that console, and
-only then onboard a real customer with the script.
+Then open a pull request into `staging`. The plan runs against that workspace
+only. Merge it, confirm the apply built what you expected, and only then onboard
+a real customer with the script.
 
 ### 6. Delete the example
 
@@ -392,8 +381,8 @@ git rm -r customers/example-customer
 ## Where these workflows actually run
 
 **On this branch, none of these workflows run at all.** They are inert until the
-branch they live on is a repository's default branch — GitHub Actions behaviour,
-not a safety catch added here:
+branch they live on is a repository's default branch. That is GitHub Actions
+behaviour, not a safety catch added here:
 
 | Trigger | Workflows | Behaviour on a non-default branch |
 |---|---|---|
@@ -409,8 +398,8 @@ the default branch only.
 So to run any of this, copy the contents of this branch into a repository of
 your own where it is the default branch.
 
-If you do push this branch somewhere as a reference, GitHub will offer to open a
-pull request from it — do not target `main` or `staging`. That makes `plan.yaml`
+If you push this branch somewhere as a reference, GitHub will offer to open a
+pull request from it. Do not target `main` or `staging`: that makes `plan.yaml`
 eligible and it will fail on credentials that do not exist.
 
 ---
@@ -443,8 +432,8 @@ flowchart LR
 
 **Scope.** A change under `customers/<name>/` affects that customer. A change
 under `modules/` affects **every** customer, so every workspace is planned and
-applied — read all of it before merging, because what is correct on one tier can
-behave differently on another.
+applied. Read all of it before merging: what is correct on one tier can behave
+differently on another.
 
 ### Branching strategy
 
@@ -468,10 +457,10 @@ feature/my-change
 | Staging | `staging` | Remote, per workspace | Shared validation tenant, mirrors production, no console changes |
 | Production | `main` | Remote, per customer | Every customer tenant |
 
-Use staging for anything that changes the shared module, since that reaches
-every tenant. A change that only enables an already-validated feature for one
-customer via their tfvars can go straight from a feature branch into `main` —
-the feature itself was proved through staging when it was built.
+Use staging for anything that changes the shared module, since that reaches every
+tenant. A change that only enables an already-validated feature for one customer
+via their tfvars can go straight from a feature branch into `main`; the feature
+itself was proved through staging when it was built.
 
 Branch naming that keeps the history readable:
 
@@ -494,14 +483,14 @@ console, and a Jamf Platform API client for their tenant. Then one command:
 ./scripts/onboard-customer.sh <customer-name> [standard|enhanced]
 ```
 
-Two decisions — the name and the tier. The script creates the GitHub Environment,
+Two decisions: the name and the tier. The script creates the GitHub Environment,
 collects and verifies both sets of credentials, clears the auto-created default
-Protect plan and action configuration, confirms the tenant has no existing
-Protect registration, stores the secrets, scaffolds the directory and opens a
-pull request. The script header lists the steps in order.
+Protect plan and action configuration, confirms the tenant has no existing Protect
+registration, stores the secrets, scaffolds the directory and opens a pull
+request. Its header lists the steps in order.
 
-The ordering is the point: nothing is written to GitHub until every check has
-passed, so a failure halfway through leaves nothing half-configured.
+Ordering matters: nothing is written to GitHub until every check has passed, so a
+failure halfway through leaves nothing half-configured.
 
 The plan runs on the pull request. After review and merge, the apply provisions
 the baseline and registers Protect in Jamf Pro.
@@ -519,7 +508,7 @@ Actions tab, then:
 
 This verifies the destroy succeeded, deletes the GitHub Environment and its
 secrets, removes the customer directory and opens a pull request for the audit
-trail. Afterwards, revoke the bootstrap API client in their console by hand —
+trail. Afterwards, revoke the bootstrap API client in their console by hand.
 Terraform did not create it, so destroy did not remove it.
 
 **The customer keeps their console.** Do not run destroy:
@@ -529,13 +518,13 @@ Terraform did not create it, so destroy did not remove it.
 ```
 
 No destroy runs and no Jamf resource is touched. The script dispatches
-`handover.yaml`, which removes only that customer's state object and fails loudly
-if it was already missing rather than reporting a handover that did not happen,
-then does the same GitHub cleanup. It is dispatched against `main`, so it must be
-merged before the first handover can run.
+`handover.yaml`, which removes only that customer's state object, then does the
+same GitHub cleanup. If the state object was already missing it fails loudly
+rather than reporting a handover that did not happen. It is dispatched against
+`main`, so it must be merged before the first handover can run.
 
-Console cleanup afterwards — removing your team's users and any integration
-clients the customer does not need — is manual. What to leave behind is a
+Console cleanup afterwards is manual: removing your team's users and any
+integration clients the customer does not need. What to leave behind is a
 commercial decision, not a technical one.
 
 ---
@@ -562,31 +551,30 @@ The script prompts for the Azure values, stores the application secret as
 `SENTINEL_APP_SECRET` in the customer's Environment, writes the non-secret
 values into their tfvars, and opens a pull request.
 
-**On rotating the secret.** The application secret is a write-only argument:
-Terraform sends it but never reads it back into state, so it has nothing to
-compare against. Rotating it means updating the GitHub secret **and**
-incrementing `app_secret_version` in the customer's tfvars. The version bump is
-the only signal Terraform gets that anything changed.
+**Rotating the secret.** The application secret is write-only: Terraform sends it
+but never reads it back, so it has nothing to compare against. Rotation means
+updating the GitHub secret **and** incrementing `app_secret_version` in the
+customer's tfvars. The version bump is the only signal Terraform gets.
 
 ---
 
 ## Drift detection and remediation
 
-Drift is rarely malicious — someone changes a setting to troubleshoot and
-forgets. The point of these two workflows is that the system notices, rather
-than you finding out when something breaks.
+Drift is rarely malicious. Someone changes a setting to troubleshoot and forgets.
+These two workflows mean the system notices, instead of you finding out when
+something breaks.
 
 **Detection** runs weekly and plans every customer with
 `terraform plan -detailed-exitcode`. Exit 0 means reality matches the code;
 exit 2 means it does not; exit 1 is a genuine error. On drift it opens or
 updates one GitHub issue per customer with the full plan output.
 
-`staging` is excluded — it is expected to be ahead of `main` during
-development, so drift there is the normal state rather than a signal.
+`staging` is excluded. It is expected to be ahead of `main` during development,
+so drift there is normal rather than a signal.
 
-**Remediation is deliberately boring.** Because the repository is the source of
-truth, fixing drift is just `terraform apply`. What makes it safe is not the
-mechanism but the gate:
+**Remediation is boring by design.** The repository is the source of truth, so
+fixing drift is just `terraform apply`. The safety is in the gate, not the
+mechanism:
 
 - It is triggered by a person applying the `auto-remediate` label. Nothing
   reverts on a schedule.
@@ -595,8 +583,8 @@ mechanism but the gate:
   `ADMIN_TEAM_ORG`/`ADMIN_TEAM_SLUG` set it gates on team membership; otherwise
   it requires `admin` or `maintain` on the repository.
 
-Drift appearing is not automatically wrong — it is a decision. If the change
-should exist, codify it through a pull request. If not, remediate. The system
+Drift appearing is not automatically wrong. It is a decision: if the change
+should exist, codify it through a pull request; if not, remediate. The system
 surfaces it and hands a human the call.
 
 ---
@@ -607,11 +595,11 @@ Drift detection has a blind spot. Terraform can only report on what it manages,
 so a resource created directly in the console has no state entry, never appears
 in a plan, and never registers as drift. Terraform does not know it exists.
 
-`reconcile.yaml` closes that gap using **list resources**, a Terraform 1.14
-feature that queries existing infrastructure whether or not it is in state.
-All the Jamf Concepts providers support it — it is also what powers
-[jamformer](https://github.com/Jamf-Concepts/jamformer)'s ability to generate
-HCL from an existing tenant.
+`reconcile.yaml` closes that gap with **list resources**, a Terraform 1.14 feature
+that queries existing infrastructure whether or not it is in state. All the Jamf
+Concepts providers support it. It is also what powers
+[jamformer](https://github.com/Jamf-Concepts/jamformer)'s ability to generate HCL
+from an existing tenant.
 
 The workflow, weekly and per customer:
 
@@ -625,33 +613,32 @@ The workflow, weekly and per customer:
    establish who created it and when.
 5. Open or update a GitHub issue with a table of findings.
 
-Each finding needs a decision — import it or delete it — recorded on the issue.
-At minimum it is a reason to ask why the resource was created, usually the more
-interesting question.
+Each finding needs a decision recorded on the issue: import it or delete it. At
+minimum it is a reason to ask why it was created, usually the more interesting
+question.
 
 Two things to know if you adapt this. The bootstrap API client is excluded by
-name, because it exists in every tenant and is intentionally unmanaged — set
+name, since it exists in every tenant and is intentionally unmanaged; set
 `BOOTSTRAP_API_CLIENT_NAME` to whatever you named yours or it is a false positive
-every week. And if the query returns no list events at all the script exits
-non-zero rather than reporting nothing: "zero out-of-band resources" and "the
+every week. And if the query returns no list events at all, the script exits
+non-zero rather than reporting nothing. "Zero out-of-band resources" and "the
 query did not run" look identical in a report, and only one is good news.
 
 ---
 
 ## Notifications
 
-**There are none, on purpose.** A webhook URL, a channel and a message format
-are the most organisation-specific thing in any pipeline, and a half-configured
+**There are none, on purpose.** A webhook URL, a channel and a message format are
+the most organisation-specific part of any pipeline, and a half-configured
 notification step is worse than none.
 
-What you get instead is the GitHub-native equivalent: every workflow writes a
-run summary, and drift and reconcile findings become GitHub issues, which notify
-whoever is watching the repository or assigned to them. For many teams that is
-genuinely enough.
+You get the GitHub-native equivalent instead: every workflow writes a run summary,
+and drift and reconcile findings become GitHub issues, which notify whoever is
+watching the repository or assigned to them. For many teams that is enough.
 
-If you do want outbound notifications, each workflow has a marked
-`# --- Notifications ---` block at the end of its job. The pattern is a single
-step reading `job.status`, the customer, and the run URL:
+For outbound notifications, each workflow has a marked `# --- Notifications ---`
+block at the end of its job. The pattern is one step reading `job.status`, the
+customer, and the run URL:
 
 ```yaml
       - name: Notify
@@ -675,24 +662,22 @@ anything sensitive in the message.
 
 ## Terraform hygiene
 
-**`-parallelism=1` everywhere, and it is not optional.** The Jamf Protect
-GraphQL API rate limits concurrent requests and returns errors under parallel
-load. Every Terraform invocation in this repository is single-threaded. If you
-add one, do the same.
+**`-parallelism=1` everywhere, and it is not optional.** The Jamf Protect GraphQL
+API returns errors under parallel load. Every Terraform invocation in this
+repository is single-threaded. If you add one, do the same.
 
-**`apply` and `destroy` only ever run in CI/CD.** Running them locally against
-a customer tenant risks state divergence and changes nobody reviewed. Local
-`terraform plan` is fine for development against a tenant you own; never point
-it at a workspace the pipeline manages.
+**`apply` and `destroy` only run in CI/CD.** Running them locally against a
+customer tenant risks state divergence and changes nobody reviewed. Local
+`terraform plan` is fine against a tenant you own; never point it at a workspace
+the pipeline manages.
 
 **Never edit or delete state by hand.** The destroy and handover workflows
 handle state cleanup for you.
 
-**Provider versions are constrained with `>=`, and the lock file is
-gitignored.** Run `terraform init -upgrade` to pick up the latest version that
-satisfies the constraints. This trades bit-for-bit reproducibility for staying
-current in a fast-moving provider ecosystem — a deliberate choice, and one you
-may want to reverse. Committing `.terraform.lock.hcl` and pinning exact
+**Provider versions are constrained with `>=`, and the lock file is gitignored.**
+Run `terraform init -upgrade` to pick up the latest version satisfying the
+constraints. This trades bit-for-bit reproducibility for staying current in a
+fast-moving provider ecosystem. Committing `.terraform.lock.hcl` and pinning exact
 versions is the more conservative position and is entirely reasonable.
 
 | Provider | Source | Minimum |
@@ -701,24 +686,24 @@ versions is the more conservative position and is entirely reasonable.
 | jamfplatform | `Jamf-Concepts/jamfplatform` | 0.25.1 |
 
 **Providers are configured inside the module, not in each root.** This keeps
-customer workspaces thin, at the cost of a module that cannot be
-called with `count`, `for_each` or an aliased provider. Terraform's own
-guidance is to configure providers only in root modules. The trade-off is
-explained in `modules/protect-baseline/main.tf`; if you need one workspace to
-reach two tenants, move the provider blocks up into the customer root.
+customer workspaces thin, at the cost of a module that cannot be called with
+`count`, `for_each` or an aliased provider. Terraform's own guidance is to
+configure providers only in root modules. The trade-off is explained in
+`modules/protect-baseline/main.tf`. If you need one workspace to reach two
+tenants, move the provider blocks up into the customer root.
 
 ### State backend
 
-The pipeline needs **remote state with locking** — per customer, so tenants stay
-isolated and two runs cannot collide. Which backend provides that is your
-choice. Terraform ships twelve, and any of them that locks will do.
+The pipeline needs **remote state with locking**, per customer, so tenants stay
+isolated and two runs cannot collide. Which backend provides that is your choice.
+Terraform ships twelve, and any of them that locks will do.
 
-S3 is what this reference is wired for, because it is what the production system
-behind it runs on — proven across a fleet of tenants, not picked to make the
-example work. It is a sound default if you have no existing preference.
+S3 is what this reference is wired for. It is what the production system behind it
+runs on, proven across a fleet of tenants, and a sound default if you have no
+existing preference.
 
-It is not a requirement, though. If your team already runs a state backend and
-has the operational habits to go with it, use that instead — three things change:
+It is not a requirement. If your team already runs a state backend, use that
+instead. Three things change:
 
 | What | Where |
 |---|---|
@@ -728,26 +713,25 @@ has the operational habits to go with it, use that instead — three things chan
 
 Nothing else in the repository knows or cares where state lives.
 
-Two things to know going in. A backend block cannot reference variables, locals
-or data sources, so the bucket and key are literal edits — and if you want the
-key to vary per environment without editing the file, that is what [partial
+Two things to know going in. A backend block cannot reference variables, locals or
+data sources, so the bucket and key are literal edits; [partial
 configuration](https://developer.hashicorp.com/terraform/language/backend#partial-configuration)
-and `terraform init -backend-config=...` are for. And when you change a backend,
-`terraform init` offers to migrate existing state into it rather than stranding it.
+with `terraform init -backend-config=...` is the way round that. And when you
+change a backend, `terraform init` offers to migrate existing state into it rather
+than stranding it.
 
 - [Backend configuration](https://developer.hashicorp.com/terraform/language/backend)
 - [Remote state](https://developer.hashicorp.com/terraform/language/state/remote)
 
 **Whatever you pick, treat state as a secret.** It records credentials in plain
-text, so encrypt it at rest and keep access to it tight. `sensitive = true` on an
-output keeps a value out of logs and does nothing at all about state.
+text, so encrypt it at rest and keep access tight. `sensitive = true` on an output
+keeps a value out of logs and does nothing about state.
 
-**If you do use S3, prefer OIDC over static keys.** The workflows use
+**On S3, prefer OIDC over static keys.** The workflows use
 `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` because it works anywhere, but
-long-lived keys in GitHub secrets are the weakest link here. Configuring GitHub
-as an OIDC identity provider and having
-`aws-actions/configure-aws-credentials` assume a role instead is a per-workflow
-change that removes the standing credential entirely.
+long-lived keys in GitHub secrets are the weakest link here. Configuring GitHub as
+an OIDC identity provider and having `aws-actions/configure-aws-credentials`
+assume a role is a per-workflow change that removes the standing credential.
 
 ---
 
@@ -758,14 +742,14 @@ the lock object behind. Take the Lock ID from the failed run's log and dispatch
 the Force Unlock workflow. Only do this when you are certain no apply is
 actually in progress.
 
-**`terraform plan` shows changes nobody made** — that is drift, and it is
-working. Someone changed something in the console. Decide whether the change
-should exist, then either codify it or remediate it.
+**`terraform plan` shows changes nobody made** — that is drift detection working.
+Someone changed something in the console. Decide whether it should exist, then
+codify it or remediate it.
 
-**Drift detection reports drift on every run for one customer** — usually a
-provider attribute that does not round-trip cleanly, not a real change. Compare
-the plan output across two runs: a genuine change appears once, a round-trip
-problem appears identically every time. Report the latter against the provider.
+**Drift detection reports drift every run for one customer** — usually a provider
+attribute that does not round-trip cleanly, not a real change. Compare two runs: a
+genuine change appears once, a round-trip problem appears identically every time.
+Report the latter against the provider.
 
 **Out-of-band detection reports the same resource every week** — either the
 decision has not been made yet, or it is a false positive that should be

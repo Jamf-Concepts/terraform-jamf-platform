@@ -1,17 +1,16 @@
 # -----------------------------------------------------------------------------
 # Telemetry — Managed Protect Telemetry
 # -----------------------------------------------------------------------------
-# Endpoint telemetry collection. Opt-in per customer via enable_telemetry,
-# because telemetry volume has a cost wherever it lands — the Protect cloud,
-# a SIEM, or both.
+# Endpoint telemetry collection, opt-in per customer via enable_telemetry.
+# Telemetry volume has a cost wherever it lands: the Protect cloud, a SIEM, or
+# both.
 #
-# When created, the configuration ID is attached to every plan (see plans.tf)
-# and, if SIEM forwarding is enabled, streamed onward (see data_forwarding.tf).
+# When created, the configuration ID is attached to every plan (plans.tf) and, if
+# SIEM forwarding is enabled, streamed onward (data_forwarding.tf).
 #
-# File hashing, performance metrics and crash reports are off by default: they
-# are the three settings most likely to change the volume and sensitivity of
-# what you collect, so they should be a conscious decision rather than
-# inherited from a template.
+# File hashing, performance metrics and crash reports are off by default. They are
+# the three settings most likely to change the volume and sensitivity of what you
+# collect, so they should be a conscious decision.
 # -----------------------------------------------------------------------------
 
 resource "jamfprotect_telemetry" "managed_protect_telemetry" {

@@ -1,29 +1,23 @@
 # -----------------------------------------------------------------------------
 # Users — Console Access
 # -----------------------------------------------------------------------------
-# Who from your team can log into each customer's Protect console, defined once
-# and applied everywhere. When someone joins or leaves, you edit one list in
-# variables.tf and every tenant is corrected on its next apply — rather than
-# auditing fifty consoles by hand.
+# Who from your team can log into each customer's Protect console. Edit one list
+# in variables.tf when someone joins or leaves and every tenant is corrected on
+# its next apply, instead of auditing fifty consoles by hand.
 #
-# Both lists default to empty, so this module creates no users until you
-# populate them. They are fleet-wide by design: set them once in
-# modules/protect-baseline/variables.tf rather than per customer.
+# Both lists default to empty, so no users are created until you populate them.
+# They are fleet-wide by design: set them in variables.tf, not per customer.
 #
-# The identity_provider_id, role_ids and group_ids below are Jamf Protect
-# built-in IDs:
-#   identity_provider_id = "1"  — the Jamf Account IdP. A tenant using a
-#                                 different IdP configuration needs a different
-#                                 value here.
-#   role_ids             = "2"  — Full Admin        "1" — Read Only
-#   group_ids            = "1"  — the default group
+# The IDs below are Jamf Protect built-ins:
+#   identity_provider_id = "1"   the Jamf Account IdP
+#   role_ids             = "2"   Full Admin, "1" Read Only
+#   group_ids            = "1"   the default group
 #
-# Confirm these against a tenant before first use: they are stable in practice
-# but they are IDs, not names, and nothing stops a tenant differing.
+# Confirm them against a tenant first. They are stable in practice, but they are
+# IDs rather than names and nothing guarantees a tenant matches.
 #
-# One caveat worth knowing: the Jamf Account used to create the tenant is
-# already associated with it and does not need a user resource. Adding it here
-# will conflict, so leave the tenant creator out of these lists.
+# Leave the Jamf Account that created the tenant out of these lists. It is
+# already associated with the tenant and adding it here conflicts.
 # -----------------------------------------------------------------------------
 
 resource "jamfprotect_user" "full_admin" {

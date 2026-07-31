@@ -1,16 +1,15 @@
 # -----------------------------------------------------------------------------
 # Device Controls — Removable Storage
 # -----------------------------------------------------------------------------
-# Enhanced-tier only. Created when product_tier is "enhanced".
+# Enhanced tier only.
 #
 # The default permission is "Prevent": removable storage is blocked unless an
-# override says otherwise. That is the whole point of the control — start
-# closed, open deliberately, and open it in code so the exception is reviewed
-# and survives the next apply.
+# override says otherwise. Start closed, open deliberately, and open it in code so
+# the exception is reviewed and survives the next apply.
 #
 # Per-customer exceptions arrive through the four removable_storage_override_*
-# variables. Anything added directly in the console instead will be reported by
-# the drift detection workflow and reverted on remediation.
+# variables. Anything added in the console instead is reported by drift detection
+# and reverted on remediation.
 # -----------------------------------------------------------------------------
 
 resource "jamfprotect_removable_storage_control_set" "managed_protect_enhanced" {

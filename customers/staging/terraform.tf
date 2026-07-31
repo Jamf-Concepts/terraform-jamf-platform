@@ -3,28 +3,28 @@
 # -----------------------------------------------------------------------------
 # Backend and version constraints for this customer workspace.
 #
-# This is the file that makes multi-tenancy safe. The customer name is baked
-# into the state key, so every customer reads and writes a completely separate
-# state object. A bad apply against one tenant cannot touch another's state.
+# This is what makes multi-tenancy safe. The customer name is in the state key, so
+# every customer reads and writes a separate state object. A bad apply against one
+# tenant cannot touch another's state.
 #
-# The backend below is S3, as a working example. Any backend that gives you a
-# per-tenant path and state locking works the same way — swap it for yours. See
-# the README "State backend" section for what else changes if you do.
+# The backend below is S3, as a working example. Any backend giving you a
+# per-tenant path and state locking works the same way. See the README "State
+# backend" section for what else changes if you swap it.
 #
 # BEFORE YOUR FIRST ONBOARDING, point this at storage you own. Backend blocks
-# cannot reference variables, so it is a literal edit; use `terraform init
-# -backend-config=...` if you would rather supply values at init time. With S3,
-# the bucket must also be set as the STATE_BUCKET repository variable, which the
-# destroy and handover workflows use to remove state objects.
+# cannot reference variables, so it is a literal edit; `terraform init
+# -backend-config=...` supplies values at init time instead. With S3, the bucket
+# must also be set as the STATE_BUCKET repository variable, used by the destroy
+# and handover workflows to remove state objects.
 #
-#   encrypt      = true  — state is encrypted at rest. State records credentials
-#                          in plain text, so treat the store as a secret.
-#   use_lockfile = true  — S3-native locking. Two operations against the same
-#                          customer cannot run at once; the second is blocked
-#                          rather than corrupting state.
+#   encrypt      = true   state encrypted at rest. State records credentials in
+#                         plain text, so treat the store as a secret.
+#   use_lockfile = true   S3-native locking. Two operations against the same
+#                         customer cannot run at once; the second is blocked
+#                         rather than corrupting state.
 #
-# The onboarding script fills the customer name in automatically. However it is
-# set, the state key must always match the customer directory name.
+# The onboarding script fills in the customer name. However it is set, the state
+# key must match the customer directory name.
 # -----------------------------------------------------------------------------
 
 terraform {
@@ -34,7 +34,7 @@ terraform {
   # Detection workflow, .github/workflows/reconcile.yaml) can resolve a provider
   # for its root-level `list` blocks. Plan and apply configure the provider
   # inside the protect-baseline module instead, so this root declaration is
-  # inert for those operations — it is only instantiated by the query.
+  # inert for those operations; only the query instantiates it.
   required_providers {
     jamfprotect = {
       source  = "Jamf-Concepts/jamfprotect"

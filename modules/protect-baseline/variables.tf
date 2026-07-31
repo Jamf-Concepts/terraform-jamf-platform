@@ -1,14 +1,13 @@
 # -----------------------------------------------------------------------------
 # Input Variables
 # -----------------------------------------------------------------------------
-# This file is the menu. Everything a customer is allowed to vary appears here
-# as a variable with a safe default; anything that is not here cannot be
-# ordered. When a customer asks for something new, it gets added here and
-# becomes available to everyone in the same, reviewed shape — rather than being
-# applied to one tenant by hand.
+# This file is the menu. Everything a customer may vary appears here as a variable
+# with a safe default. Anything absent cannot be ordered. When a customer asks for
+# something new it gets added here, in one reviewed shape available to everyone,
+# rather than applied to one tenant by hand.
 #
 # Credentials arrive as TF_VAR_* environment variables from GitHub Environment
-# secrets at run time. They are never committed and never defaulted.
+# secrets at run time. Never committed, never defaulted.
 # -----------------------------------------------------------------------------
 
 # --- Jamf Protect Credentials -----------------------------------------------
@@ -33,7 +32,7 @@ variable "protect_client_password" {
 # --- Jamf Platform Credentials ----------------------------------------------
 # Used to reach the customer's Jamf Pro instance through the Platform API
 # gateway. Note this is a regional endpoint plus a tenant UUID, not a per-
-# instance hostname — see the provider block in main.tf.
+# instance hostname. See the provider block in main.tf.
 
 variable "platform_base_url" {
   description = "Jamf Platform API gateway base URL for this customer's region (e.g. https://eu.apigw.jamf.com)"
@@ -71,7 +70,7 @@ variable "platform_client_secret" {
 
 # --- Product Tier -----------------------------------------------------------
 # The two bases on the menu. A validation block turns a typo into a clear plan
-# error instead of a tenant that silently gets the wrong configuration.
+# error instead of a tenant silently getting the wrong configuration.
 
 variable "product_tier" {
   description = "Product tier: standard (threat prevention) or enhanced (threat prevention + device controls)"
@@ -98,10 +97,10 @@ variable "removable_storage_default_permission" {
 }
 
 # --- Per-Customer Removable Storage Overrides -------------------------------
-# Four override shapes, matching the four ways Jamf Protect can identify a
-# device: by vendor, by vendor+product pair, by serial number, or by whether
-# the device is encrypted. All default to empty, so a customer with no
-# exceptions carries no exception configuration at all.
+# Four override shapes, matching the four ways Jamf Protect identifies a device:
+# vendor, vendor+product pair, serial number, or whether the device is encrypted.
+# All default to empty, so a customer with no exceptions carries no exception
+# configuration.
 
 variable "removable_storage_override_vendor_id" {
   description = "Vendor ID overrides for the removable storage control set. Only used when product_tier is enhanced."
@@ -160,12 +159,12 @@ variable "exception_sets" {
 }
 
 # --- Console Users ----------------------------------------------------------
-# Fleet-wide lists: these apply to every customer tenant, not per customer.
-# Populate with your own team's addresses. Leave empty to manage console
-# access outside Terraform.
+# Fleet-wide: these apply to every customer tenant, not per customer. Populate
+# with your own team's addresses, or leave empty to manage console access outside
+# Terraform.
 #
-# Do not include the Jamf Account that created a tenant — it is already
-# associated with that tenant (see users.tf).
+# Do not include the Jamf Account that created a tenant; it is already associated
+# with that tenant (see users.tf).
 
 variable "full_admin_users" {
   description = "Email addresses provisioned as Full Admin console users in every customer tenant."

@@ -1,16 +1,15 @@
 # -----------------------------------------------------------------------------
 # Protect Baseline Module
 # -----------------------------------------------------------------------------
-# The shared baseline every customer calls. One module, one definition of
-# "good", applied to every tenant. The only thing that varies between
-# customers is the values passed in from their customer.auto.tfvars.
+# The shared baseline every customer calls. One definition of "good", applied to
+# every tenant. The only thing that varies is the values passed in from each
+# customer.auto.tfvars.
 #
 # Product tiers:
-#   - "standard"  — threat prevention only (default)
-#   - "enhanced"  — threat prevention + removable storage device controls
+#   "standard"   threat prevention only (default)
+#   "enhanced"   threat prevention plus removable storage device controls
 #
-# Add a capability here once and every customer picks it up on their next
-# apply. Nobody logs into fifty consoles to make the same change fifty times.
+# Add a capability here and every customer picks it up on their next apply.
 # -----------------------------------------------------------------------------
 
 terraform {
@@ -37,20 +36,18 @@ terraform {
 # customer's root module. That is a deliberate trade-off worth understanding
 # before you copy it:
 #
-#   Why it is done this way — a customer workspace is then four small files
-#   (main.tf, terraform.tf, customer.auto.tfvars, outputs.tf) with no provider
-#   plumbing to keep in sync across fifty directories. Credentials arrive as
-#   module inputs, which the onboarding script wires to GitHub Environment
-#   secrets once.
+#   What it buys — a customer workspace is four small files (main.tf,
+#   terraform.tf, customer.auto.tfvars, outputs.tf) with no provider plumbing to
+#   keep in sync across fifty directories. Credentials arrive as module inputs,
+#   which the onboarding script wires to GitHub Environment secrets once.
 #
-#   What it costs — a module that configures its own providers cannot be
-#   called with `count`, `for_each` or `depends_on`, and cannot be given an
-#   aliased provider by its caller. If you ever need one workspace to talk to
-#   two tenants, move these two blocks up into the customer root module and
-#   pass them in explicitly.
+#   What it costs — a module that configures its own providers cannot be called
+#   with `count`, `for_each` or `depends_on`, and cannot be given an aliased
+#   provider by its caller. If you need one workspace to reach two tenants, move
+#   these blocks into the customer root module and pass them in.
 #
-# Terraform's own guidance is to configure providers only in root modules. We
-# accept the limitation because the fan-out here is one module call per
+# Terraform's guidance is to configure providers only in root modules. The
+# limitation is acceptable here because the fan-out is one module call per
 # workspace, and the isolation boundary is the workspace, not the module.
 
 provider "jamfprotect" {
@@ -60,7 +57,7 @@ provider "jamfprotect" {
 }
 
 # Reaches Jamf Pro through the Platform API gateway, so a customer is identified
-# by a regional base_url (us / eu / apac — shared between customers in the same
+# by a regional base_url (us / eu / apac, shared between customers in the same
 # region) plus a tenant UUID, not by a Jamf Pro hostname.
 provider "jamfplatform" {
   base_url      = var.platform_base_url
@@ -70,8 +67,8 @@ provider "jamfplatform" {
 }
 
 # --- Feature flags ----------------------------------------------------------
-# Derived once here so the resource files read as plain conditionals rather
-# than repeating the tier comparison in every `count`.
+# Derived once so the resource files read as plain conditionals instead of
+# repeating the tier comparison in every `count`.
 
 locals {
   # Device controls are an Enhanced-tier capability.

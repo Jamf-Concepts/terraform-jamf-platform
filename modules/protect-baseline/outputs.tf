@@ -2,12 +2,11 @@
 # Outputs
 # -----------------------------------------------------------------------------
 # Resource IDs and attributes exposed for the customer root module, and for
-# anything that needs a value Terraform generated (see the reporting
-# integration credentials, which have to be entered into that product by hand).
+# anything needing a value Terraform generated (the reporting integration
+# credentials have to be entered into that product by hand).
 #
-# Marking an output `sensitive = true` keeps it out of plan and apply logs. It
-# does NOT keep it out of state — state is a plain-text record and must be
-# treated as a secret in its own right.
+# `sensitive = true` keeps an output out of plan and apply logs. It does NOT keep
+# it out of state, which is plain text and must be treated as a secret.
 # -----------------------------------------------------------------------------
 
 # --- API Clients ------------------------------------------------------------

@@ -1,23 +1,21 @@
 # -----------------------------------------------------------------------------
 # Customer Root Module — staging
 # -----------------------------------------------------------------------------
-# One module call, and a variable declaration for every input that call needs.
-# There is no configuration in here: the whole baseline lives in
-# modules/protect-baseline. This file exists to say "this customer, these
-# values, that module".
+# One module call, plus a variable declaration for every input it needs. No
+# configuration lives here; the baseline is all in modules/protect-baseline. This
+# file says "this customer, these values, that module".
 #
-# Terraform has no variable inheritance — a root module must declare every
-# variable it passes down, even when the module already declares it. That is
-# why this file is longer than it looks like it should be. The declarations are
-# deliberately thin: no descriptions duplicated from the module, no defaults
-# that could drift from the module's, just types.
+# Terraform has no variable inheritance, so a root module must declare every
+# variable it passes down even when the module already declares it. That is why
+# the file is long. The declarations are thin on purpose: no descriptions copied
+# from the module, no defaults that could drift from it, just types.
 #
 # Where values come from:
-#   Credentials         → TF_VAR_* environment variables, set from GitHub
-#                         Environment secrets by the workflows. Never committed.
-#   Tier and overrides  → customer.auto.tfvars, in this directory. Committed,
-#                         reviewed, and the only file that differs in substance
-#                         between customers.
+#   Credentials         TF_VAR_* environment variables, set from GitHub
+#                       Environment secrets by the workflows. Never committed.
+#   Tier and overrides  customer.auto.tfvars, in this directory. Committed and
+#                       reviewed, and the only file that differs in substance
+#                       between customers.
 # -----------------------------------------------------------------------------
 
 # --- Jamf Protect Credentials -----------------------------------------------
@@ -40,9 +38,9 @@ variable "protect_client_password" {
 }
 
 # --- Jamf Platform Credentials ----------------------------------------------
-# Reaches this customer's Jamf Pro instance via the Platform API gateway. The
-# base URL is regional and the tenant is identified by UUID, so there is no
-# Jamf Pro hostname here. Validation lives in the module.
+# Reaches this customer's Jamf Pro instance via the Platform API gateway. The base
+# URL is regional and the tenant is identified by UUID, so no Jamf Pro hostname
+# appears here. Validation lives in the module.
 
 variable "platform_base_url" {
   description = "Jamf Platform API gateway base URL for this customer's region"
@@ -171,7 +169,7 @@ variable "sentinel_app_secret" {
 }
 
 # -----------------------------------------------------------------------------
-# The module call — this is the entire customer configuration.
+# The module call. This is the entire customer configuration.
 # -----------------------------------------------------------------------------
 
 module "protect" {
@@ -202,11 +200,9 @@ module "protect" {
 
 # --- Customer-specific resources --------------------------------------------
 #
-# Anything that should exist for THIS customer only can be declared here,
-# alongside the module call, rather than being added to the shared module.
+# Anything that should exist for THIS customer only can be declared here, beside
+# the module call, rather than added to the shared module.
 #
-# Use this sparingly. A resource here is a snowflake: it will not be picked up
-# by the next customer, and nobody reviewing the shared module will know it
-# exists. If two customers need the same thing, it belongs in the module behind
-# a variable instead — that is the difference between adding to the menu and
-# cooking something off-menu.
+# Use it sparingly. A resource here is a snowflake: the next customer will not
+# pick it up, and nobody reviewing the shared module will know it exists. If two
+# customers need the same thing, it belongs in the module behind a variable.

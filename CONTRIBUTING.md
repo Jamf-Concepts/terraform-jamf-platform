@@ -1,22 +1,20 @@
 # Contributing
 
-Thanks for your interest in contributing. This branch is a reference for
-managed service providers and anyone running Jamf configuration as code across
-more than one tenant — keep that audience in mind when proposing changes.
+This branch is a reference for managed service providers and anyone running Jamf
+configuration as code across more than one tenant. Keep that audience in mind
+when proposing changes.
 
 ## What this project is and is not
 
-**It is** a worked example of a multi-tenant Terraform pipeline, sanitised from
-a production system, structured so someone can read it top to bottom and
-recognise both the Jamf resources and the operational scaffolding around them.
+**It is** a worked example of a multi-tenant Terraform pipeline, sanitised from a
+production system, written to be read top to bottom.
 
-**It is not** a module published for direct consumption, nor a turnkey
-configuration. Users are expected to fork it and adapt it to their own service.
+**It is not** a published module or a turnkey configuration. Fork it and adapt it
+to your own service.
 
 Changes that make the patterns clearer, more honest about their trade-offs, or
-more portable are welcome. Changes that add abstraction or indirection for its
-own sake, or that reintroduce organisation-specific detail, will likely be
-declined.
+more portable are welcome. Changes that add abstraction for its own sake, or
+reintroduce organisation-specific detail, will likely be declined.
 
 ## Reporting issues
 
@@ -36,8 +34,8 @@ Provider bugs belong on the provider repositories rather than here:
 ## Proposing changes
 
 1. Fork the repository.
-2. Branch off `ref-jamfprotect-msp`. Note this is an **orphaned** branch with no
-   shared history with `main` — do not merge across branches in this repository.
+2. Branch off `ref-jamfprotect-msp`. It is an **orphaned** branch with no shared
+   history with `main`, so do not merge across branches in this repository.
 3. Make your changes.
 4. Run the checks below.
 5. Apply your changes against a sandbox tenant you own to confirm they work end
@@ -74,18 +72,16 @@ commands above catch will fail CI anyway.
 - **Dynamic per-customer resources** use `for_each` over a map declared in the
   customer's tfvars. Do not flatten dissimilar resources into one parameterised
   `for_each` purely for the sake of DRY.
-- **Comments explain the reasoning, not the syntax.** Why `depends_on` is
-  needed, why `-parallelism=1` is mandatory, why a filter exists, what a
-  trade-off costs. A comment restating what the next line plainly says is
-  noise.
-- **Document trade-offs where they occur.** Several decisions in here are
-  defensible rather than correct — providers configured inside the module,
-  credentials written to a run summary, an unpinned lock file. Each is
-  explained at the point it happens. Keep that up rather than quietly
-  smoothing it over.
-- **Sensitive values** are `sensitive = true` on the variable, never given a
-  default, and never committed. Anything genuinely secret reaches Terraform as
-  a `TF_VAR_*` environment variable from a GitHub Environment secret.
+- **Comments explain reasoning, not syntax.** Why `depends_on` is needed, why
+  `-parallelism=1` is mandatory, why a filter exists, what a trade-off costs. A
+  comment restating the next line is noise.
+- **Document trade-offs where they occur.** Some decisions here are defensible
+  rather than correct: providers configured inside the module, credentials written
+  to a run summary, an unpinned lock file. Each is explained at the point it
+  happens. Keep that up.
+- **Sensitive values** are `sensitive = true` on the variable, never defaulted,
+  never committed. Secrets reach Terraform as `TF_VAR_*` environment variables
+  from GitHub Environment secrets.
 - **Workflows** declare explicit least-privilege `permissions`, pin third-party
   actions by commit SHA, and validate any user input before it reaches a shell
   or an S3 key.
@@ -100,9 +96,9 @@ This branch is intended to be shareable. Pull requests must not introduce:
 - Links to internal documentation, ticketing or wiki systems
 - Dependencies on internal infrastructure
 
-Where a value has to exist, make it a repository variable or an environment
-variable with a documented placeholder — and pick a placeholder that fails
-loudly rather than one that looks plausible.
+Where a value has to exist, make it a repository or environment variable with a
+documented placeholder. Pick one that fails loudly rather than one that looks
+plausible.
 
 ## Provider version policy
 
@@ -127,8 +123,8 @@ In scope:
 Out of scope:
 
 - General Terraform tutorials
-- Prescriptive CI/CD or remote state architecture beyond what is documented —
-  this repository documents one approach rather than recommending it over others
+- Prescriptive CI/CD or remote state architecture beyond what is documented; this
+  repository shows one approach rather than recommending it over others
 - Other Jamf products, which have their own providers and belong on their own
   reference branches
 

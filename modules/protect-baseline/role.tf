@@ -5,10 +5,9 @@
 # -----------------------------------------------------------------------------
 
 # --- Read Only (data source) ------------------------------------------------
-# "Read Only" is a built-in role present in every Jamf Protect tenant, with a
-# different ID in each. Reading it by name means the module never carries a
-# hardcoded UUID and never needs an import block. Same pattern as the
-# Jamf-managed exception set in exception_sets.tf.
+# "Read Only" is a built-in role in every Protect tenant, with a different ID in
+# each. Reading it by name keeps hardcoded UUIDs and import blocks out of the
+# module. Same pattern as the Jamf-managed exception set in exception_sets.tf.
 
 data "jamfprotect_roles" "all" {}
 
@@ -18,12 +17,11 @@ locals {
 
 # --- Reporting integration role ---------------------------------------------
 # A least-privilege read-only role for an external reporting or analytics
-# integration — in our service this is Jamf Insights, but the pattern is the
-# same for any consumer that needs to read alert and inventory data without
-# the ability to change configuration.
+# integration. Here that is Jamf Insights, but the pattern suits any consumer
+# that reads alert and inventory data without changing configuration.
 #
-# Grant only the read permissions the integration actually needs. Adding
-# permissions here is a reviewed change; adding them in the console is drift.
+# Grant only the read permissions the integration needs. Adding permissions here
+# is a reviewed change; adding them in the console is drift.
 
 resource "jamfprotect_role" "insights" {
   name = "Jamf-Insights-Integration"
