@@ -716,9 +716,20 @@ terraform plan -generate-config-out=generated.tf
 ```
 
 Terraform reads the live device group from the API and writes its full resource
-block to `generated.tf`. Review the output and copy the resource block into
-`device_groups.tf`. Delete the import block from `imports.tf` and delete
-`generated.tf`.
+block to `generated.tf`. Review the output and copy the **whole** resource block
+into `device_groups.tf`, then delete `generated.tf`. Leave the import block in
+`imports.tf` for now — copy the entire block as-is; any attributes you drop
+will show as drift on the next plan.
+
+Run apply to perform the import (import blocks execute on apply, not plan —
+`-generate-config-out` only reads the API and writes HCL, it never touches
+state):
+
+```bash
+terraform apply
+```
+
+Once apply completes, delete the import block from `imports.tf`.
 
 Run a final plan to confirm no changes:
 
@@ -743,9 +754,9 @@ import {
 terraform plan -generate-config-out=generated.tf
 ```
 
-Terraform generates the blueprint resource block. Copy it into `blueprints.tf`,
-delete the import block from `imports.tf` and `generated.tf`, then run
-`terraform plan` to verify a clean result.
+Terraform generates the blueprint resource block. Copy the **whole** block into
+`blueprints.tf` and delete `generated.tf`. Leave the import block in
+`imports.tf` for now.
 
 If the blueprint targets a device group that is now managed by Terraform, update
 the `device_groups` attribute in the generated block to use the resource
@@ -763,6 +774,20 @@ device_groups = [jamfplatform_device_group.terraform_managed.id]
 > configuration from an existing tenant, it detects UUID references between
 > resources and replaces them with Terraform symbolic references automatically.
 > The result is immediately correct HCL — no manual UUID replacement required.
+
+Run apply to perform the import:
+
+```bash
+terraform apply
+```
+
+Once apply completes, delete the import block from `imports.tf`.
+
+Run a final plan to verify a clean result:
+
+```bash
+terraform plan
+```
 
 ---
 
