@@ -539,12 +539,25 @@ something like:
 
 ```hcl
 resource "jamfpro_category" "finance" {
-  name = "Finance"
+  name     = "Finance"
+  priority = 9
 }
 ```
 
-Copy the resource block into `categories.tf`. Delete the import block from
-`imports.tf` and delete `generated.tf`.
+Copy the **whole** generated block into `categories.tf` and delete
+`generated.tf`. Leave the import block in `imports.tf` for now — copy the
+entire block as-is; any attributes you drop will show as drift on the next
+plan.
+
+Run apply to perform the import (import blocks execute on apply, not plan —
+`-generate-config-out` only reads the API and writes HCL, it never touches
+state):
+
+```bash
+terraform apply -parallelism=1
+```
+
+Once apply completes, delete the import block from `imports.tf`.
 
 Run a final plan to confirm Terraform sees no changes:
 
@@ -591,9 +604,22 @@ script_contents = file("${path.root}/support_files/scripts/inventory_update.sh")
 > automatically into `support_files/`. The result is immediately readable HCL
 > with proper file references — no manual extraction required.
 
-Copy the block into `scripts.tf`, delete the import block from `imports.tf`
-and delete `generated.tf`, then run `terraform plan` to verify
-a clean result.
+Copy the **whole** block into `scripts.tf` and delete `generated.tf`. Leave
+the import block in `imports.tf` for now.
+
+Run apply to perform the import:
+
+```bash
+terraform apply -parallelism=1
+```
+
+Once apply completes, delete the import block from `imports.tf`.
+
+Run a final plan to verify a clean result:
+
+```bash
+terraform plan
+```
 
 ---
 
