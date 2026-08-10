@@ -3,7 +3,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
-      version               = "0.18.0-rc.2"
+      version               = ">= 0.26.0"
       configuration_aliases = [jamfplatform.jpro]
     }
   }
@@ -27,24 +27,24 @@ resource "jamfplatform_pro_category" "category_tahoe_cis_lvl1_benchmarks" {
 
 ## Create scripts
 resource "jamfplatform_pro_script" "script_sonoma_cis_lvl1_compliance" {
-  name     = "Sonoma - CIS Level 1 Compliance"
-  priority = "AFTER"
-  info     = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Sonoma"
-  script_contents   = file("${path.module}/support_files/computer_scripts/sonoma_cis_lvl1_compliance.sh")
+  name            = "Sonoma - CIS Level 1 Compliance"
+  priority        = "AFTER"
+  info            = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Sonoma"
+  script_contents = file("${path.module}/support_files/computer_scripts/sonoma_cis_lvl1_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_cis_lvl1_compliance" {
-  name     = "Sequoia - CIS Level 1 Compliance"
-  priority = "AFTER"
-  info     = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Sequoia"
-  script_contents   = file("${path.module}/support_files/computer_scripts/sequoia_cis_lvl1_compliance.sh")
+  name            = "Sequoia - CIS Level 1 Compliance"
+  priority        = "AFTER"
+  info            = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Sequoia"
+  script_contents = file("${path.module}/support_files/computer_scripts/sequoia_cis_lvl1_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_tahoe_cis_lvl1_compliance" {
-  name     = "Tahoe - CIS Level 1 Compliance"
-  priority = "AFTER"
-  info     = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Tahoe"
-  script_contents   = file("${path.module}/support_files/computer_scripts/tahoe_cis_lvl1_compliance.sh")
+  name            = "Tahoe - CIS Level 1 Compliance"
+  priority        = "AFTER"
+  info            = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Tahoe"
+  script_contents = file("${path.module}/support_files/computer_scripts/tahoe_cis_lvl1_compliance.sh")
 }
 
 ## Create computer extension attributes
@@ -214,8 +214,8 @@ resource "jamfplatform_pro_policy" "policy_sonoma_cis_lvl1_audit" {
   scripts = {
     scripts = [
       {
-        id         = jamfplatform_pro_script.script_sonoma_cis_lvl1_compliance.id
-        parameter4 = "--check"
+        id          = jamfplatform_pro_script.script_sonoma_cis_lvl1_compliance.id
+        parameter_4 = "--check"
       },
     ]
   }
@@ -256,10 +256,10 @@ resource "jamfplatform_pro_policy" "policy_sonoma_cis_lvl1_remediation" {
   scripts = {
     scripts = [
       {
-        id         = jamfplatform_pro_script.script_sonoma_cis_lvl1_compliance.id
-        parameter4 = "--check"
-        parameter5 = "--fix"
-        parameter6 = "--check"
+        id          = jamfplatform_pro_script.script_sonoma_cis_lvl1_compliance.id
+        parameter_4 = "--check"
+        parameter_5 = "--fix"
+        parameter_6 = "--check"
       },
     ]
   }
@@ -300,8 +300,8 @@ resource "jamfplatform_pro_policy" "policy_sequoia_cis_lvl1_audit" {
   scripts = {
     scripts = [
       {
-        id         = jamfplatform_pro_script.script_sequoia_cis_lvl1_compliance.id
-        parameter4 = "--check"
+        id          = jamfplatform_pro_script.script_sequoia_cis_lvl1_compliance.id
+        parameter_4 = "--check"
       },
     ]
   }
@@ -342,10 +342,10 @@ resource "jamfplatform_pro_policy" "policy_sequoia_cis_lvl1_remediation" {
   scripts = {
     scripts = [
       {
-        id         = jamfplatform_pro_script.script_sequoia_cis_lvl1_compliance.id
-        parameter4 = "--check"
-        parameter5 = "--fix"
-        parameter6 = "--check"
+        id          = jamfplatform_pro_script.script_sequoia_cis_lvl1_compliance.id
+        parameter_4 = "--check"
+        parameter_5 = "--fix"
+        parameter_6 = "--check"
       },
     ]
   }
@@ -386,8 +386,8 @@ resource "jamfplatform_pro_policy" "policy_tahoe_cis_lvl1_audit" {
   scripts = {
     scripts = [
       {
-        id         = jamfplatform_pro_script.script_tahoe_cis_lvl1_compliance.id
-        parameter4 = "--check"
+        id          = jamfplatform_pro_script.script_tahoe_cis_lvl1_compliance.id
+        parameter_4 = "--check"
       },
     ]
   }
@@ -428,10 +428,10 @@ resource "jamfplatform_pro_policy" "policy_tahoe_cis_lvl1_remediation" {
   scripts = {
     scripts = [
       {
-        id         = jamfplatform_pro_script.script_tahoe_cis_lvl1_compliance.id
-        parameter4 = "--check"
-        parameter5 = "--fix"
-        parameter6 = "--check"
+        id          = jamfplatform_pro_script.script_tahoe_cis_lvl1_compliance.id
+        parameter_4 = "--check"
+        parameter_5 = "--fix"
+        parameter_6 = "--check"
       },
     ]
   }

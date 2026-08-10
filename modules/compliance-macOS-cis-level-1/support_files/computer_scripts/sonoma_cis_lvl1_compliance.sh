@@ -1,4 +1,4 @@
-﻿#!/bin/zsh --no-rcs
+#!/bin/zsh --no-rcs
 
 ##  This script will attempt to audit all of the settings based on the installed profile.
 
