@@ -160,6 +160,12 @@ variable "include_mac_cis_lvl1_benchmark" {
   default = false
 }
 
+variable "include_mac_cis_lvl1_benchmark_cbengine" {
+  description = "Deploy the CIS Level 1 macOS benchmark via the Compliance Benchmarks Engine (jamfplatform_cbengine_benchmark) instead of the classic-API module. Used by the Jamf Foundations onboarder."
+  type        = bool
+  default     = false
+}
+
 variable "include_mac_stig_benchmark" {
   type    = bool
   default = false
