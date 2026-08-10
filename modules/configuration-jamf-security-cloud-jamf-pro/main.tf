@@ -79,7 +79,7 @@ output "jp_client_secret" {
 }
 
 resource "jsc_uemc" "initial_uemc" {
-  domain       = var.jamfplatform_base_url
+  domain       = var.jamfpro_instance_url
   clientid     = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_id
   clientsecret = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_secret
 }

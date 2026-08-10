@@ -20,6 +20,12 @@ variable "jamfplatform_tenant_id" {
   type        = string
 }
 
+variable "jamfpro_instance_url" {
+  description = "Full URL of the Jamf Pro instance (e.g. https://letstest.jamfcloud.com)."
+  type        = string
+  default     = ""
+}
+
 variable "jamfprotect_url" {
   description = "Jamf Protect URL name."
   type        = string

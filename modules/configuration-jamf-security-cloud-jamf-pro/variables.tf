@@ -4,6 +4,12 @@ variable "jamfplatform_base_url" {
   default   = ""
 }
 
+variable "jamfpro_instance_url" {
+  description = "Full URL of the Jamf Pro instance (e.g. https://letstest.jamfcloud.com)."
+  type        = string
+  default     = ""
+}
+
 variable "jsc_username" {
   type      = string
   sensitive = true

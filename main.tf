@@ -356,6 +356,7 @@ module "configuration-jamf-security-cloud-jamf-pro" {
   count                      = var.include_jsc_uemc == true ? 1 : 0
   source                     = "./modules/configuration-jamf-security-cloud-jamf-pro"
   jamfplatform_base_url      = var.jamfplatform_base_url
+  jamfpro_instance_url       = var.jamfpro_instance_url
   jamfplatform_client_id     = var.jamfplatform_client_id
   jamfplatform_client_secret = var.jamfplatform_client_secret
   jsc_username               = var.jsc_username
