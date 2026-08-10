@@ -4,7 +4,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
-      version               = "0.18.0-rc.2"
+      version               = ">= 0.26.0"
       configuration_aliases = [jamfplatform.jpro]
     }
   }

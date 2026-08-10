@@ -3,6 +3,7 @@
 .terraform*
 terraform.tfvars
 terraform.*.tfvars
+tfvars.auto.tfvars.json
 catalog-info.yaml
 .DS_Store
 plan.json
