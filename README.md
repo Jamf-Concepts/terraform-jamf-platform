@@ -96,21 +96,23 @@ significantly easier.
 ### Install and configure jamf-cli
 
 [jamf-cli](https://github.com/Jamf-Concepts/jamf-cli) is used during the
-import exercise to look up numeric resource IDs from Jamf Pro. Install it via
-Homebrew:
+import exercise to create unmanaged resources and look up their IDs. Install
+via Homebrew:
 
 ```bash
 brew install Jamf-Concepts/tap/jamf-cli
 ```
 
-Then configure it against your sandbox instance:
+Configure a platform profile pointing at the same gateway and tenant you
+configured for Terraform:
 
 ```bash
-jamf-cli pro setup
+jamf-cli platform setup
 ```
 
-Follow the prompts to enter your Jamf Pro URL and local admin credentials.
-jamf-cli creates an API client automatically.
+Follow the prompts to enter your gateway URL, tenant ID, and OAuth2 credentials.
+When asked for a profile name, choose something memorable — you'll pass it to
+every jamf-cli command with `-p <profile>`.
 
 ### Install jamformer
 
@@ -680,18 +682,14 @@ export into a structured project is a copy, not a rewrite.
 To remove everything Terraform created in your sandbox:
 
 ```bash
-terraform destroy -parallelism=1
+terraform destroy
 ```
 
 Terraform reads state and deletes each resource from Jamf Pro. Type `yes`
 when prompted. The state file will be empty when it finishes.
 
-Then delete the API client and role created during setup:
-
-```bash
-jamf-cli pro api-integrations delete --name "terraform-starter" --yes
-jamf-cli pro api-roles delete --name "terraform-starter" --yes
-```
+Then delete the integration in [account.jamf.com](https://account.jamf.com)
+under **Integrations** to clean up credentials.
 
 ---
 
