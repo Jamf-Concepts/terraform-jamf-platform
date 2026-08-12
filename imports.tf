@@ -1,9 +1,11 @@
-#import {
-#  to = jamfpro_category.finance
-#  id = "223"
-#}
+# Uncomment a block, fill in the numeric ID, then see the Import section in README.md.
 
-import {
-  to = jamfplatform_pro_script.depnotify
-  id = "175"
-}
+# import {
+#   to = jamfplatform_pro_category.finance
+#   id = ""
+# }
+
+# import {
+#   to = jamfplatform_pro_script.inventory_update
+#   id = ""
+# }
