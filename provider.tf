@@ -1,10 +1,8 @@
 # Credentials are supplied via terraform.tfvars — see Prerequisites in README.md
 
-provider "jamfpro" {
-  jamfpro_instance_fqdn = var.jamfpro_instance_fqdn
-  auth_method           = "oauth2"
-  client_id             = var.jamfpro_client_id
-  client_secret         = var.jamfpro_client_secret
-
-  token_refresh_buffer_period_seconds = 30
+provider "jamfplatform" {
+  base_url      = var.jamfplatform_base_url
+  client_id     = var.jamfplatform_client_id
+  client_secret = var.jamfplatform_client_secret
+  tenant_id     = var.jamfplatform_tenant_id
 }
