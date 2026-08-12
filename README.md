@@ -62,7 +62,7 @@ By the end of this session you will be able to:
 - VS Code with the HashiCorp Terraform extension (see below)
 - jamf-cli (see below)
 - jamformer (see below)
-- An API Role and Client in the sandbox (see below)
+- Platform API credentials from Jamf Account (see below)
 
 ### Installing git
 
@@ -123,39 +123,40 @@ resources at scale.
 brew install Jamf-Concepts/tap/jamformer
 ```
 
-### Create an API Role and Client
+### Create Platform API credentials
 
-Terraform authenticates to Jamf Pro using OAuth2. Use jamf-cli to create the
-credentials from the command line:
+The Jamf Platform Terraform provider authenticates via OAuth2 using an
+**integration** created in **Jamf Account** at
+[account.jamf.com](https://account.jamf.com).
 
-Create a role with all privileges — appropriate for learning, tighten for
-production:
+> **Beta requirement:** The Platform API Gateway is currently in beta. You must
+> first enroll in the **Platform API Gateway Beta** via
+> **Feedback Program → Other** in Jamf Account before the Integrations section
+> becomes available.
 
-```bash
-jamf-cli pro api-roles-privileges api-role-privileges -o json | \
-  jq '{displayName: "terraform-starter", privileges: .privileges}' | \
-  jamf-cli pro api-roles create
-```
+1. Sign in to [account.jamf.com](https://account.jamf.com)
+2. Enroll in the Platform API Gateway Beta under **Feedback Program → Other**
+   (if not already enrolled)
+3. Navigate to **Integrations** in the left navigation
+4. Click **Create integration**
+5. Enter a name and description, select the **Region** matching your tenant,
+   select your sandbox instance under **Tenants**, and grant permissions for
+   Categories, Scripts, Computer Groups, and Policies
+6. Click **Create integration** — the Integration details panel shows your
+   `client_id` and `client_secret`
 
-Create a client and attach the role:
+> **Copy the client secret immediately.** It is not shown again after you close
+> the panel.
 
-```bash
-echo '{"displayName":"terraform-starter","enabled":true,"accessTokenLifetimeSeconds":300,"authorizationScopes":["terraform-starter"]}' | \
-  jamf-cli pro api-integrations create
-```
+**Finding your tenant ID:** In the Integration details panel, the scoped
+tenants are shown as pills. Click any tenant pill to copy its UUID to your
+clipboard — that is the `tenant_id` value for the Terraform provider.
 
-Retrieve credentials — copy immediately, the secret is shown only once:
+**Base URL** — the regional API gateway:
 
-```bash
-jamf-cli pro api-integrations client-credentials --name "terraform-starter"
-```
-
-If you have multiple jamf-cli profiles, add `-p <profile-name>` to each
-command. `client-credentials` rotates the secret — running it again invalidates
-the previous one.
-
-Copy the `clientId` and `clientSecret` values — you'll need them in the next
-step.
+- `https://us.apigw.jamf.com` (US)
+- `https://eu.apigw.jamf.com` (EU)
+- `https://apac.apigw.jamf.com` (APAC)
 
 ---
 
