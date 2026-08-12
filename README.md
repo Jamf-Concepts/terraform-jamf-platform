@@ -93,38 +93,6 @@ gives you syntax highlighting, auto-complete, and inline documentation for
 resource attributes. It is not required but makes editing `.tf` files
 significantly easier.
 
-### Install and configure jamf-cli
-
-[jamf-cli](https://github.com/Jamf-Concepts/jamf-cli) is used during the
-import exercise to create unmanaged resources and look up their IDs. Install
-via Homebrew:
-
-```bash
-brew install Jamf-Concepts/tap/jamf-cli
-```
-
-Configure a platform profile pointing at the same gateway and tenant you
-configured for Terraform:
-
-```bash
-jamf-cli platform setup
-```
-
-Follow the prompts to enter your gateway URL, tenant ID, and OAuth2 credentials.
-When asked for a profile name, choose something memorable — you'll pass it to
-every jamf-cli command with `-p <profile>`.
-
-### Install jamformer
-
-[jamformer](https://github.com/Jamf-Concepts/jamformer) reads an existing Jamf
-Pro instance and generates Terraform configuration from it. It is used later
-in this session to demonstrate how to bootstrap a project from existing
-resources at scale.
-
-```bash
-brew install Jamf-Concepts/tap/jamformer
-```
-
 ### Create Platform API credentials
 
 The Jamf Platform Terraform provider authenticates via OAuth2 using an
@@ -159,6 +127,38 @@ clipboard — that is the `tenant_id` value for the Terraform provider.
 - `https://us.apigw.jamf.com` (US)
 - `https://eu.apigw.jamf.com` (EU)
 - `https://apac.apigw.jamf.com` (APAC)
+
+### Install and configure jamf-cli
+
+[jamf-cli](https://github.com/Jamf-Concepts/jamf-cli) is used during the
+import exercise to create unmanaged resources and look up their IDs. Install
+via Homebrew:
+
+```bash
+brew install Jamf-Concepts/tap/jamf-cli
+```
+
+Configure a platform profile pointing at the same gateway and tenant you
+configured for Terraform:
+
+```bash
+jamf-cli platform setup
+```
+
+Follow the prompts to enter your gateway URL, tenant ID, and OAuth2 credentials.
+When asked for a profile name, choose something memorable — you'll pass it to
+every jamf-cli command with `-p <profile>`.
+
+### Install jamformer
+
+[jamformer](https://github.com/Jamf-Concepts/jamformer) reads an existing Jamf
+Pro instance and generates Terraform configuration from it. It is used later
+in this session to demonstrate how to bootstrap a project from existing
+resources at scale.
+
+```bash
+brew install Jamf-Concepts/tap/jamformer
+```
 
 ---
 
