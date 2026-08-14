@@ -1,6 +1,9 @@
-# Full URL including https://, e.g. https://yourcompany.jamfcloud.com
-jamfpro_instance_fqdn = ""
+# Jamf Platform API gateway URL, e.g. https://us.apigw.jamf.com
+jamfplatform_base_url = ""
+
+# Your Jamf tenant UUID
+jamfplatform_tenant_id = ""
 
 # OAuth2 API client credentials — see Prerequisites in README.md for setup steps
-jamfpro_client_id     = ""
-jamfpro_client_secret = ""
+jamfplatform_client_id     = ""
+jamfplatform_client_secret = ""

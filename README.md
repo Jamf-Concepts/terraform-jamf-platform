@@ -35,7 +35,7 @@ multi-environment structure.
 
 By the end of this session you will be able to:
 
-- Configure the Jamf Pro Terraform provider with OAuth2 credentials
+- Configure the Jamf Platform Terraform provider with OAuth2 credentials
 - Declare resources, understand state, and run `init`, `plan`, `apply`, and `destroy`
 - Reference resource IDs across files and let Terraform resolve dependency ordering automatically
 - Read external file content into a resource attribute using `file()`
@@ -58,11 +58,11 @@ By the end of this session you will be able to:
 
 - A Jamf Pro sandbox instance — **do not use production**
 - Git (see below)
-- Terraform >= 1.11.0 (see below)
+- Terraform >= 1.13.0 (see below)
 - VS Code with the HashiCorp Terraform extension (see below)
 - jamf-cli (see below)
 - jamformer (see below)
-- An API Role and Client in the sandbox (see below)
+- Platform API credentials from Jamf Account (see below)
 
 ### Installing git
 
@@ -93,24 +93,61 @@ gives you syntax highlighting, auto-complete, and inline documentation for
 resource attributes. It is not required but makes editing `.tf` files
 significantly easier.
 
+### Create Platform API credentials
+
+The Jamf Platform Terraform provider authenticates via OAuth2 using an
+**integration** created in **Jamf Account** at
+[account.jamf.com](https://account.jamf.com).
+
+> **Beta requirement:** The Platform API Gateway is currently in beta. You must
+> first enroll in the **Platform API Gateway Beta** via
+> **Feedback Program → Other** in Jamf Account before the Integrations section
+> becomes available.
+
+1. Sign in to [account.jamf.com](https://account.jamf.com)
+2. Enroll in the Platform API Gateway Beta under **Feedback Program → Other**
+   (if not already enrolled)
+3. Navigate to **Integrations** in the left navigation
+4. Click **Create integration**
+5. Enter a name and description, select the **Region** matching your tenant,
+   select your sandbox instance under **Tenants**, and grant permissions for
+   Categories, Scripts, Computer Groups, and Policies
+6. Click **Create integration** — the Integration details panel shows your
+   `client_id` and `client_secret`
+
+> **Copy the client secret immediately.** It is not shown again after you close
+> the panel.
+
+**Finding your tenant ID:** In the Integration details panel, the scoped
+tenants are shown as pills. Click any tenant pill to copy its UUID to your
+clipboard — that is the `tenant_id` value for the Terraform provider.
+
+**Base URL** — the regional API gateway:
+
+- `https://us.apigw.jamf.com` (US)
+- `https://eu.apigw.jamf.com` (EU)
+- `https://apac.apigw.jamf.com` (APAC)
+
 ### Install and configure jamf-cli
 
 [jamf-cli](https://github.com/Jamf-Concepts/jamf-cli) is used during the
-import exercise to look up numeric resource IDs from Jamf Pro. Install it via
-Homebrew:
+import exercise to create unmanaged resources and look up their IDs. Install
+via Homebrew:
 
 ```bash
 brew install Jamf-Concepts/tap/jamf-cli
 ```
 
-Then configure it against your sandbox instance:
+Configure a platform profile pointing at the same gateway and tenant you
+configured for Terraform:
 
 ```bash
-jamf-cli pro setup
+jamf-cli platform setup
 ```
 
-Follow the prompts to enter your Jamf Pro URL and local admin credentials.
-jamf-cli creates an API client automatically.
+Follow the prompts to enter your gateway URL, tenant ID, and OAuth2 credentials.
+This profile becomes your default, so commands below don't need `-p`. If you
+later add a second profile, pass `-p <profile>` to pick between them.
 
 ### Install jamformer
 
@@ -122,40 +159,6 @@ resources at scale.
 ```bash
 brew install Jamf-Concepts/tap/jamformer
 ```
-
-### Create an API Role and Client
-
-Terraform authenticates to Jamf Pro using OAuth2. Use jamf-cli to create the
-credentials from the command line:
-
-Create a role with all privileges — appropriate for learning, tighten for
-production:
-
-```bash
-jamf-cli pro api-roles-privileges api-role-privileges -o json | \
-  jq '{displayName: "terraform-starter", privileges: .privileges}' | \
-  jamf-cli pro api-roles create
-```
-
-Create a client and attach the role:
-
-```bash
-echo '{"displayName":"terraform-starter","enabled":true,"accessTokenLifetimeSeconds":300,"authorizationScopes":["terraform-starter"]}' | \
-  jamf-cli pro api-integrations create
-```
-
-Retrieve credentials — copy immediately, the secret is shown only once:
-
-```bash
-jamf-cli pro api-integrations client-credentials --name "terraform-starter"
-```
-
-If you have multiple jamf-cli profiles, add `-p <profile-name>` to each
-command. `client-credentials` rotates the secret — running it again invalidates
-the previous one.
-
-Copy the `clientId` and `clientSecret` values — you'll need them in the next
-step.
 
 ---
 
@@ -174,13 +177,13 @@ cd terraform-jamf-platform
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Open `terraform.tfvars` and fill in your sandbox URL with the `clientId` and
-`clientSecret` from the previous step:
+Open `terraform.tfvars` and fill in your values:
 
 ```hcl
-jamfpro_instance_fqdn = "https://yourcompany.jamfcloud.com"
-jamfpro_client_id     = "your-client-id"
-jamfpro_client_secret = "your-client-secret"
+jamfplatform_base_url      = "https://us.apigw.jamf.com"
+jamfplatform_tenant_id     = "your-tenant-uuid"
+jamfplatform_client_id     = "your-client-id"
+jamfplatform_client_secret = "your-client-secret"
 ```
 
 `terraform.tfvars` is gitignored — it will never be committed.
@@ -188,9 +191,10 @@ jamfpro_client_secret = "your-client-secret"
 Alternatively, export credentials as environment variables:
 
 ```bash
-export TF_VAR_jamfpro_instance_fqdn="https://yourcompany.jamfcloud.com"
-export TF_VAR_jamfpro_client_id="..."
-export TF_VAR_jamfpro_client_secret="..."
+export TF_VAR_jamfplatform_base_url="https://us.apigw.jamf.com"
+export TF_VAR_jamfplatform_tenant_id="your-tenant-uuid"
+export TF_VAR_jamfplatform_client_id="..."
+export TF_VAR_jamfplatform_client_secret="..."
 ```
 
 ### Initialise Terraform
@@ -199,7 +203,7 @@ export TF_VAR_jamfpro_client_secret="..."
 terraform init
 ```
 
-Terraform downloads the `deploymenttheory/jamfpro` provider from the registry
+Terraform downloads the `Jamf-Concepts/jamfplatform` provider from the registry
 into a local `.terraform/` cache. Run this once after cloning.
 
 To update providers to newer versions within the declared constraints, run:
@@ -231,23 +235,27 @@ Jamf Pro resources, which makes them the right first thing to declare.
 Open `categories.tf` and replace its contents with:
 
 ```hcl
-resource "jamfpro_category" "engineering" {
-  name = "Engineering"
+resource "jamfplatform_pro_category" "engineering" {
+  name     = "Engineering"
+  priority = 9
 }
 
-resource "jamfpro_category" "operations" {
-  name = "Operations"
+resource "jamfplatform_pro_category" "operations" {
+  name     = "Operations"
+  priority = 9
 }
 ```
 
 **Key points:**
 
 - Each `resource` block declares one object Terraform will create. The block
-  address is `<type>.<name>` — `jamfpro_category.engineering` and
-  `jamfpro_category.operations`. Terraform tracks them independently in state.
+  address is `<type>.<name>` — `jamfplatform_pro_category.engineering` and
+  `jamfplatform_pro_category.operations`. Terraform tracks them independently in state.
 - To reference one of these categories from another resource, use
-  `jamfpro_category.engineering.id`. Terraform substitutes the API-assigned
+  `jamfplatform_pro_category.engineering.id`. Terraform substitutes the API-assigned
   ID at plan time — you never look up or hard-code IDs manually.
+- `priority` is required and must be between 1 and 20. Lower values sort first
+  in Jamf Pro.
 
 Run a plan:
 
@@ -281,10 +289,10 @@ The script file `support_files/scripts/hello_world.sh` is already in the repo.
 Open `scripts.tf` and replace its contents with:
 
 ```hcl
-resource "jamfpro_script" "hello_world" {
+resource "jamfplatform_pro_script" "hello_world" {
   name            = "Hello World"
   script_contents = file("${path.root}/support_files/scripts/hello_world.sh")
-  category_id     = jamfpro_category.engineering.id
+  category_id     = jamfplatform_pro_category.engineering.id
   priority        = "AFTER"
 }
 ```
@@ -295,7 +303,7 @@ resource "jamfpro_script" "hello_world" {
   script from disk at plan time and passes the contents as a string.
   `${path.root}` resolves to the directory Terraform was invoked from — in
   this project, the repo root.
-- `category_id = jamfpro_category.engineering.id` is a resource reference.
+- `category_id = jamfplatform_pro_category.engineering.id` is a resource reference.
   Terraform reads the `id` attribute of the category and substitutes it here.
   Because this is a reference, Terraform knows the category must exist before
   the script — you never specify ordering manually.
@@ -323,8 +331,10 @@ a policy.
 Open `static_computer_groups.tf` and replace its contents with:
 
 ```hcl
-resource "jamfpro_static_computer_group" "test_machines" {
-  name = "Test Machines"
+resource "jamfplatform_device_group" "test_machines" {
+  name        = "Test Machines"
+  group_type  = "static"
+  device_type = "computer"
 }
 ```
 
@@ -349,39 +359,49 @@ correct order automatically.
 Open `policies.tf` and replace its contents with:
 
 ```hcl
-resource "jamfpro_policy" "run_hello_world" {
-  name            = "Run Hello World"
-  enabled         = true
-  trigger_checkin = true
-  frequency       = "Ongoing"
-  category_id     = jamfpro_category.engineering.id
-
-  scope {
-    all_computers      = false
-    computer_group_ids = [jamfpro_static_computer_group.test_machines.id]
+resource "jamfplatform_pro_policy" "run_hello_world" {
+  general = {
+    name            = "Run Hello World"
+    enabled         = true
+    trigger_checkin = true
+    frequency       = "Ongoing"
+    category_id     = jamfplatform_pro_category.engineering.id
   }
 
-  payloads {
-    scripts {
-      id       = jamfpro_script.hello_world.id
-      priority = "After"
+  scope = {
+    targets = {
+      all_computers      = false
+      computer_group_ids = [jamfplatform_device_group.test_machines.jamf_pro_id]
     }
-    maintenance {
-      recon = true
-    }
+  }
+
+  scripts = {
+    scripts = [
+      {
+        id       = jamfplatform_pro_script.hello_world.id
+        priority = "After"
+      }
+    ]
+  }
+
+  maintenance = {
+    update_inventory = true
   }
 }
 ```
 
 **Key points:**
 
-- `category_id`, `computer_group_ids`, and `scripts.id` each reference a
+- `category_id`, `computer_group_ids`, and `scripts[*].id` each reference a
   resource defined in a different file. Terraform resolves these at plan time —
   no manual ordering required.
+- `computer_group_ids` uses `.jamf_pro_id` (the classic numeric Jamf Pro ID)
+  rather than `.id` (which is a Platform Services UUID). The policy API requires
+  the numeric ID.
 - `computer_group_ids = [...]` takes a list. Even when scoping to one group,
   wrap the reference in `[...]`.
-- `maintenance { recon = true }` runs an inventory update after the policy
-  completes.
+- `maintenance = { update_inventory = true }` runs an inventory update after
+  the policy completes.
 
 ```bash
 terraform plan
@@ -416,7 +436,7 @@ terraform plan
 Terraform shows a modification:
 
 ```text
-~ jamfpro_category.engineering
+~ jamfplatform_pro_category.engineering
     ~ name = "Engineering (Test)" -> "Engineering"
 ```
 
@@ -441,7 +461,7 @@ terraform plan
 Terraform shows:
 
 ```text
-+ jamfpro_category.engineering
++ jamfplatform_pro_category.engineering
 ```
 
 The `+` means Terraform intends to create the resource. What happened:
@@ -462,7 +482,7 @@ and neither can fully reconcile without manual intervention.
 resource at its current ID:
 
 ```bash
-terraform state rm jamfpro_category.engineering
+terraform state rm jamfplatform_pro_category.engineering
 ```
 
 Then add an import block in `imports.tf` pointing to the new ID (find it with
@@ -522,7 +542,7 @@ Open `imports.tf` and uncomment the category block, filling in the ID:
 
 ```hcl
 import {
-  to = jamfpro_category.finance
+  to = jamfplatform_pro_category.finance
   id = "42"  # replace with the actual numeric ID from Jamf Pro
 }
 ```
@@ -575,7 +595,7 @@ Uncomment the script block in `imports.tf`, filling in the ID:
 
 ```hcl
 import {
-  to = jamfpro_script.inventory_update
+  to = jamfplatform_pro_script.inventory_update
   id = "17"  # replace with the actual numeric ID from Jamf Pro
 }
 ```
@@ -668,17 +688,17 @@ terraform destroy -parallelism=1
 Terraform reads state and deletes each resource from Jamf Pro. Type `yes`
 when prompted. The state file will be empty when it finishes.
 
-Then delete the API client and role created during setup:
-
-```bash
-jamf-cli pro api-integrations delete --name "terraform-starter" --yes
-jamf-cli pro api-roles delete --name "terraform-starter" --yes
-```
+Then delete the integration in [account.jamf.com](https://account.jamf.com)
+under **Integrations** to clean up credentials.
 
 ---
 
 ## What's next
 
+- **`ref-jamfplatform-starter` branch** — the companion starter for native
+  Platform API resources (blueprints, compliance benchmarks, device groups).
+  Covers the same flat project layout as this branch but targets Platform
+  Services resources rather than Jamf Pro parity resources.
 - **`ref-jamfpro` branch** — the next step up. Uses `environments/` +
   `modules/` structure that scales to multiple Jamf Pro tenants from a single
   set of resource definitions. This is what a jamformer export refactors into.

@@ -1,14 +1,20 @@
-variable "jamfpro_instance_fqdn" {
+variable "jamfplatform_base_url" {
   type        = string
-  description = "Full URL of your Jamf Pro instance, e.g. https://yourcompany.jamfcloud.com"
+  description = "Jamf Platform API gateway URL, e.g. https://us.apigw.jamf.com"
 }
 
-variable "jamfpro_client_id" {
+variable "jamfplatform_client_id" {
   type      = string
   sensitive = true
 }
 
-variable "jamfpro_client_secret" {
+variable "jamfplatform_client_secret" {
   type      = string
   sensitive = true
+}
+
+variable "jamfplatform_tenant_id" {
+  type        = string
+  description = "Your Jamf tenant UUID"
+  sensitive   = true
 }
