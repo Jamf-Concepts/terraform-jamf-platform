@@ -146,8 +146,8 @@ jamf-cli platform setup
 ```
 
 Follow the prompts to enter your gateway URL, tenant ID, and OAuth2 credentials.
-When asked for a profile name, choose something memorable — you'll pass it to
-every jamf-cli command with `-p <profile>`.
+This profile becomes your default, so commands below don't need `-p`. If you
+later add a second profile, pass `-p <profile>` to pick between them.
 
 ### Install jamformer
 
@@ -682,7 +682,7 @@ export into a structured project is a copy, not a rewrite.
 To remove everything Terraform created in your sandbox:
 
 ```bash
-terraform destroy
+terraform destroy -parallelism=1
 ```
 
 Terraform reads state and deletes each resource from Jamf Pro. Type `yes`
@@ -695,6 +695,10 @@ under **Integrations** to clean up credentials.
 
 ## What's next
 
+- **`ref-jamfplatform-starter` branch** — the companion starter for native
+  Platform API resources (blueprints, compliance benchmarks, device groups).
+  Covers the same flat project layout as this branch but targets Platform
+  Services resources rather than Jamf Pro parity resources.
 - **`ref-jamfpro` branch** — the next step up. Uses `environments/` +
   `modules/` structure that scales to multiple Jamf Pro tenants from a single
   set of resource definitions. This is what a jamformer export refactors into.
