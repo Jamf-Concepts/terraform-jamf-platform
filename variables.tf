@@ -166,8 +166,20 @@ variable "include_mac_cis_lvl1_benchmark" {
   default = false
 }
 
-variable "include_mac_cis_lvl1_benchmark_cbengine" {
-  description = "Deploy the CIS Level 1 macOS benchmark via the Compliance Benchmarks Engine (jamfplatform_cbengine_benchmark) instead of the classic-API module. Used by the Jamf Foundations onboarder."
+variable "mac_cbengine_baseline_id" {
+  description = "Compliance Benchmarks Engine baseline_id to deploy via jamfplatform_cbengine_benchmark instead of the classic-API module (e.g. \"cis_lvl1\"). Empty string means none selected. Used by the Jamf Foundations onboarder, which discovers valid values live via the Jamf Platform API."
+  type        = string
+  default     = ""
+}
+
+variable "mac_cbengine_baseline_title" {
+  description = "Human-readable title for mac_cbengine_baseline_id's benchmark, supplied by the caller (e.g. from the live baseline list). Falls back to mac_cbengine_baseline_id itself if empty."
+  type        = string
+  default     = ""
+}
+
+variable "include_mac_software_update_blueprint" {
+  description = "Deploy macOS OS-patch enforcement via a Jamf Blueprint (jamfplatform_blueprints_blueprint, software_update_settings component). Used by the Jamf Foundations onboarder."
   type        = bool
   default     = false
 }

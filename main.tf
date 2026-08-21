@@ -65,9 +65,22 @@ module "compliance-macOS-cis-level-1" {
   }
 }
 
-module "compliance-macOS-cbengine-cis-level-1" {
-  count                      = var.include_mac_cis_lvl1_benchmark_cbengine == true ? 1 : 0
-  source                     = "./modules/compliance-macOS-cbengine-cis-level-1"
+module "compliance-macOS-cbengine-benchmark" {
+  count                      = var.mac_cbengine_baseline_id != "" ? 1 : 0
+  source                     = "./modules/compliance-macOS-cbengine-benchmark"
+  baseline_id                = var.mac_cbengine_baseline_id
+  benchmark_title            = var.mac_cbengine_baseline_title != "" ? var.mac_cbengine_baseline_title : var.mac_cbengine_baseline_id
+  jamfplatform_base_url      = var.jamfplatform_base_url
+  jamfplatform_client_id     = var.jamfplatform_client_id
+  jamfplatform_client_secret = var.jamfplatform_client_secret
+  providers = {
+    jamfplatform.jpro = jamfplatform.jpro
+  }
+}
+
+module "management-macOS-software-update-blueprint" {
+  count                      = var.include_mac_software_update_blueprint == true ? 1 : 0
+  source                     = "./modules/management-macOS-software-update-blueprint"
   jamfplatform_base_url      = var.jamfplatform_base_url
   jamfplatform_client_id     = var.jamfplatform_client_id
   jamfplatform_client_secret = var.jamfplatform_client_secret
