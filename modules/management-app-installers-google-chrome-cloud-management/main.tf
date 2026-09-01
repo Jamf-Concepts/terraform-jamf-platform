@@ -60,33 +60,9 @@ resource "jamfplatform_pro_macos_configuration_profile" "google_chrome_cloud_man
   }
 }
 
-## Create Google Chrome App Installer
-resource "jamfplatform_pro_app_installer" "google_chrome" {
-  count           = var.include_google_chrome == true || contains(var.app_installers, "Google Chrome") ? 0 : 1
-  name            = "Google Chrome"
-  app_title_name  = "Google Chrome"
-  deployment_type = "INSTALL_AUTOMATICALLY"
-  update_behavior = "AUTOMATIC"
-  category_id     = jamfplatform_pro_category.google_chrome_cloud_management.id
-  site_id         = "-1"
-  smart_group_id  = jamfplatform_device_group.google_chrome_cloud_management.jamf_pro_id
-
-
-
-  notification_settings = {
-    notification_message  = "A new update is available"
-    notification_interval = 1
-    deadline_message      = "Update deadline approaching"
-    deadline              = 1
-    quit_delay            = 1
-    complete_message      = "Update completed successfully"
-    relaunch              = true
-    suppress              = false
-  }
-  self_service_settings = {
-    include_in_featured_category   = true
-    include_in_compliance_category = false
-    force_view_description         = false
-    description                    = "This is an app provided from your Self Service Provider."
-  }
-}
+## jamfplatform_pro_app_installer was dropped from the provider in v0.29.0-rc.4
+## (PR #335 -- reverse-engineered surface with no published spec). This
+## resource used to create the Google Chrome App Installer deployment
+## conditionally on include_google_chrome/app_installers; that's now handled
+## directly against the Jamf Pro API by modular_onboarder's
+## utils/jamf_app_installers.py, outside Terraform.

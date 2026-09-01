@@ -99,32 +99,9 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
 }
 
 
-## Create Microsoft Defender Appinstaller
-resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_defender" {
-  name            = "Microsoft Defender"
-  app_title_name  = "Microsoft Defender"
-  deployment_type = "INSTALL_AUTOMATICALLY"
-  update_behavior = "MANUAL"
-  category_id     = jamfplatform_pro_category.category_defender.id
-  site_id         = "-1"
-  smart_group_id  = jamfplatform_device_group.microsoft_defender_target.jamf_pro_id
-
-
-
-  notification_settings = {
-    notification_message  = "An update is available"
-    notification_interval = 1
-    deadline_message      = "Update deadline approaching"
-    deadline              = 1
-    quit_delay            = 1
-    complete_message      = "Update completed successfully"
-    relaunch              = true
-    suppress              = false
-  }
-  self_service_settings = {
-    include_in_featured_category   = true
-    include_in_compliance_category = false
-    force_view_description         = false
-    description                    = ""
-  }
-}
+## jamfplatform_pro_app_installer was dropped from the provider in v0.29.0-rc.4
+## (PR #335 -- reverse-engineered surface with no published spec). The
+## Microsoft Defender App Installer resource that used to live here is now
+## provisioned directly against the Jamf Pro API by modular_onboarder's
+## utils/jamf_app_installers.py, outside Terraform. The category/device group
+## above are unaffected and stay as-is.

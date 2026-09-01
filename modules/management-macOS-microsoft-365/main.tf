@@ -105,35 +105,13 @@ resource "jamfplatform_device_group" "group_msft_teams" {
   ]
 }
 
-## Create Microsoft 365 App Installers
-resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_excel" {
-  app_title_name  = "Microsoft Excel 365"
-  name            = "Microsoft Excel 365"
-  deployment_type = "SELF_SERVICE"
-  update_behavior = "AUTOMATIC"
-  category_id     = jamfplatform_pro_category.category_microsoft_365.id
-  site_id         = "-1"
-  smart_group_id  = jamfplatform_device_group.group_msft_excel.jamf_pro_id
-
-
-
-  notification_settings = {
-    notification_message  = "A new update is available"
-    notification_interval = 1
-    deadline_message      = "Update deadline approaching"
-    deadline              = 1
-    quit_delay            = 1
-    complete_message      = "Update completed successfully"
-    relaunch              = true
-    suppress              = false
-  }
-  self_service_settings = {
-    include_in_featured_category   = true
-    include_in_compliance_category = true
-    force_view_description         = true
-    description                    = "This applicaton is managed by Jamf Pro"
-  }
-}
+## jamfplatform_pro_app_installer was dropped from the provider in v0.29.0-rc.4
+## (PR #335 -- reverse-engineered surface with no published spec). The five
+## Microsoft 365 App Installer resources that used to live here (Excel,
+## PowerPoint, Outlook, OneDrive, Word, Teams) are now provisioned directly
+## against the Jamf Pro API by modular_onboarder's utils/jamf_app_installers.py,
+## outside Terraform. The categories/device groups above are unaffected and
+## stay as-is.
 
 # resource "jamfpro_app_installer" "jamfpro_app_installer_microsoft_edge_365" {
 #   name            = "Microsoft Edge"
@@ -171,148 +149,6 @@ resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_excel
 #   }
 # }
 
-resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_powerpoint_365" {
-  app_title_name  = "Microsoft PowerPoint 365"
-  name            = "Microsoft PowerPoint 365"
-  deployment_type = "SELF_SERVICE"
-  update_behavior = "AUTOMATIC"
-  category_id     = jamfplatform_pro_category.category_microsoft_365.id
-  site_id         = "-1"
-  smart_group_id  = jamfplatform_device_group.group_msft_powerpoint.jamf_pro_id
-
-
-
-  notification_settings = {
-    notification_message  = "A new update is available"
-    notification_interval = 1
-    deadline_message      = "Update deadline approaching"
-    deadline              = 1
-    quit_delay            = 1
-    complete_message      = "Update completed successfully"
-    relaunch              = true
-    suppress              = false
-  }
-  self_service_settings = {
-    include_in_featured_category   = true
-    include_in_compliance_category = true
-    force_view_description         = true
-    description                    = "This applicaton is managed by Jamf Pro"
-  }
-}
-
-resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_outlook_365" {
-  app_title_name  = "Microsoft Outlook 365"
-  name            = "Microsoft Outlook 365"
-  deployment_type = "SELF_SERVICE"
-  update_behavior = "AUTOMATIC"
-  category_id     = jamfplatform_pro_category.category_microsoft_365.id
-  site_id         = "-1"
-  smart_group_id  = jamfplatform_device_group.group_msft_outlook.jamf_pro_id
-
-
-
-  notification_settings = {
-    notification_message  = "A new update is available"
-    notification_interval = 1
-    deadline_message      = "Update deadline approaching"
-    deadline              = 1
-    quit_delay            = 1
-    complete_message      = "Update completed successfully"
-    relaunch              = true
-    suppress              = false
-  }
-  self_service_settings = {
-    include_in_featured_category   = true
-    include_in_compliance_category = true
-    force_view_description         = true
-    description                    = "This applicaton is managed by Jamf Pro"
-  }
-}
-
-resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_onedrive_365" {
-  app_title_name  = "Microsoft OneDrive"
-  name            = "Microsoft OneDrive"
-  deployment_type = "SELF_SERVICE"
-  update_behavior = "AUTOMATIC"
-  category_id     = jamfplatform_pro_category.category_microsoft_365.id
-  site_id         = "-1"
-  smart_group_id  = jamfplatform_device_group.group_msft_onedrive.jamf_pro_id
-
-
-
-  notification_settings = {
-    notification_message  = "A new update is available"
-    notification_interval = 1
-    deadline_message      = "Update deadline approaching"
-    deadline              = 1
-    quit_delay            = 1
-    complete_message      = "Update completed successfully"
-    relaunch              = true
-    suppress              = false
-  }
-  self_service_settings = {
-    include_in_featured_category   = true
-    include_in_compliance_category = true
-    force_view_description         = true
-    description                    = "This applicaton is managed by Jamf Pro"
-  }
-}
-
-resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_word_365" {
-  app_title_name  = "Microsoft Word 365"
-  name            = "Microsoft Word 365"
-  deployment_type = "SELF_SERVICE"
-  update_behavior = "AUTOMATIC"
-  category_id     = jamfplatform_pro_category.category_microsoft_365.id
-  site_id         = "-1"
-  smart_group_id  = jamfplatform_device_group.group_msft_word.jamf_pro_id
-
-
-
-  notification_settings = {
-    notification_message  = "A new update is available"
-    notification_interval = 1
-    deadline_message      = "Update deadline approaching"
-    deadline              = 1
-    quit_delay            = 1
-    complete_message      = "Update completed successfully"
-    relaunch              = true
-    suppress              = false
-  }
-  self_service_settings = {
-    include_in_featured_category   = true
-    include_in_compliance_category = true
-    force_view_description         = true
-    description                    = "This applicaton is managed by Jamf Pro"
-  }
-}
-
-resource "jamfplatform_pro_app_installer" "jamfpro_app_installer_microsoft_teams_365" {
-  app_title_name  = "Microsoft Teams"
-  name            = "Microsoft Teams"
-  deployment_type = "SELF_SERVICE"
-  update_behavior = "AUTOMATIC"
-  category_id     = jamfplatform_pro_category.category_microsoft_365.id
-  site_id         = "-1"
-  smart_group_id  = jamfplatform_device_group.group_msft_teams.jamf_pro_id
-
-
-
-  notification_settings = {
-    notification_message  = "A new update is available"
-    notification_interval = 1
-    deadline_message      = "Update deadline approaching"
-    deadline              = 1
-    quit_delay            = 1
-    complete_message      = "Update completed successfully"
-    relaunch              = true
-    suppress              = false
-  }
-  self_service_settings = {
-    include_in_featured_category   = true
-    include_in_compliance_category = true
-    force_view_description         = true
-    description                    = "This applicaton is managed by Jamf Pro"
-  }
-}
+## PowerPoint, Outlook, OneDrive, Word, and Teams App Installer resources
+## removed for the same reason as Excel above.
 
