@@ -376,7 +376,6 @@ module "configuration-jamf-security-cloud-jamf-pro" {
   jsc_password               = var.jsc_password
   providers = {
     jamfplatform.jpro = jamfplatform.jpro
-    jsc.jsc           = jsc.jsc
   }
 }
 

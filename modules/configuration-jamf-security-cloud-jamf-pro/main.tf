@@ -3,83 +3,31 @@ terraform {
   required_providers {
     jamfplatform = {
       source                = "Jamf-Concepts/jamfplatform"
-      version               = ">= 0.26.0"
+      version               = "0.29.0-rc.5"
       configuration_aliases = [jamfplatform.jpro]
-    }
-    jsc = {
-      source                = "Jamf-Concepts/jsctfprovider"
-      configuration_aliases = [jsc.jsc]
     }
   }
 }
 
-resource "jamfplatform_pro_api_role" "jamfpro_api_role_sync" {
-  display_name = "JSC API Role Device Sync"
-  privileges = [
-    "Read Mac Applications",
-    "Read Mobile Devices",
-    "Read Mobile Device Applications",
-    "Read Smart Mobile Device Groups",
-    "Read Static Mobile Device Groups",
-    "Read Computers",
-    "Read Smart Computer Groups",
-    "Create Static Computer Groups",
-    "Read Static Computer Groups"
-  ]
-}
+## jamfplatform_pro_api_role and jamfplatform_pro_api_client were withdrawn from
+## the provider at Platform API GA (credential management for Jamf Pro API
+## integrations moved to Jamf Account, human-only, no API path) -- the three
+## roles and one client that used to live here, feeding jsc_uemc below, can no
+## longer be created by any credential. jsc_uemc itself (Jamf-Concepts/jsctfprovider)
+## is also gone from this module now, replaced by jamfplatform_security_cloud_uem_connect
+## below, which sidesteps the whole problem: with platform_tenant auth, Jamf
+## Security Cloud provisions and manages its own Jamf Pro credentials directly,
+## so nothing here ever needs to mint one.
 
-resource "jamfplatform_pro_api_role" "jamfpro_api_role_signalling" {
-  display_name = "JSC API Role Signalling"
-  privileges = [
-    "Create Computer Extension Attributes",
-    "Read Computer Extension Attributes",
-    "Update Computer Extension Attributes",
-    "Delete Computer Extension Attributes",
-    "Create Mobile Device Extension Attributes",
-    "Read Mobile Device Extension Attributes",
-    "Update Mobile Device Extension Attributes",
-    "Delete Mobile Device Extension Attributes",
-    "Update Mobile Devices",
-    "Update Computers",
-    "Update User"
-  ]
-}
+## The Jamf Pro tenant identifier for the scope this provider is configured
+## with -- naming the tenant to Jamf Security Cloud so it can provision its own
+## credentials there, instead of us supplying an API integration's client_id/secret.
+data "jamfplatform_pro_tenant_id" "jamf_pro" {}
 
-resource "jamfplatform_pro_api_role" "jamfpro_api_role_deploy" {
-  display_name = "JSC API Role Deploy"
-  privileges = [
-    "Create iOS Configuration Profiles",
-    "Read iOS Configuration Profiles",
-    "Update iOS Configuration Profiles",
-    "Create macOS Configuration Profiles",
-    "Read macOS Configuration Profiles",
-    "Update macOS Configuration Profiles",
-    "Update Smart Mobile Device Groups",
-    "Update Static Mobile Device Groups",
-    "Update Smart Computer Groups",
-    "Update Static Computer Groups"
-  ]
-}
+resource "jamfplatform_security_cloud_uem_connect" "jamf_pro" {
+  uem_vendor = "JAMF_PRO"
 
-resource "jamfplatform_pro_api_client" "jamfpro_api_integration_jsc" {
-  display_name                  = "JSC API Client"
-  enabled                       = true
-  access_token_lifetime_seconds = 6000
-  api_roles                     = [jamfplatform_pro_api_role.jamfpro_api_role_sync.display_name, jamfplatform_pro_api_role.jamfpro_api_role_signalling.display_name, jamfplatform_pro_api_role.jamfpro_api_role_deploy.display_name]
-  credential_rotation           = "1"
-}
-
-output "jp_client_id" {
-  value = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_id
-}
-
-output "jp_client_secret" {
-  value     = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_secret
-  sensitive = true
-}
-
-resource "jsc_uemc" "initial_uemc" {
-  domain       = var.jamfpro_instance_url
-  clientid     = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_id
-  clientsecret = jamfplatform_pro_api_client.jamfpro_api_integration_jsc.client_secret
+  platform_tenant = {
+    tenant_id = data.jamfplatform_pro_tenant_id.jamf_pro.tenant_id
+  }
 }
