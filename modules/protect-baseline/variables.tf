@@ -31,28 +31,28 @@ variable "protect_client_password" {
 
 # --- Jamf Platform Credentials ----------------------------------------------
 # Used to reach the customer's Jamf Pro instance through the Platform API
-# gateway. Note this is a regional endpoint plus a tenant UUID, not a per-
-# instance hostname. See the provider block in main.tf.
+# gateway. This is a regional endpoint plus a platform environment UUID, not a
+# per-instance hostname. See the provider block in main.tf.
 
 variable "platform_base_url" {
-  description = "Jamf Platform API gateway base URL for this customer's region (e.g. https://eu.apigw.jamf.com)"
+  description = "Jamf Platform API gateway base URL for this customer's region (e.g. https://eu.api.jamfcloud.com)"
   type        = string
 
   validation {
     # A tenant URL here is the most likely mistake, and it produces a confusing
     # auth failure rather than an obvious one.
-    condition     = can(regex("^https://[a-z]+\\.(stage\\.)?apigw\\.jamf(nebula)?\\.com/?$", var.platform_base_url))
-    error_message = "platform_base_url must be a Jamf Platform API gateway URL, e.g. https://us.apigw.jamf.com, https://eu.apigw.jamf.com or https://apac.apigw.jamf.com — not a Jamf Pro tenant URL."
+    condition     = can(regex("^https://[a-z]+\\.api\\.jamfcloud\\.com/?$", var.platform_base_url))
+    error_message = "platform_base_url must be a Jamf Platform API gateway URL, e.g. https://us.api.jamfcloud.com, https://eu.api.jamfcloud.com or https://apac.api.jamfcloud.com. Not a Jamf Pro tenant URL."
   }
 }
 
-variable "platform_tenant_id" {
-  description = "Jamf Platform tenant UUID. Scopes every API request to this customer."
+variable "platform_environment_id" {
+  description = "Jamf Platform environment UUID. Scopes every API request to this customer."
   type        = string
 
   validation {
-    condition     = can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", var.platform_tenant_id))
-    error_message = "platform_tenant_id must be a UUID."
+    condition     = can(regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", var.platform_environment_id))
+    error_message = "platform_environment_id must be a UUID."
   }
 }
 

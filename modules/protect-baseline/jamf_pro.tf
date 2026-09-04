@@ -14,12 +14,13 @@
 # nothing to push and the configuration profiles land empty.
 # -----------------------------------------------------------------------------
 
-# A customer's Jamf Pro identity here is a tenant UUID, which no human
-# recognises. This resolves the hostname so run summaries and outputs say which
-# instance a run touched. Derived, so it cannot drift.
+# A customer's Jamf Pro identity here is a UUID, which no human recognises.
+# This resolves the hostname so run summaries and outputs say which instance a
+# run touched. Derived, so it cannot drift.
 #
-# Costs one privilege on the Platform API client, read:pro:jss-url. Delete this
-# and the matching output if you would rather not grant it.
+# Costs one permission on the Platform API integration, Infrastructure > Jamf
+# Pro server URL > Read. Delete this and the matching output if you would
+# rather not grant it.
 data "jamfplatform_pro_jamf_pro_server_url" "current" {}
 
 resource "jamfplatform_pro_jamf_protect" "registration" {

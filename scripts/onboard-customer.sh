@@ -38,14 +38,13 @@
 #   - An API client created BY HAND in the customer's Jamf Protect console.
 #     Terraform cannot create the credential it needs to authenticate with in
 #     the first place — see modules/protect-baseline/api_client.tf.
-#   - A Jamf Platform API client for the customer's tenant, granted these
-#     privileges (see the jamfplatform_pro_jamf_protect resource docs):
-#         read:pro:jamf-protect-deployments
-#         read:pro:jamf-protect-settings
-#         update:pro:jamf-protect-settings
-#         read:pro:jss-url
-#     NOT created by this script: Platform API clients are created in the Jamf
-#     Account portal (account.jamf.com), so bring one with you.
+#   - A Jamf Platform API integration for the customer, scoped to a platform
+#     environment and granted these permissions (see the
+#     jamfplatform_pro_jamf_protect resource docs):
+#         Deployment > Jamf Protect deployment > Read, Update
+#         Infrastructure > Jamf Pro server URL > Read
+#     NOT created by this script: Platform API integrations are created in the
+#     Jamf Account portal (account.jamf.com), so bring one with you.
 #     `jamf-cli platform setup` turns one into a local CLI profile if you also
 #     want to drive the CLI interactively.
 #
@@ -137,19 +136,17 @@ unset JAMFPROTECT_URL JAMFPROTECT_CLIENT_ID JAMFPROTECT_CLIENT_SECRET
 
 # --- 4. Collect Jamf Platform API credentials -------------------------------
 # These reach the customer's Jamf Pro instance through the Platform API gateway.
-# Note what identifies the customer here: a REGIONAL base URL plus a tenant
-# UUID, not a Jamf Pro hostname.
+# Note what identifies the customer here: a REGIONAL base URL plus a platform
+# environment UUID, not a Jamf Pro hostname.
 echo
 echo "==> Collecting Jamf Platform API credentials..."
-echo "    The API client must already exist, with these privileges:"
-echo "      read:pro:jamf-protect-deployments"
-echo "      read:pro:jamf-protect-settings"
-echo "      update:pro:jamf-protect-settings"
-echo "      read:pro:jss-url"
+echo "    The API integration must already exist, with these permissions:"
+echo "      Deployment > Jamf Protect deployment > Read, Update"
+echo "      Infrastructure > Jamf Pro server URL > Read"
 echo
-read -r -p "  → Platform base URL (https://us.apigw.jamf.com | eu | apac): " PLATFORM_BASE_URL_VAL
+read -r -p "  → Platform base URL (https://us.api.jamfcloud.com | eu | apac): " PLATFORM_BASE_URL_VAL
 PLATFORM_BASE_URL_VAL="${PLATFORM_BASE_URL_VAL%/}"
-read -r -p "  → Platform tenant UUID: " PLATFORM_TENANT_ID_VAL
+read -r -p "  → Platform environment UUID: " PLATFORM_ENVIRONMENT_ID_VAL
 read -r -p "  → Platform API client ID: " PLATFORM_CLIENT_ID_VAL
 read -r -s -p "  → Platform API client secret: " PLATFORM_CLIENT_SECRET_VAL
 echo
@@ -157,14 +154,14 @@ echo
 # Validate locally, before anything is stored. The same checks exist as
 # variable validation in the module, but failing here is much cheaper than
 # failing in CI after the secrets are already written and a PR is open.
-if [[ ! "$PLATFORM_BASE_URL_VAL" =~ ^https://[a-z]+\.(stage\.)?apigw\.jamf(nebula)?\.com$ ]]; then
+if [[ ! "$PLATFORM_BASE_URL_VAL" =~ ^https://[a-z]+\.api\.jamfcloud\.com$ ]]; then
   echo "Error: '${PLATFORM_BASE_URL_VAL}' is not a Jamf Platform API gateway URL."
-  echo "       Expected something like https://eu.apigw.jamf.com — not a Jamf Pro tenant URL."
+  echo "       Expected something like https://eu.api.jamfcloud.com, not a Jamf Pro tenant URL."
   exit 1
 fi
 
-if [[ ! "$PLATFORM_TENANT_ID_VAL" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then
-  echo "Error: '${PLATFORM_TENANT_ID_VAL}' is not a UUID."
+if [[ ! "$PLATFORM_ENVIRONMENT_ID_VAL" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then
+  echo "Error: '${PLATFORM_ENVIRONMENT_ID_VAL}' is not a UUID."
   exit 1
 fi
 
@@ -183,18 +180,18 @@ done
 # jamf-cli reaches the Jamf Pro API through the Platform gateway when given
 # platform credentials. Its variable names differ from the Terraform provider's:
 # JAMF_URL (set to the gateway base URL), JAMF_CLIENT_ID, JAMF_CLIENT_SECRET,
-# JAMF_TENANT_ID.
+# JAMF_ENVIRONMENT_ID.
 #
-# This doubles as a live credential check — the validation above only checked the
+# This doubles as a live credential check. The validation above only checked the
 # shape of what was typed, whereas this proves the credentials authenticate and
-# carry the required privileges, before any secret is written to GitHub.
+# carry the required permissions, before any secret is written to GitHub.
 #
 # --no-version-check: whether a registration exists does not depend on the
 # tenant's Jamf Pro version, so skip it and avoid failing on an older tenant.
 echo "==> Checking for an existing Jamf Protect registration..."
 rc=0
 JAMF_URL="${PLATFORM_BASE_URL_VAL}" \
-JAMF_TENANT_ID="${PLATFORM_TENANT_ID_VAL}" \
+JAMF_ENVIRONMENT_ID="${PLATFORM_ENVIRONMENT_ID_VAL}" \
 JAMF_CLIENT_ID="${PLATFORM_CLIENT_ID_VAL}" \
 JAMF_CLIENT_SECRET="${PLATFORM_CLIENT_SECRET_VAL}" \
   jamf-cli pro jamf-protect get --no-input --no-version-check -o json >/dev/null 2>&1 || rc=$?
@@ -212,16 +209,14 @@ case "${rc}" in
     ;;
   3)
     echo "Error: the Platform API credentials failed to authenticate (exit 3)."
-    echo "       Check the client ID, secret, tenant UUID and region base URL."
+    echo "       Check the client ID, secret, environment UUID and region base URL."
     exit 1
     ;;
   5)
-    echo "Error: the Platform API client authenticated but lacks the required privileges (exit 5)."
+    echo "Error: the Platform API integration authenticated but lacks the required permissions (exit 5)."
     echo "       It needs:"
-    echo "         read:pro:jamf-protect-deployments"
-    echo "         read:pro:jamf-protect-settings"
-    echo "         update:pro:jamf-protect-settings"
-    echo "         read:pro:jss-url"
+    echo "         Deployment > Jamf Protect deployment > Read, Update"
+    echo "         Infrastructure > Jamf Pro server URL > Read"
     exit 1
     ;;
   *)
@@ -230,11 +225,11 @@ case "${rc}" in
     ;;
 esac
 
-# Resolve the Jamf Pro hostname behind the tenant UUID and show it. A UUID typo
-# that still authenticates would otherwise point this customer at the wrong
+# Resolve the Jamf Pro hostname behind the environment UUID and show it. A UUID
+# typo that still authenticates would otherwise point this customer at the wrong
 # instance, and nothing later would reveal it.
 JAMF_PRO_URL=$(JAMF_URL="${PLATFORM_BASE_URL_VAL}" \
-  JAMF_TENANT_ID="${PLATFORM_TENANT_ID_VAL}" \
+  JAMF_ENVIRONMENT_ID="${PLATFORM_ENVIRONMENT_ID_VAL}" \
   JAMF_CLIENT_ID="${PLATFORM_CLIENT_ID_VAL}" \
   JAMF_CLIENT_SECRET="${PLATFORM_CLIENT_SECRET_VAL}" \
   jamf-cli pro jamf-pro-server-url get --no-input --no-version-check --field url 2>/dev/null || true)
@@ -248,17 +243,17 @@ if [ -n "${JAMF_PRO_URL}" ]; then
   fi
 else
   JAMF_PRO_URL="unresolved"
-  echo "  ! Could not resolve the Jamf Pro URL (needs read:pro:jss-url). Continuing."
+  echo "  ! Could not resolve the Jamf Pro URL (needs Infrastructure > Jamf Pro server URL > Read). Continuing."
 fi
 
 # --- 5. Store secrets in the GitHub Environment -----------------------------
-# Only now, with everything validated. URLs and the tenant UUID are variables
-# rather than secrets: they are identifiers, not credentials, and having them
-# readable makes run logs and summaries useful.
+# Only now, with everything validated. URLs and the environment UUID are
+# variables rather than secrets: they are identifiers, not credentials, and
+# having them readable makes run logs and summaries useful.
 echo "==> Storing environment variables and secrets..."
 gh variable set PROTECT_URL       --env "${CUSTOMER}" --repo "${REPO}" --body "${PROTECT_URL_VAL}"
 gh variable set PLATFORM_BASE_URL --env "${CUSTOMER}" --repo "${REPO}" --body "${PLATFORM_BASE_URL_VAL}"
-gh variable set PLATFORM_TENANT_ID --env "${CUSTOMER}" --repo "${REPO}" --body "${PLATFORM_TENANT_ID_VAL}"
+gh variable set PLATFORM_ENVIRONMENT_ID --env "${CUSTOMER}" --repo "${REPO}" --body "${PLATFORM_ENVIRONMENT_ID_VAL}"
 echo "${PROTECT_CLIENT_ID_VAL}"       | gh secret set PROTECT_CLIENT_ID       --env "${CUSTOMER}" --repo "${REPO}"
 echo "${PROTECT_CLIENT_PASSWORD_VAL}" | gh secret set PROTECT_CLIENT_PASSWORD --env "${CUSTOMER}" --repo "${REPO}"
 echo "${PLATFORM_CLIENT_ID_VAL}"      | gh secret set PLATFORM_CLIENT_ID      --env "${CUSTOMER}" --repo "${REPO}"
@@ -304,7 +299,7 @@ PR_ARGS=(
 |--------|-------|
 | **Protect URL** | \`${PROTECT_URL_VAL}\` |
 | **Platform base URL** | \`${PLATFORM_BASE_URL_VAL}\` |
-| **Platform tenant ID** | \`${PLATFORM_TENANT_ID_VAL}\` |
+| **Platform environment ID** | \`${PLATFORM_ENVIRONMENT_ID_VAL}\` |
 | **Jamf Pro** | \`${JAMF_PRO_URL}\` |
 | **Product tier** | \`${TIER}\` |
 

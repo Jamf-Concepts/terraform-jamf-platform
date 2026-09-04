@@ -47,8 +47,8 @@ variable "platform_base_url" {
   type        = string
 }
 
-variable "platform_tenant_id" {
-  description = "Jamf Platform tenant UUID"
+variable "platform_environment_id" {
+  description = "Jamf Platform environment UUID"
   type        = string
 }
 
@@ -179,10 +179,10 @@ module "protect" {
   protect_client_id       = var.protect_client_id
   protect_client_password = var.protect_client_password
 
-  platform_base_url      = var.platform_base_url
-  platform_tenant_id     = var.platform_tenant_id
-  platform_client_id     = var.platform_client_id
-  platform_client_secret = var.platform_client_secret
+  platform_base_url       = var.platform_base_url
+  platform_environment_id = var.platform_environment_id
+  platform_client_id      = var.platform_client_id
+  platform_client_secret  = var.platform_client_secret
 
   product_tier = var.product_tier
 

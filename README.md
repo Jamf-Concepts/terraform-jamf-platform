@@ -22,7 +22,8 @@ Built on the
 and
 [Jamf-Concepts/jamfplatform](https://registry.terraform.io/providers/Jamf-Concepts/jamfplatform/latest)
 providers. Jamf Pro is reached through the Platform API gateway, which means a
-regional endpoint and a tenant UUID instead of a per-instance hostname.
+regional endpoint and a platform environment UUID instead of a per-instance
+hostname.
 
 ---
 
@@ -106,7 +107,7 @@ graph TB
     end
 
     subgraph "Platform API Gateway"
-        G[regional gateway<br/>routes by tenant UUID]
+        G[regional gateway<br/>routes by environment UUID]
     end
 
     subgraph "Jamf Pro Instances"
@@ -265,13 +266,14 @@ You also need:
   their first apply. Terraform cannot create the credential it needs to
   authenticate with in the first place. Once onboarded, the module manages its
   own clients from there.
-- **A Jamf Platform API client per customer tenant**, granted
-  `read:pro:jamf-protect-deployments`, `read:pro:jamf-protect-settings` and
-  `update:pro:jamf-protect-settings` and `read:pro:jss-url`. Created in the Jamf
-  Account portal (account.jamf.com), not by the onboarding script, so bring one
-  with you. `read:pro:jss-url` only resolves which Jamf Pro a tenant UUID refers
-  to; drop the `jamfplatform_pro_jamf_pro_server_url` data source and its output
-  if you would rather not grant it.
+- **A Jamf Platform API integration per customer**, scoped to a platform
+  environment and granted **Deployment → Jamf Protect deployment → Read,
+  Update** and **Infrastructure → Jamf Pro server URL → Read**. Created in the
+  Jamf Account portal (account.jamf.com), not by the onboarding script, so
+  bring one with you. The Jamf Pro server URL permission only resolves which
+  Jamf Pro an environment UUID refers to; drop the
+  `jamfplatform_pro_jamf_pro_server_url` data source and its output if you
+  would rather not grant it.
 
 ---
 
@@ -326,7 +328,7 @@ onboarding script (or by hand for `staging`, see step 5):
 | `PROTECT_CLIENT_ID` | Secret | Protect API client ID |
 | `PROTECT_CLIENT_PASSWORD` | Secret | Protect API client password |
 | `PLATFORM_BASE_URL` | Variable | Platform API gateway for this customer's region |
-| `PLATFORM_TENANT_ID` | Variable | Platform tenant UUID. An identifier, not a credential. |
+| `PLATFORM_ENVIRONMENT_ID` | Variable | Platform environment UUID. An identifier, not a credential. |
 | `PLATFORM_CLIENT_ID` | Secret | Platform API OAuth client ID |
 | `PLATFORM_CLIENT_SECRET` | Secret | Platform API OAuth client secret |
 | `SENTINEL_APP_SECRET` | Secret | Only for customers with SIEM forwarding |
@@ -360,8 +362,8 @@ gh api repos/OWNER/REPO/environments/staging -X PUT --input - <<< '{}'
 gh variable set PROTECT_URL --env staging --body "https://your-tenant.protect.jamfcloud.com"
 gh secret   set PROTECT_CLIENT_ID       --env staging
 gh secret   set PROTECT_CLIENT_PASSWORD --env staging
-gh variable set PLATFORM_BASE_URL  --env staging --body "https://eu.apigw.jamf.com"
-gh variable set PLATFORM_TENANT_ID --env staging --body "00000000-0000-0000-0000-000000000000"
+gh variable set PLATFORM_BASE_URL       --env staging --body "https://eu.api.jamfcloud.com"
+gh variable set PLATFORM_ENVIRONMENT_ID --env staging --body "00000000-0000-0000-0000-000000000000"
 gh secret   set PLATFORM_CLIENT_ID     --env staging
 gh secret   set PLATFORM_CLIENT_SECRET --env staging
 ```
@@ -683,7 +685,7 @@ versions is the more conservative position and is entirely reasonable.
 | Provider | Source | Minimum |
 |---|---|---|
 | jamfprotect | `Jamf-Concepts/jamfprotect` | 0.10.0 |
-| jamfplatform | `Jamf-Concepts/jamfplatform` | 0.25.1 |
+| jamfplatform | `Jamf-Concepts/jamfplatform` | 0.29.0 |
 
 **Providers are configured inside the module, not in each root.** This keeps
 customer workspaces thin, at the cost of a module that cannot be called with

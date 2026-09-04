@@ -30,7 +30,7 @@ output "insights_api_client_secret" {
 # --- Jamf Pro ---------------------------------------------------------------
 
 output "jamf_pro_server_url" {
-  description = "Jamf Pro server URL for this tenant, resolved from the tenant UUID"
+  description = "Jamf Pro server URL for this tenant, resolved through the platform environment"
   value       = data.jamfplatform_pro_jamf_pro_server_url.current.url
 }
 

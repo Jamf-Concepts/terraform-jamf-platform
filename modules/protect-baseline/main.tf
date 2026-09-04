@@ -25,7 +25,7 @@ terraform {
     }
     jamfplatform = {
       source  = "Jamf-Concepts/jamfplatform"
-      version = ">= 0.25.1"
+      version = ">= 0.29.0"
     }
   }
 }
@@ -58,12 +58,17 @@ provider "jamfprotect" {
 
 # Reaches Jamf Pro through the Platform API gateway, so a customer is identified
 # by a regional base_url (us / eu / apac, shared between customers in the same
-# region) plus a tenant UUID, not by a Jamf Pro hostname.
+# region) plus a platform environment UUID, not by a Jamf Pro hostname.
+#
+# environment_id, not tenant_id: the Platform API reached GA on 3 September 2026
+# and a GA integration is registered against a platform environment, a group of
+# tenants across product types. tenant_id remains for single-product legacy
+# integrations, and the two are mutually exclusive.
 provider "jamfplatform" {
-  base_url      = var.platform_base_url
-  client_id     = var.platform_client_id
-  client_secret = var.platform_client_secret
-  tenant_id     = var.platform_tenant_id
+  base_url       = var.platform_base_url
+  client_id      = var.platform_client_id
+  client_secret  = var.platform_client_secret
+  environment_id = var.platform_environment_id
 }
 
 # --- Feature flags ----------------------------------------------------------
