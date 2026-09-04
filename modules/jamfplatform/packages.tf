@@ -1,14 +1,14 @@
 # https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-current/page/Packages.html
 #
 # Packages are downloaded from the URLs in the map and uploaded to the Jamf Pro
-# distribution point on the first apply. To upgrade a package, update the URL —
+# distribution point on the first apply. To upgrade a package, update the URL.
 # Terraform will re-download and re-upload on the next apply. Package names
 # are derived from the filename in the URL via basename(). Set filename when
 # the URL is a redirect and basename() would produce a garbage name.
 
 locals {
   packages = {
-    # Microsoft's fwlink URL is a redirect — basename() gives a garbage query string,
+    # Microsoft's fwlink URL is a redirect, so basename() gives a garbage query string,
     # so filename is set explicitly.
     microsoft_company_portal = {
       url      = "https://go.microsoft.com/fwlink/?linkid=862280"

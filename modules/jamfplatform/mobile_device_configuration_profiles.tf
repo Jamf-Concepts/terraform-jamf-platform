@@ -4,7 +4,7 @@
 # the SSID and password injected at plan time via templatefile(). This keeps
 # the profile structure in version control while allowing values to vary.
 # Move ios_wifi_ssid and ios_wifi_password to sensitive variables in
-# variables.tf if deploying to a real environment — locals are stored in
+# variables.tf if deploying to a real environment, because locals are stored in
 # Terraform state in plaintext.
 #
 # payload_validate is false for the Wi-Fi profile because the provider's

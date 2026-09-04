@@ -2,7 +2,7 @@
 #
 # Smart groups used for scoping profiles, policies, and app installers
 # throughout this module. Jamf Pro populates membership dynamically
-# as devices check in and match criteria — Terraform only manages the group
+# as devices check in and match criteria. Terraform manages the group
 # definition, not membership.
 #
 # nudge_is_installed pins a specific Nudge version in both criteria values.

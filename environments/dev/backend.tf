@@ -47,7 +47,7 @@ terraform {
 #
 # AWS S3
 # The bucket should have versioning enabled. Terraform 1.10+ supports
-# native S3 locking via use_lockfile = true — no DynamoDB table needed.
+# native S3 locking via use_lockfile = true, so no DynamoDB table is needed.
 #
 # terraform {
 #   backend "s3" {

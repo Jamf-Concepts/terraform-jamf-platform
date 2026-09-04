@@ -2,7 +2,7 @@
 #
 # Profile payloads are read from .mobileconfig files under
 # support_files/macos_configuration_profiles/ at plan time via file().
-# Edit those files to change payload content — Terraform detects the change
+# Edit those files to change payload content. Terraform detects the change
 # and pushes an updated profile on the next apply.
 
 resource "jamfplatform_pro_macos_configuration_profile" "microsoft_autoupdate" {

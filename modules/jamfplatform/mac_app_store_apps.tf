@@ -1,11 +1,11 @@
 # https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-current/page/Apps_Purchased_in_Volume.html
 #
 # App metadata (name, version, bundle ID, icon URL) is fetched live from the
-# iTunes Search API using the itunessearchapi provider — no manual version
+# iTunes Search API using the itunessearchapi provider, so there is no version
 # pinning needed.
 #
 # VPP licence check: vpp_adam_ids reads the content list from the VPP location
-# (populated after the async sync in volume_purchasing_locations.tf — see that
+# (populated after the async sync in volume_purchasing_locations.tf. See that
 # file for the time_sleep pattern). For each app, if its Adam ID is in the list
 # the resource assigns a device-based VPP licence; otherwise it falls back to
 # a free install. Apps without licences still appear in Self Service.

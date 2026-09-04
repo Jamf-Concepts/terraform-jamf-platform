@@ -1,6 +1,6 @@
 # https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-current/page/App_Installers.html
 #
-# Microsoft Office apps share configuration via for_each — one App Installer
+# Microsoft Office apps share configuration via for_each, one App Installer
 # record per map entry. Company Portal is defined separately because it uses
 # INSTALL_AUTOMATICALLY (silent push to all managed computers) rather than
 # SELF_SERVICE, which makes it available but does not force install.

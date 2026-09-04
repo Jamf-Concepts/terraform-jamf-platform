@@ -11,7 +11,8 @@ terraform {
 
   required_providers {
     jamfplatform = {
-      source = "Jamf-Concepts/jamfplatform"
+      source  = "Jamf-Concepts/jamfplatform"
+      version = ">= 0.29.0"
     }
     time = {
       source  = "hashicorp/time"

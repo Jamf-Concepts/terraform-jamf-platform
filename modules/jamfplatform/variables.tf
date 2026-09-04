@@ -1,5 +1,5 @@
 # Module input variables. The root module (environments/dev/main.tf) reads
-# token files from disk and passes the encoded content here. Both are required —
+# token files from disk and passes the encoded content here. Both are required.
 # environments without ADE or VPP should omit the call to this module or
 # set up separate module instances per token type.
 
@@ -22,7 +22,7 @@ variable "wifi_ssid" {
 }
 
 variable "wifi_password" {
-  description = "Password for the Wi-Fi network deployed to mobile devices. Stored in Terraform state — supply via terraform.tfvars or TF_VAR_wifi_password and rotate as you would any other credential."
+  description = "Password for the Wi-Fi network deployed to mobile devices. Stored in Terraform state, so supply it via terraform.tfvars or TF_VAR_wifi_password and rotate it as you would any other credential."
   type        = string
   sensitive   = true
 }

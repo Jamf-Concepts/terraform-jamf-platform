@@ -7,14 +7,15 @@
 
 # ----- Jamf Platform API integration -----
 # Create an API integration at account.jamf.com (Integrations) to obtain the
-# client ID, client secret, and tenant ID. Pick the base_url for your region:
-#   US:   https://us.apigw.jamf.com
-#   EU:   https://eu.apigw.jamf.com
-#   APAC: https://apac.apigw.jamf.com
-jamfplatform_base_url      = "https://us.apigw.jamf.com"
-jamfplatform_client_id     = "00000000-0000-0000-0000-000000000000"
-jamfplatform_client_secret = "replace-with-your-client-secret"
-jamfplatform_tenant_id     = "00000000-0000-0000-0000-000000000000"
+# client ID, client secret, and environment ID. Scope it to a platform
+# environment. Pick the base_url for your region:
+#   US:   https://us.api.jamfcloud.com
+#   EU:   https://eu.api.jamfcloud.com
+#   APAC: https://apac.api.jamfcloud.com
+jamfplatform_base_url       = "https://us.api.jamfcloud.com"
+jamfplatform_client_id      = "00000000-0000-0000-0000-000000000000"
+jamfplatform_client_secret  = "replace-with-your-client-secret"
+jamfplatform_environment_id = "00000000-0000-0000-0000-000000000000"
 
 # ----- Apple-issued tokens -----
 # Place token files in:

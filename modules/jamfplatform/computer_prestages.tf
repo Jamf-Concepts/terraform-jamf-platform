@@ -6,7 +6,16 @@
 #                   Company Portal during Setup Assistant, enabling Platform SSO
 #
 # Both reference jamfplatform_pro_automated_device_enrollment.default, so an ADE token is
-# required — see device_enrollments.tf and variables.tf.
+# required. See device_enrollments.tf and variables.tf.
+#
+# entra_id_psso sets psso_enabled = true, which Jamf Pro refuses unless the
+# tenant already has SAML single sign-on configured:
+#
+#   [INVALID_CONTENT] pssoEnabled: Cannot enable Platform Single Sign-On
+#   (PSSO) 403 workflow when SAML is not configured
+#
+# Configure SSO in Jamf Pro under Settings > System > Single sign-on before
+# applying, or comment this resource out.
 #
 # Only non-default values are set. Optional fields left unset (support
 # contact details, location/purchasing/account info, recovery lock, etc.)

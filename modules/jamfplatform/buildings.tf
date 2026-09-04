@@ -1,7 +1,7 @@
 # https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-current/page/Buildings_and_Departments.html
 #
 # The locals map drives a single resource block via for_each, creating one
-# building per entry. Add or remove map entries to add or remove buildings —
+# building per entry. Add or remove map entries to add or remove buildings.
 # Terraform handles the creates and deletes on the next apply. The map key
 # (e.g. "north") becomes the resource address in state and can be referenced
 # elsewhere as jamfplatform_pro_building.common["north"].id.

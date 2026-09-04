@@ -1,7 +1,7 @@
 # https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-current/page/Automated_Device_Enrollment_for_Mobile_Devices.html
 #
 # Default mobile device ADE prestage. References jamfpro_device_enrollments.default,
-# so an ADE token is required — see device_enrollments.tf and variables.tf.
+# so an ADE token is required. See device_enrollments.tf and variables.tf.
 
 resource "jamfplatform_pro_mobile_device_prestage_enrollment" "default" {
   display_name                                 = "Default (Managed by Terraform)"

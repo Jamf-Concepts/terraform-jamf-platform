@@ -1,7 +1,7 @@
 # Contributing
 
 Thanks for your interest in contributing. This repository is a reference and
-learning resource for Jamf administrators adopting Terraform — keep that
+learning resource for Jamf administrators adopting Terraform. Keep that
 audience in mind when proposing changes.
 
 ## What this project is and is not
@@ -29,8 +29,8 @@ Open a GitHub issue with:
   redacted)
 - A minimal HCL snippet that reproduces the issue
 
-Provider bugs in `Jamf-Concepts/jamfplatform` should be reported on that
-provider repository directly.
+Report provider bugs in `Jamf-Concepts/jamfplatform` on that provider's own
+repository.
 
 ## Proposing changes
 
@@ -55,9 +55,9 @@ the reference set.
 - **`for_each` over a `locals` map** for resources that vary only in name
   or a small number of attributes.
 - **Single resource blocks** for resources with unique configuration. Do not
-  flatten dissimilar resources into one parameterised `for_each` just for
-  DRY.
-- **Comments explain Terraform concepts in context** for the audience —
+  flatten dissimilar resources into one parameterised `for_each` for the sake
+  of DRY.
+- **Comments explain Terraform concepts in context** for the audience:
   what `path.module` resolves to, why `parallelism=1` matters, what a
   `data` source does. Comments do not need to explain Jamf concepts.
 - **Resource names** include `(Managed by Terraform)` so the resources are
