@@ -5,9 +5,9 @@
 # Fetches Jamf Protect audit-log entries so out-of-band resources can be
 # attributed to the account that created them, and writes them as a JSON array.
 #
-# The audit-log API caps each query at a 7-day window — the SDK silently clamps
+# The audit-log API caps each query at a 7-day window, and the SDK clamps
 # anything larger to the last 7 days. Older history IS retained and queryable;
-# you just have to page `--end` backwards in 7-day chunks. This script does
+# you have to page `--end` backwards in 7-day chunks. This script does
 # that, but lazily:
 #
 #   1. Fetch the most recent 7-day window.
@@ -32,7 +32,7 @@
 # Requires: jamf-cli (authenticated via JAMFPROTECT_* environment variables), jq.
 #
 # Never fails the caller. Attribution is a nice-to-have on top of detection, so
-# a fetch error writes whatever was gathered — an empty array at worst — and the
+# a fetch error writes whatever it gathered, an empty array at worst, and the
 # report shows dashes instead of names.
 # -----------------------------------------------------------------------------
 set -uo pipefail
@@ -113,7 +113,7 @@ fetch_window() {
   return
 }
 
-# Window 0 — the most recent 7 days. Often the only call made.
+# Window 0: the most recent 7 days. Often the only call made.
 fetch_window "$(days_ago "$WINDOW_DAYS")" "$(now_iso)"
 
 # Deep lookback, only while resources remain unattributed and within horizon.

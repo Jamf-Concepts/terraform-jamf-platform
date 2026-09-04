@@ -17,7 +17,7 @@
 #   - The customer is already onboarded (directory and Environment exist)
 #   - An Azure App Registration, Data Collection Endpoint and Data Collection
 #     Rules already configured in the customer's Azure tenant. This script does
-#     not create any Azure resources — it only wires Jamf Protect to them.
+#     not create any Azure resources. It only wires Jamf Protect to them.
 #
 # Adding another destination: the module's data_forwarding.tf already carries a
 # disabled amazon_s3 block. Add an `--s3` flag here, a matching variable, and
@@ -135,7 +135,7 @@ if [ "$DESTINATION" = "sentinel" ]; then
 # --- Microsoft Sentinel Data Forwarding -------------------------------------
 # The application secret lives in the ${CUSTOMER} GitHub Environment as
 # SENTINEL_APP_SECRET, not here. It is write-only, so rotating it means
-# updating that secret AND incrementing app_secret_version below — the version
+# updating that secret AND incrementing app_secret_version below. The version
 # bump is the only signal Terraform gets that anything changed.
 
 sentinel = {

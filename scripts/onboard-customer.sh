@@ -10,7 +10,7 @@
 # Arguments:
 #   customer-name   Lowercase, hyphenated identifier (e.g. example-customer).
 #                   Becomes the directory name, the GitHub Environment name and
-#                   the S3 state key — keep them identical.
+#                   the S3 state key. Keep them identical.
 #   product-tier    standard (default) or enhanced
 #
 # What it does, in order:
@@ -20,9 +20,9 @@
 #      tenant, via jamf-cli
 #   4. Prompt for Jamf Platform API credentials
 #   5. Check, via jamf-cli through the Platform gateway, that the tenant has no
-#      existing Jamf Protect registration — which also proves the credentials
+#      existing Jamf Protect registration, which also proves the credentials
 #      authenticate and carry the required privileges
-#   6. Store all seven values in the GitHub Environment — only after every
+#   6. Store all seven values in the GitHub Environment, only after every
 #      check above has passed
 #   7. Scaffold the customer directory from customers/_template
 #   8. Commit, push and open a pull request
@@ -37,7 +37,7 @@
 #   - jq
 #   - An API client created BY HAND in the customer's Jamf Protect console.
 #     Terraform cannot create the credential it needs to authenticate with in
-#     the first place — see modules/protect-baseline/api_client.tf.
+#     the first place. See modules/protect-baseline/api_client.tf.
 #   - A Jamf Platform API integration for the customer, scoped to a platform
 #     environment and granted these permissions (see the
 #     jamfplatform_pro_jamf_protect resource docs):
@@ -109,7 +109,7 @@ echo
 # --- 3. Remove auto-created Protect defaults --------------------------------
 # Every new Protect tenant ships with a "Default" plan and action
 # configuration. The default plan syncs to Jamf Pro and creates an unscoped
-# configuration profile, so both must go before Terraform runs — otherwise you
+# configuration profile, so both must go before Terraform runs. Otherwise you
 # spend the rest of the engagement fighting something you did not create.
 
 echo "==> Removing default Protect plan (if present)..."
@@ -120,14 +120,14 @@ export JAMFPROTECT_CLIENT_SECRET="${PROTECT_CLIENT_PASSWORD_VAL}"
 if jamf-cli protect plans get "Default" -o json >/dev/null 2>&1; then
   jamf-cli protect plans delete "Default" --yes
 else
-  echo "  ✓ Already removed — skipping."
+  echo "  ✓ Already removed, skipping."
 fi
 
 echo "==> Removing default Protect action configuration (if present)..."
 if jamf-cli protect action-configs get "Default" -o json >/dev/null 2>&1; then
   jamf-cli protect action-configs delete "Default" --yes
 else
-  echo "  ✓ Already removed — skipping."
+  echo "  ✓ Already removed, skipping."
 fi
 
 # Drop the Protect credentials out of the environment now they are no longer
@@ -174,7 +174,7 @@ done
 
 # --- Check for an existing Protect registration ------------------------------
 # This matters: the registration is a singleton, and creating it over an
-# existing one does NOT fail — the server overwrites it in place. So abort
+# existing one does NOT fail. The server overwrites it in place, so abort
 # rather than stomp on something already configured.
 #
 # jamf-cli reaches the Jamf Pro API through the Platform gateway when given
@@ -204,7 +204,7 @@ case "${rc}" in
     exit 1
     ;;
   4)
-    # not_found — the expected state for a new onboarding.
+    # not_found, the expected state for a new onboarding.
     echo "  ✓ No existing Protect registration found."
     ;;
   3)
@@ -307,7 +307,7 @@ Credentials are stored in the \`${CUSTOMER}\` GitHub Environment. Nothing
 sensitive is in this diff.
 
 ## Checklist
-- [ ] Review \`${CUSTOMER_DIR}/customer.auto.tfvars\` — add any USB exceptions or exception sets
+- [ ] Review \`${CUSTOMER_DIR}/customer.auto.tfvars\`, adding any USB exceptions or exception sets
 - [ ] Check the plan output posted below, in particular that \`jamfplatform_pro_jamf_protect\` is being **created** and not replacing an existing registration
 - [ ] After merge and a successful apply, record the API credentials in ${CREDENTIAL_STORE}"
 )
@@ -321,5 +321,5 @@ gh pr create "${PR_ARGS[@]}"
 echo
 echo "==> Done. Next steps:"
 echo "    1. Review the pull request and check the plan output"
-echo "    2. Merge — the apply workflow provisions the tenant and registers Protect in Jamf Pro"
+echo "    2. Merge. The apply workflow provisions the tenant and registers Protect in Jamf Pro"
 echo "    3. Record the API credentials in ${CREDENTIAL_STORE}"

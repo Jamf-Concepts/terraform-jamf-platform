@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Terraform Configuration — <CUSTOMER_NAME>
+# Terraform Configuration: <CUSTOMER_NAME>
 # -----------------------------------------------------------------------------
 # Backend and version constraints for this customer workspace.
 #

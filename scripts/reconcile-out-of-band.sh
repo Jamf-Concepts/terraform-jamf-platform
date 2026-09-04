@@ -3,7 +3,7 @@
 # reconcile-out-of-band.sh
 # -----------------------------------------------------------------------------
 # Finds resources that exist in a customer's Jamf Protect tenant but have NO
-# entry in Terraform state — created directly in the console, and therefore
+# entry in Terraform state, because someone created it in the console and
 # invisible to `terraform plan` and to drift detection. Terraform does not know
 # they exist, so it cannot report them as changed.
 #
@@ -11,16 +11,16 @@
 # see in the tenant) against `terraform show -json` (everything Terraform
 # manages). Present in the tenant, absent from state = out of band.
 #
-# Built-in and system resources — the Default plan, the Full Admin and Read Only
+# Built-in and system resources: the Default plan, the Full Admin and Read Only
 # roles, the Default analytic set and action configuration, Jamf Managed Default
-# Exceptions — are filtered out upstream by the provider's list resources (see
+# Exceptions: are filtered out upstream by the provider's list resources (see
 # exclude_builtins in reconcile.tfquery.hcl), so they never reach this script.
 #
 # The one exclusion applied here is the bootstrap API client: the credential
 # created by hand in every tenant so Terraform can authenticate at all. It is
 # intentionally unmanaged and exists everywhere, so without this filter it would
 # be a permanent false positive on every customer, every week. It is matched by
-# NAME because that is what is constant across tenants — each tenant's client
+# NAME because that is what is constant across tenants: each tenant's client
 # has a different id.
 #
 # Usage:
@@ -36,12 +36,12 @@
 # Environment:
 #   RECONCILE_SKIP_API_CLIENT_NAME  Name of the bootstrap API client to exclude.
 #                                   Defaults to "terraform-bootstrap". Set it to
-#                                   whatever you actually named yours, or this
+#                                   whatever you named yours, or this
 #                                   filter does nothing.
 #
 # Output:
 #   Prints the number of out-of-band resources found (last line of stdout).
-#   Exits 0 on success — finding resources is a normal outcome, not an error —
+#   Exits 0 on success. Finding resources is a normal outcome, not an error,
 #   or 2 on invalid invocation, a missing dependency, or a missing input.
 # -----------------------------------------------------------------------------
 set -euo pipefail
@@ -74,7 +74,7 @@ oob_records="$workdir/oob_records.tsv"
 # Every jamfprotect_* managed resource, keyed by type + identity. Resources live
 # under module.protect, so recurse through child modules rather than reading the
 # root module only. Match on the resource identity where present, falling back
-# to the `id` attribute — both hold the same canonical value the list resource
+# to the `id` attribute. Both hold the same canonical value the list resource
 # emits.
 jq -r '
   [ (.values.root_module // {}) | recurse(.child_modules[]?) | .resources[]? ]
@@ -92,7 +92,7 @@ jq -r '
 #
 # `terraform query -json` frames every list block with list_start/list_complete
 # events and emits list_resource_found per resource, so a healthy run ALWAYS
-# contains at least the framing events — even against a tenant with nothing out
+# contains at least the framing events, even against a tenant with nothing out
 # of band. No list events at all means either the list blocks did not execute or
 # the (experimental) -json event schema changed underneath us. Fail loudly
 # rather than emit an empty result that looks like a clean bill of health.
@@ -128,7 +128,7 @@ readonly BOOTSTRAP_API_CLIENT_NAME="${RECONCILE_SKIP_API_CLIENT_NAME:-terraform-
 # Matched on FILENAME rather than the usual NR==FNR idiom for a reason: when
 # state contains no in-scope resources, state_keys is empty, and NR==FNR would
 # then treat the FIRST LINE of the tenant file as the start of the "seen" set
-# and report nothing — a silent failure masking every out-of-band resource.
+# and report nothing, a silent failure masking every out-of-band resource.
 # FILENAME matching over-reports on empty state instead, which is the safe
 # direction to fail in.
 awk -F'\t' -v statef="$state_keys" \

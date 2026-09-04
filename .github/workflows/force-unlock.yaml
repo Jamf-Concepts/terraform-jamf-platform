@@ -3,13 +3,13 @@ name: Terraform Force Unlock
 # -----------------------------------------------------------------------------
 # Releases a stale Terraform state lock for one customer workspace.
 #
-# When a run is interrupted — a cancelled job, a runner that died — the S3 lock
+# When a run is interrupted by a cancelled job or a dead runner, the S3 lock
 # object (terraform.tfstate.tflock) can be left behind. Every subsequent run for
 # that customer then fails with "Error acquiring the state lock". Take the Lock
 # ID from the failed run's log and dispatch this workflow.
 #
-# Only ever run this when you are certain no apply is actually in progress.
-# Force-unlocking a live operation is how state gets corrupted — the thing the
+# Only run this when you are certain no apply is still running.
+# Force-unlocking a live operation is how state gets corrupted: the thing the
 # lock exists to prevent.
 #
 # Note this touches only the backend lock, so it needs no Jamf credentials at
@@ -76,7 +76,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Force unlock — ${{ github.event.inputs.customer }}"
+            echo "## Force unlock: ${{ github.event.inputs.customer }}"
             echo ""
             echo "| Field | Value |"
             echo "|-------|-------|"

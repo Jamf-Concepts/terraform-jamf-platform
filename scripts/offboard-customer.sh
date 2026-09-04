@@ -7,12 +7,12 @@
 #
 # Usage: ./scripts/offboard-customer.sh [--handover] <customer-name>
 #
-# DEFAULT MODE — the tenant has been emptied.
+# DEFAULT MODE: the tenant has been emptied.
 #   Run the Terraform Destroy workflow first. This script then verifies that
 #   destroy succeeded before touching anything, deletes the GitHub Environment,
 #   removes the customer directory and opens a pull request for the audit trail.
 #
-# --handover MODE — the customer keeps their console.
+# --handover MODE: the customer keeps their console.
 #   No destroy is run and no Jamf resource is touched. The script dispatches
 #   handover.yaml to remove only that customer's Terraform state object, waits
 #   for it, then does the same GitHub cleanup. The console is left exactly as
@@ -74,7 +74,7 @@ fi
 #
 # Note the limitation: this checks that A successful Terraform Destroy run
 # exists, not that it was for THIS customer. Tighten it if that matters to you
-# — matching on the run's inputs is possible but noticeably more code.
+# Matching on the run's inputs is possible but takes a lot more code.
 if [ "${HANDOVER}" = false ]; then
   echo "==> Checking that the Terraform Destroy workflow completed successfully..."
   DESTROY_STATUS=$(gh run list \
@@ -97,13 +97,13 @@ echo "==> Offboarding customer: ${CUSTOMER}"
 # --- Handover: tear down Terraform state ------------------------------------
 # Runs BEFORE the GitHub Environment is deleted (the workflow references that
 # environment) and BEFORE the directory is removed. Deletes the state object
-# only — no live resources are touched.
+# only. It touches no live resources.
 if [ "${HANDOVER}" = true ]; then
   echo "==> Dispatching Handover workflow (Terraform state teardown) for ${CUSTOMER}..."
 
   # Record the newest existing run id first, so the run triggered below can be
   # pinned by id rather than trusting whatever "latest" happens to be by the
-  # time this looks — someone else dispatching concurrently would otherwise be
+  # time this looks. Someone else dispatching concurrently would otherwise be
   # indistinguishable.
   BEFORE_ID=$(gh run list \
     --repo "${REPO}" \
@@ -167,7 +167,7 @@ if [ "${HANDOVER}" = true ]; then
   PR_TITLE="Offboard customer (handover): ${CUSTOMER}"
   PR_BODY="Removes the customer directory for **${CUSTOMER}** as part of a Jamf Protect console handover.
 
-The console has been handed to the customer **as-is** — no \`terraform destroy\` was run and **no Jamf resources were destroyed**. This removes the customer from the pipeline: the customer directory, the GitHub Environment, and the Terraform state object.
+The console goes to the customer **as-is**. Nothing ran \`terraform destroy\` and **no Jamf resources were destroyed**. This removes the customer from the pipeline: the customer directory, the GitHub Environment, and the Terraform state object.
 
 Terraform state deleted: \`${STATE_KEY}\` (handover workflow run ${RUN_URL}).
 
@@ -180,7 +180,7 @@ else
   PR_TITLE="Offboard customer: ${CUSTOMER}"
   PR_BODY="Removes the customer directory for **${CUSTOMER}** following a successful Terraform destroy.
 
-This pull request is for the audit trail — the resources, the S3 state object and the GitHub Environment are already gone.
+This pull request is for the audit trail. The resources, the S3 state object and the GitHub Environment are already gone.
 
 ## Remaining manual steps
 - [ ] Revoke the bootstrap API client in the customer's Protect console (Terraform did not create it, so destroy did not remove it)

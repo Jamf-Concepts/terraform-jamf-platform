@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Jamf Pro — Protect Registration
+# Jamf Pro: Protect Registration
 # -----------------------------------------------------------------------------
 # One pipeline, two products, one apply: the same run that builds the Protect
 # configuration registers Protect in the customer's Jamf Pro instance, using the

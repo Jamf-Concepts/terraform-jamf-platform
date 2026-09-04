@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Device Controls — Removable Storage
+# Device Controls: Removable Storage
 # -----------------------------------------------------------------------------
 # Enhanced tier only.
 #
@@ -19,7 +19,7 @@ resource "jamfprotect_removable_storage_control_set" "managed_protect_enhanced" 
   default_permission                 = var.removable_storage_default_permission
   default_local_notification_message = "This removable storage device is not allowed."
 
-  # Per-customer overrides — passed through from variables as nested attributes.
+  # Per-customer overrides, passed through from variables as nested attributes.
   override_vendor_id         = var.removable_storage_override_vendor_id
   override_product_id        = var.removable_storage_override_product_id
   override_serial_number     = var.removable_storage_override_serial_number

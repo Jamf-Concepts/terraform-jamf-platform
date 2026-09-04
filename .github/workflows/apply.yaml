@@ -9,7 +9,7 @@ name: Terraform Apply
 #
 # Deliberately absent: a chat notification step. A webhook, channel and message
 # format are the most organisation-specific part of any pipeline, so what you get
-# is the GitHub-native equivalent — a run summary — plus a marked place to add
+# is the GitHub-native equivalent, a run summary, plus a marked place to add
 # your own. See README "Notifications".
 # -----------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ jobs:
       customers: ${{ steps.find.outputs.customers }}
     steps:
       - name: Checkout code
-        # fetch-depth: 0 — the diff below compares two commits, which needs
+        # fetch-depth: 0, because the diff below compares two commits, which needs
         # full history. A shallow clone makes `git diff` fail here.
         uses: actions/checkout@v7
         with:
@@ -143,7 +143,7 @@ jobs:
           SECRET=$(terraform output -raw insights_api_client_secret)
           ID=$(terraform output -raw insights_api_client_id)
           {
-            echo "## Reporting integration credentials — ${{ matrix.customer }}"
+            echo "## Reporting integration credentials: ${{ matrix.customer }}"
             echo ""
             echo "| Field | Value |"
             echo "|-------|-------|"
@@ -158,12 +158,12 @@ jobs:
       - name: Record outcome in run summary
         if: always()
         # The Jamf Pro URL is resolved through the platform environment, so the summary names
-        # the instance the run actually touched. Tolerates failure: on a failed
+        # the instance the run touched. Tolerates failure: on a failed
         # apply there may be no output to read.
         run: |
           JAMF_PRO_URL=$(terraform output -raw jamf_pro_server_url 2>/dev/null || echo "unknown")
           {
-            echo "## Apply — ${{ matrix.customer }}"
+            echo "## Apply: ${{ matrix.customer }}"
             echo ""
             echo "| Field | Value |"
             echo "|-------|-------|"
@@ -177,7 +177,7 @@ jobs:
         working-directory: customers/${{ matrix.customer }}
 
       # --- Notifications ------------------------------------------------------
-      # Add your own outbound notification here if you want one — Slack, Teams,
+      # Add your own outbound notification here if you want one: Slack, Teams,
       # email, a ticketing system. The pattern is a single `if: always()` step
       # at the end of the job reading `job.status`, `matrix.customer` and the
       # run URL. See README "Notifications" for a worked example.

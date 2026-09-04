@@ -2,7 +2,7 @@ name: Drift Remediation
 
 # -----------------------------------------------------------------------------
 # Reverts drift by re-applying the code. Deliberately boring: because the
-# repository is the source of truth, "fixing" drift is just `terraform apply`.
+# repository is the source of truth, "fixing" drift is `terraform apply`.
 #
 # Two things make this safe rather than reckless:
 #
@@ -50,7 +50,7 @@ jobs:
             // labelled `auto-remediate` is ignored rather than guessed at.
             const match = title.match(/^Drift detected:\s*(.+)$/);
             if (!match) {
-              core.info(`Issue title "${title}" does not match drift pattern — skipping`);
+              core.info(`Issue title "${title}" does not match drift pattern, skipping`);
               core.setOutput('customer', '');
               return;
             }
@@ -59,7 +59,7 @@ jobs:
             core.info(`Parsed customer: ${customer}`);
 
       # --- Authorisation ------------------------------------------------------
-      # Two modes, one of which runs. Each uses the token that can actually
+      # Two modes, one of which runs. Each uses the token that can
       # answer its question: team membership needs an org-scoped token, and
       # repository permission is answerable by the default GITHUB_TOKEN.
 
@@ -253,7 +253,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Drift remediation — ${{ needs.validate.outputs.customer }}"
+            echo "## Drift remediation: ${{ needs.validate.outputs.customer }}"
             echo ""
             echo "| Field | Value |"
             echo "|-------|-------|"

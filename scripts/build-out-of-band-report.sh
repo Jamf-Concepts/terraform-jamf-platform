@@ -13,7 +13,7 @@
 #
 # Attribution is best-effort. A resource created before the lookback horizon, or
 # of a type the audit log does not cover, shows a dash. A missing or empty audit
-# file simply omits attribution for every row — the detection result still
+# file omits attribution for every row. The detection result still
 # stands, which is the part that matters.
 #
 # Usage:
@@ -44,8 +44,8 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 2
 fi
 
-# Normalise the audit input to an array — empty when absent, unreadable or blank
-# — so the join below never fails just because attribution was unavailable.
+# Normalise the audit input to an array: empty when absent, unreadable or blank
+# so the join below never fails when attribution is unavailable.
 audit_norm="$(mktemp)"
 trap 'rm -f "$audit_norm"' EXIT
 if [[ -s "$AUDIT_JSON" ]] && jq -e 'type == "array"' "$AUDIT_JSON" >/dev/null 2>&1; then
@@ -55,7 +55,7 @@ else
 fi
 
 # See audit-op-map.json. Audit entries key only on resourceId, which collides
-# across types — a plan, a role and an action config can all be id "1" — so
+# across types, because a plan, a role and an action config can all be id "1", so
 # attribution matches resourceId AND the op noun for the type. A type absent
 # from the map is left unattributed rather than matched on resourceId alone.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -89,7 +89,7 @@ count="$(printf '%s' "$enriched" | jq 'length')"
 printf '## Out-of-band resources detected for `%s`\n\n' "$CUSTOMER"
 printf '%s\n\n' "The following resources exist in the Jamf Protect tenant but are **not** managed by Terraform. They have no entry in state, so they are invisible to \`terraform plan\` and to drift detection."
 printf ':mag: **%s** out-of-band resource(s) found.\n\n' "$count"
-printf '%s\n\n' "Each one needs a decision: **import** it into Terraform if it should exist, or **delete** it from the tenant if it should not. Record the decision on this issue — an unanswered finding here is the same problem as the drift it was written to catch."
+printf '%s\n\n' "Each one needs a decision: **import** it into Terraform if it should exist, or **delete** it from the tenant if it should not. Record the decision on this issue. An unanswered finding here is the same problem as the drift it exists to catch."
 
 if [ -n "$REPORT_MENTION" ]; then
   printf 'cc %s\n\n' "$REPORT_MENTION"
@@ -111,5 +111,5 @@ printf '%s' "$enriched" | jq -r '
     + "| \(if .last_op then "\(.last_op.op) (\(.last_op.date))" else "—" end) |"
 '
 
-printf '\n> Attribution comes from the Jamf Protect audit log, paged back to the configured lookback horizon. A dash means no matching audit event was found within that horizon — the resource predates it, or its type is not captured in the audit log.\n'
+printf '\n> Attribution comes from the Jamf Protect audit log, paged back to the configured lookback horizon. A dash means no matching audit event within that horizon: the resource predates it, or the audit log does not capture its type.\n'
 printf '\n**Workflow run:** %s\n' "$RUN_URL"

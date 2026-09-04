@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Terraform Configuration — staging
+# Terraform Configuration: staging
 # -----------------------------------------------------------------------------
 # Backend and version constraints for this customer workspace.
 #

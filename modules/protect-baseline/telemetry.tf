@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Telemetry — Managed Protect Telemetry
+# Telemetry: Managed Protect Telemetry
 # -----------------------------------------------------------------------------
 # Endpoint telemetry collection, opt-in per customer via enable_telemetry.
 # Telemetry volume has a cost wherever it lands: the Protect cloud, a SIEM, or
@@ -28,7 +28,7 @@ resource "jamfprotect_telemetry" "managed_protect_telemetry" {
 
   # Collect inbound and outbound network connections. Requires Jamf Protect agent
   # 8.14.0+, macOS 26+, and the Network Content Filter Profile deployed first, so
-  # it is off here rather than silently failing the prerequisites.
+  # it is off here rather than failing the prerequisites without saying so.
   log_network = false
 
   # Custom log file paths, on top of the event sources above. Required by the

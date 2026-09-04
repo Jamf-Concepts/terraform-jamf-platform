@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Customer Root Module — staging
+# Customer Root Module: staging
 # -----------------------------------------------------------------------------
 # One module call, plus a variable declaration for every input it needs. No
 # configuration lives here; the baseline is all in modules/protect-baseline. This
@@ -8,7 +8,7 @@
 # Terraform has no variable inheritance, so a root module must declare every
 # variable it passes down even when the module already declares it. That is why
 # the file is long. The declarations are thin on purpose: no descriptions copied
-# from the module, no defaults that could drift from it, just types.
+# from the module, no defaults that could drift from it, only types.
 #
 # Where values come from:
 #   Credentials         TF_VAR_* environment variables, set from GitHub

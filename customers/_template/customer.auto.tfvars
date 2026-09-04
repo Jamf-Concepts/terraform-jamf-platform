@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------
-# Customer Configuration — <CUSTOMER_NAME>
+# Customer Configuration: <CUSTOMER_NAME>
 # -----------------------------------------------------------------------------
 # The only file that meaningfully differs between customers. Everything here is
 # non-secret by design and is committed, reviewed in a pull request, and
-# versioned. Credentials never appear in this file — they reach Terraform as
+# versioned. Credentials never appear in this file. They reach Terraform as
 # TF_VAR_* environment variables from GitHub Environment secrets.
 #
 # Terraform loads *.auto.tfvars automatically, so there is no -var-file flag to
@@ -14,13 +14,13 @@
 # -----------------------------------------------------------------------------
 
 # --- Product Tier -----------------------------------------------------------
-# "standard" — threat prevention only
-# "enhanced" — threat prevention + removable storage device controls
+# "standard": threat prevention only
+# "enhanced": threat prevention plus removable storage device controls
 
 product_tier = "standard"
 
 # --- Device Controls (optional) ---------------------------------------------
-# Enhanced tier only. Default is "Prevent" — removable storage blocked unless
+# Enhanced tier only. Default is "Prevent", so removable storage is blocked unless
 # an override below says otherwise. Only relax this with a documented reason.
 #
 # removable_storage_default_permission = "Read Only"
@@ -85,7 +85,7 @@ product_tier = "standard"
 # --- Microsoft Sentinel Data Forwarding (optional) --------------------------
 # Populated by scripts/enable-data-forwarding.sh rather than by hand.
 #
-# The application secret is NOT stored here — it lives in the customer's
+# The application secret is NOT stored here: it lives in the customer's
 # GitHub Environment as SENTINEL_APP_SECRET. It is a write-only value that
 # Terraform cannot read back, so rotating it means BOTH updating the secret in
 # GitHub AND incrementing app_secret_version below. The version bump is the

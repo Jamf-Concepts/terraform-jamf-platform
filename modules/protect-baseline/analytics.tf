@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Analytics — Custom Analytic & Analytic Set
+# Analytics: Custom Analytic & Analytic Set
 # -----------------------------------------------------------------------------
 # The custom analytic below watches the Protect quarantine directory and tags the
 # machine in Jamf Pro via a smart group, so a quarantine event becomes something

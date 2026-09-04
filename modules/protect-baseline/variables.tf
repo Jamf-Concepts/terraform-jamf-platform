@@ -70,7 +70,7 @@ variable "platform_client_secret" {
 
 # --- Product Tier -----------------------------------------------------------
 # The two bases on the menu. A validation block turns a typo into a clear plan
-# error instead of a tenant silently getting the wrong configuration.
+# error instead of a tenant getting the wrong configuration unnoticed.
 
 variable "product_tier" {
   description = "Product tier: standard (threat prevention) or enhanced (threat prevention + device controls)"

@@ -36,12 +36,12 @@ terraform {
 # customer's root module. That is a deliberate trade-off worth understanding
 # before you copy it:
 #
-#   What it buys — a customer workspace is four small files (main.tf,
+#   What it buys: a customer workspace is four small files (main.tf,
 #   terraform.tf, customer.auto.tfvars, outputs.tf) with no provider plumbing to
 #   keep in sync across fifty directories. Credentials arrive as module inputs,
 #   which the onboarding script wires to GitHub Environment secrets once.
 #
-#   What it costs — a module that configures its own providers cannot be called
+#   What it costs: a module that configures its own providers cannot be called
 #   with `count`, `for_each` or `depends_on`, and cannot be given an aliased
 #   provider by its caller. If you need one workspace to reach two tenants, move
 #   these blocks into the customer root module and pass them in.

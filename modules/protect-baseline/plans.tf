@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Plans — Managed Protect
+# Plans: Managed Protect
 # -----------------------------------------------------------------------------
 # Standard customers get one plan: threat prevention only.
 #
@@ -66,7 +66,7 @@ resource "jamfprotect_plan" "managed_protect_standard" {
 # --- Enhanced plan (enhanced tier only) -------------------------------------
 #
 # `count` on a tier flag is the conditional-resource pattern: standard-tier
-# customers simply never create this resource, and Terraform reports nothing
+# customers never create this resource, and Terraform reports nothing
 # to do for it rather than needing a separate module or workspace shape.
 
 resource "jamfprotect_plan" "managed_protect_enhanced" {

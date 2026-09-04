@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Terraform Configuration — example-customer
+# Terraform Configuration: example-customer
 # -----------------------------------------------------------------------------
 # Backend and version constraints for this customer workspace.
 #

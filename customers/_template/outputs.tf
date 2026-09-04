@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Outputs — <CUSTOMER_NAME>
+# Outputs: <CUSTOMER_NAME>
 # -----------------------------------------------------------------------------
 # Only the values a human has to act on after an apply. Terraform generates the
 # reporting integration credentials but they have to be entered into the reporting

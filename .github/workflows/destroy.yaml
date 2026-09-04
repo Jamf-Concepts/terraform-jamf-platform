@@ -6,7 +6,7 @@ name: Terraform Destroy
 #
 # This is the one workflow with no automatic trigger and no way back. It is
 # manual dispatch only, it validates the customer name twice, and it requires
-# the operator to retype that name as confirmation — because a mis-selected
+# the operator to retype that name as confirmation, because a mis-selected
 # dropdown should not be able to empty a live tenant.
 #
 # Destroying is step one of offboarding. Step two is scripts/offboard-customer.sh,
@@ -122,7 +122,7 @@ jobs:
           set -euo pipefail
 
           # Re-validate: this step interpolates the customer into an S3 key, so
-          # do not trust it unchecked just because an earlier step ran.
+          # do not trust it unchecked because an earlier step ran.
           if ! [[ "${CUSTOMER}" =~ ^[a-zA-Z0-9._-]+$ ]]; then
             echo "Error: invalid customer name '${CUSTOMER}'"
             exit 1
@@ -136,7 +136,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Destroy — ${{ github.event.inputs.customer }}"
+            echo "## Destroy: ${{ github.event.inputs.customer }}"
             echo ""
             echo "| Field | Value |"
             echo "|-------|-------|"

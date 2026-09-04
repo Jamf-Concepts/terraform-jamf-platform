@@ -5,9 +5,9 @@ name: Terraform Plan
 # approves a diff rather than a promise.
 #
 # Three jobs:
-#   detect — works out which customers this PR actually affects
-#   lint   — fmt, tflint and validate, once for the whole repo
-#   plan   — one matrix job per affected customer, each scoped to that
+#   detect : works out which customers this PR affects
+#   lint   : fmt, tflint and validate, once for the whole repo
+#   plan   : one matrix job per affected customer, each scoped to that
 #            customer's GitHub Environment and therefore only that customer's
 #            credentials
 #
@@ -41,7 +41,7 @@ jobs:
         id: find
         run: |
           CHANGED=$(gh pr diff ${{ github.event.pull_request.number }} --name-only) || {
-            echo "::warning::gh pr diff failed — no customers will be planned"
+            echo "::warning::gh pr diff failed, so no customers will be planned"
             CHANGED=""
           }
 
@@ -135,7 +135,7 @@ jobs:
       contents: read
       pull-requests: write
     strategy:
-      # fail-fast: false — one customer's plan failing must not cancel the
+      # fail-fast: false, so one customer's plan failing does not cancel the
       # others. You want the whole picture in the PR, not the first error.
       fail-fast: false
       matrix:
@@ -154,7 +154,7 @@ jobs:
 
       - name: Configure AWS credentials
         # Static keys are used here for portability. If your state bucket is in
-        # AWS, prefer OIDC role assumption instead — no long-lived keys in
+        # AWS, prefer OIDC role assumption instead, which keeps long-lived keys out of
         # GitHub at all. See README "State backend".
         uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6
         with:
@@ -205,7 +205,7 @@ jobs:
 
   plan-result:
     # Aggregates the matrix into one stable status check name for branch
-    # protection. `if: always()` so it still runs — and still reports failure —
+    # protection. `if: always()` so it still runs, and still reports failure,
     # when an upstream job failed or was skipped.
     needs: [detect, lint, plan]
     if: always()

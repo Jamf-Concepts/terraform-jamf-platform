@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Users — Console Access
+# Users: Console Access
 # -----------------------------------------------------------------------------
 # Who from your team can log into each customer's Protect console. Edit one list
 # in variables.tf when someone joins or leaves and every tenant is corrected on

@@ -6,17 +6,17 @@ name: Out-of-Band Resource Detection
 # Drift detection compares managed resources against the code. It is blind to
 # resources Terraform never created: something built directly in the console has
 # no state entry, so it never appears in a plan and never registers as drift.
-# Terraform simply does not know it exists.
+# Terraform does not know it exists.
 #
 # This workflow closes that gap using Terraform list resources, which query
 # existing infrastructure whether or not it is in state:
 #
-#   1. `terraform query -json`  — everything the provider can see in the tenant
-#   2. `terraform show -json`   — everything Terraform manages in state
-#   3. diff the two             — anything in (1) but not (2) is out of band
-#   4. attribute each finding   — who created it and when, from the Jamf Protect
+#   1. `terraform query -json` : everything the provider can see in the tenant
+#   2. `terraform show -json`  : everything Terraform manages in state
+#   3. diff the two             : anything in (1) but not (2) is out of band
+#   4. attribute each finding   : who created it and when, from the Jamf Protect
 #                                 audit log via jamf-cli
-#   5. open or update an issue  — one per customer, so the decision to import or
+#   5. open or update an issue  : one per customer, so the decision to import or
 #                                 delete is recorded somewhere
 #
 # The list blocks live in scripts/reconcile.tfquery.hcl, which is copied into
@@ -28,7 +28,7 @@ name: Out-of-Band Resource Detection
 
 on:
   schedule:
-    # Monday 07:00 UTC — an hour after drift detection.
+    # Monday 07:00 UTC, an hour after drift detection.
     - cron: '0 7 * * 1'
   workflow_dispatch:
 
@@ -51,7 +51,7 @@ jobs:
         run: |
           # Exclude only `_template`, which is a skeleton with no tenant and no
           # GitHub Environment. `staging` IS reconciled: it is a real tenant with
-          # real state, so out-of-band resources there matter just as much. Note
+          # real state, so out-of-band resources there matter as much. Note
           # this differs from drift.yaml, which excludes staging deliberately.
           CUSTOMERS=$(
             # Glob rather than `ls | grep`: no ls output to parse, and safe for any
@@ -120,14 +120,14 @@ jobs:
           }
         env:
           # The root-level `list` blocks use the ROOT default provider, which is
-          # configured from these environment variables — not from the module's
+          # configured from these environment variables, not from the module's
           # provider block. This is why customers/<name>/terraform.tf declares
           # jamfprotect in required_providers.
           JAMFPROTECT_URL: ${{ vars.PROTECT_URL }}
           JAMFPROTECT_CLIENT_ID: ${{ secrets.PROTECT_CLIENT_ID }}
           JAMFPROTECT_CLIENT_SECRET: ${{ secrets.PROTECT_CLIENT_PASSWORD }}
           # The module block still has to evaluate for the configuration to load,
-          # even though the query never touches module resources — so its inputs
+          # even though the query never touches module resources, so its inputs
           # must be present.
           TF_VAR_protect_url: ${{ vars.PROTECT_URL }}
           TF_VAR_protect_client_id: ${{ secrets.PROTECT_CLIENT_ID }}
@@ -171,7 +171,7 @@ jobs:
         id: audit
         if: steps.detect.outputs.count != '0'
         # Lazily fetches the most recent 7-day audit window and only pages older
-        # windows if out-of-band resources remain unattributed — one API call in
+        # windows if out-of-band resources remain unattributed, one API call in
         # steady state, deeper history on a first run against an existing tenant.
         # Best-effort: never fails the job. Attribution degrades to dashes if the
         # audit API is unavailable.
@@ -269,7 +269,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number(${{ steps.check-issue.outputs.issue-number }}),
-              body: `## :repeat: Out-of-band resources still present — ${now}\n\n` +
+              body: `## :repeat: Out-of-band resources still present: ${now}\n\n` +
                     `This is a subsequent detection run, not a new event.\n\n` +
                     body
             });
@@ -278,7 +278,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Out-of-band detection — ${{ matrix.customer }}"
+            echo "## Out-of-band detection: ${{ matrix.customer }}"
             echo ""
             echo "| Field | Value |"
             echo "|-------|-------|"

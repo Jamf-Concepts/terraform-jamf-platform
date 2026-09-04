@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Action Configuration — Managed Protect
+# Action Configuration: Managed Protect
 # -----------------------------------------------------------------------------
 # Where alerts go and how much detail travels with them.
 #

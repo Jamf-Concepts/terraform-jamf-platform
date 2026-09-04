@@ -1,8 +1,8 @@
 # -----------------------------------------------------------------------------
-# Customer Configuration — example-customer
+# Customer Configuration: example-customer
 # -----------------------------------------------------------------------------
 # A worked example. Compare it with customers/_template/customer.auto.tfvars
-# (everything commented out — the minimum viable customer) and with
+# (everything commented out, the minimum viable customer) and with
 # customers/staging (a plain standard-tier workspace).
 #
 # This customer is on the enhanced tier and has ordered three things off the
@@ -20,7 +20,7 @@
 product_tier = "enhanced"
 
 # --- Removable Storage Overrides --------------------------------------------
-# The default permission stays "Prevent" — this is one carve-out, not a relaxed
+# The default permission stays "Prevent". This is one carve-out, not a relaxed
 # baseline. A serial number override is the narrowest form available: it covers
 # exactly this physical device, and nothing else the vendor makes.
 #
@@ -32,7 +32,7 @@ removable_storage_override_serial_number = [
   {
     serial_numbers             = ["EXAMPLE123456"]
     permission                 = "Read and Write"
-    local_notification_message = "Approved device — see change request."
+    local_notification_message = "Approved device. See change request."
   }
 ]
 
@@ -59,6 +59,6 @@ enable_telemetry = true
 
 # --- Microsoft Sentinel Data Forwarding -------------------------------------
 # Not enabled for this customer. Run scripts/enable-data-forwarding.sh to add
-# it — the script prompts for the Azure values, stores the secret in this
+# it. The script prompts for the Azure values, stores the secret in this
 # customer's GitHub Environment, writes the block into this file and opens a
 # pull request. See customers/_template/customer.auto.tfvars for the shape.

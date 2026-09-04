@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# Customer Configuration — staging
+# Customer Configuration: staging
 # -----------------------------------------------------------------------------
 # `staging` is not a customer. It is a workspace with the same shape as one,
 # pointed at a Jamf Protect tenant you own, and it is where module changes get
 # proved before they reach anybody's production console.
 #
 # It has its own GitHub Environment, its own credentials and its own state
-# object, exactly like a customer — because a validation tenant configured
+# object, exactly like a customer, because a validation tenant configured
 # differently from production validates nothing.
 #
 # How it is treated differently:

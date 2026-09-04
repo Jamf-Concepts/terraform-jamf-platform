@@ -5,22 +5,22 @@ name: Drift Detection
 # every customer, on a schedule, without anyone remembering to ask.
 #
 # The mechanism is one flag: `terraform plan -detailed-exitcode`.
-#   exit 0 — no changes. Reality matches the code.
-#   exit 2 — changes present. Something was altered outside Terraform.
-#   exit 1 — the plan itself failed. That is an error, not drift.
+#   exit 0: no changes. Reality matches the code.
+#   exit 2: changes present. Something was altered outside Terraform.
+#   exit 1: the plan itself failed. That is an error, not drift.
 #
 # Drift is reported, never auto-corrected. A finding opens (or updates) a GitHub
 # issue and stops there. Deciding whether a change should exist is a human
 # judgement: if it should, it goes into the code through a reviewed pull
 # request; if it should not, remediate.yaml reverts it. See remediate.yaml.
 #
-# `staging` is excluded — it is expected to be ahead of main during
+# `staging` is excluded, because it is expected to be ahead of main during
 # development, so drift there is normal rather than a signal.
 # -----------------------------------------------------------------------------
 
 on:
   schedule:
-    # Monday 06:00 UTC — findings are waiting at the start of the week.
+    # Monday 06:00 UTC, so findings are waiting at the start of the week.
     - cron: '0 6 * * 1'
   workflow_dispatch:
 
@@ -73,7 +73,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Terraform
-        # terraform_wrapper: false — the setup action's default wrapper script
+        # terraform_wrapper: false, because the setup action's default wrapper script
         # swallows the process exit code, which is the entire signal this
         # workflow depends on.
         uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
@@ -110,7 +110,7 @@ jobs:
             echo "Drift detected for ${{ matrix.customer }}"
             echo "drift=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Terraform plan failed for ${{ matrix.customer }} — this is an error, not drift"
+            echo "Terraform plan failed for ${{ matrix.customer }}. This is an error, not drift"
             exit 1
           fi
         working-directory: customers/${{ matrix.customer }}
@@ -216,7 +216,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number(${{ steps.check-issue.outputs.issue-number }}),
-              body: `## :repeat: Drift still present — ${now}\n\n` +
+              body: `## :repeat: Drift still present: ${now}\n\n` +
                     `This is a subsequent detection run, not a new drift event.\n\n` +
                     `**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n\n` +
                     `<details><summary>Terraform Plan Output</summary>\n\n\`\`\`\n${truncated}\n\`\`\`\n\n</details>`
@@ -226,7 +226,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Drift detection — ${{ matrix.customer }}"
+            echo "## Drift detection: ${{ matrix.customer }}"
             echo ""
             echo "| Field | Value |"
             echo "|-------|-------|"
@@ -237,7 +237,7 @@ jobs:
 
       # --- Notifications ------------------------------------------------------
       # A drift finding is the single most useful thing in this pipeline to push
-      # somewhere people actually look. Add your own step here — the issue URL
+      # somewhere people look. Add your own step here, where the issue URL
       # is available as steps.create-issue.outputs.issue-url (new) or
       # steps.check-issue.outputs.issue-url (recurring). See README
       # "Notifications".

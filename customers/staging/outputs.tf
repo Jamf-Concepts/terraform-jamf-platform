@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Outputs — staging
+# Outputs: staging
 # -----------------------------------------------------------------------------
 # Only the values a human has to act on after an apply. Terraform generates the
 # reporting integration credentials but they have to be entered into the reporting

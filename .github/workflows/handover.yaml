@@ -1,7 +1,7 @@
 name: Handover
 
 # -----------------------------------------------------------------------------
-# For when a customer keeps their Jamf Protect console and simply stops being
+# For when a customer keeps their Jamf Protect console and stops being
 # managed by you. Nothing in the tenant is touched: no `terraform destroy`, no
 # resources removed, no configuration changed. The only thing that goes is that
 # customer's Terraform state object, which is what takes them out of the
@@ -22,7 +22,7 @@ name: Handover
 #   3. Delete the lock object, tolerating absence.
 #   4. Verify it is gone.
 #   5. Only then print the marker the offboard script anchors on.
-# A missing state must fail loudly here, not pass silently and leave the
+# A missing state must fail loudly here, rather than pass and leave the
 # operator believing a handover completed.
 # -----------------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ jobs:
 
           # 1. Confirm the state object exists BEFORE deleting. `aws s3 rm` on a
           #    missing key exits 0 and deletes nothing, so a missing state must
-          #    fail loudly here rather than pass silently.
+          #    fail loudly here rather than pass.
           echo "==> Confirming state object exists: s3://${STATE_BUCKET}/${STATE_KEY}"
           aws s3api head-object --bucket "${STATE_BUCKET}" --key "${STATE_KEY}"
 
@@ -107,7 +107,7 @@ jobs:
           echo "==> Deleting lock object (if present)..."
           aws s3 rm "s3://${STATE_BUCKET}/${LOCK_KEY}" || true
 
-          # 4. Verify the state object is actually gone.
+          # 4. Verify the state object is gone.
           echo "==> Verifying state object is gone..."
           if aws s3api head-object --bucket "${STATE_BUCKET}" --key "${STATE_KEY}" >/dev/null 2>&1; then
             echo "Error: state object still present after delete: s3://${STATE_BUCKET}/${STATE_KEY}"
@@ -115,7 +115,7 @@ jobs:
           fi
 
           # 5. Only now emit success and the confirmed key. The stdout marker is
-          #    printed ONLY on this path — after the second head-object passes —
+          #    printed ONLY on this path, after the second head-object passes,
           #    so the offboard script can anchor on it safely.
           echo "==> Confirmed deleted: s3://${STATE_BUCKET}/${STATE_KEY}"
           echo "state_key=${STATE_KEY}" >> "$GITHUB_OUTPUT"
@@ -125,7 +125,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Handover — ${{ inputs.customer }}"
+            echo "## Handover: ${{ inputs.customer }}"
             echo ""
             echo "| Field | Value |"
             echo "|-------|-------|"
