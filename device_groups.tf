@@ -1,1 +1,1 @@
-# Step 1 — add your device group here
+# Step 1: add your device group here

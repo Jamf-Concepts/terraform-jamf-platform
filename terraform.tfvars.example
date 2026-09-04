@@ -1,12 +1,13 @@
-# Regional API gateway URL — pick the one matching your tenant's region
-# US:   https://us.apigw.jamf.com
-# EU:   https://eu.apigw.jamf.com
-# APAC: https://apac.apigw.jamf.com
+# Regional API gateway URL. Pick the one matching your environment's region.
+# US:   https://us.api.jamfcloud.com
+# EU:   https://eu.api.jamfcloud.com
+# APAC: https://apac.api.jamfcloud.com
 jamfplatform_base_url = ""
 
-# OAuth2 credentials — see Prerequisites in README.md for setup steps
+# OAuth2 credentials. See Prerequisites in README.md for setup steps.
 jamfplatform_client_id     = ""
 jamfplatform_client_secret = ""
 
-# Your tenant UUID — click the tenant pill in the Integration details panel at account.jamf.com
-jamfplatform_tenant_id = ""
+# Your platform environment UUID. The Integration details panel at
+# account.jamf.com shows it.
+jamfplatform_environment_id = ""
