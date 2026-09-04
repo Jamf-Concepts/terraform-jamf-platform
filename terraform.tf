@@ -4,7 +4,7 @@ terraform {
   required_providers {
     jamfplatform = {
       source  = "Jamf-Concepts/jamfplatform"
-      version = "~> 0.26"
+      version = ">= 0.29.0"
     }
   }
 }

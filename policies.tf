@@ -1,1 +1,1 @@
-# Step 4 — add your policy here
+# Step 4: add your policy here

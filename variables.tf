@@ -1,6 +1,6 @@
 variable "jamfplatform_base_url" {
   type        = string
-  description = "Jamf Platform API gateway URL, e.g. https://us.apigw.jamf.com"
+  description = "Jamf Platform API gateway URL, e.g. https://us.api.jamfcloud.com"
 }
 
 variable "jamfplatform_client_id" {
@@ -13,8 +13,8 @@ variable "jamfplatform_client_secret" {
   sensitive = true
 }
 
-variable "jamfplatform_tenant_id" {
+variable "jamfplatform_environment_id" {
   type        = string
-  description = "Your Jamf tenant UUID"
+  description = "Your Jamf platform environment UUID"
   sensitive   = true
 }
