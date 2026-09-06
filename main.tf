@@ -1,18 +1,4 @@
 # Onboarder Modules
-module "onboarder-all" {
-  count                       = var.include_onboarder_all == true ? 1 : 0
-  source                      = "./modules/onboarder-all"
-  jamfplatform_base_url       = var.jamfplatform_base_url
-  jamfplatform_client_id      = var.jamfplatform_client_id
-  jamfplatform_client_secret  = var.jamfplatform_client_secret
-  jamfprotect_url             = var.jamfprotect_url
-  jamfprotect_client_id       = var.jamfprotect_client_id
-  jamfprotect_client_password = var.jamfprotect_client_password
-  providers = {
-    jamfplatform.jpro = jamfplatform.jpro
-    jsc.jsc           = jsc.jsc
-  }
-}
 
 module "onboarder-management-macOS" {
   count  = var.include_onboarder_management_macOS == true ? 1 : 0
@@ -33,22 +19,6 @@ module "onboarder-management-mobile" {
 module "onboarder-app-installers" {
   count  = var.include_onboarder_app_installers == true ? 1 : 0
   source = "./modules/onboarder-app-installers"
-  providers = {
-    jamfplatform.jpro = jamfplatform.jpro
-  }
-}
-
-## Initialize Protect (for macOS) module
-
-module "configuration-jamf-pro-jamf-protect" {
-  count                       = var.include_jamf_protect_trial_kickstart == true ? 1 : 0
-  source                      = "./modules/configuration-jamf-pro-jamf-protect"
-  jamfplatform_base_url       = var.jamfplatform_base_url
-  jamfplatform_client_id      = var.jamfplatform_client_id
-  jamfplatform_client_secret  = var.jamfplatform_client_secret
-  jamfprotect_url             = var.jamfprotect_url
-  jamfprotect_client_id       = var.jamfprotect_client_id
-  jamfprotect_client_password = var.jamfprotect_client_password
   providers = {
     jamfplatform.jpro = jamfplatform.jpro
   }
@@ -223,18 +193,6 @@ module "configuration-jamf-pro-computer-management-settings" {
   }
 }
 
-# Workbrew Stage 1: Create API Role and Integration (deploy first, get credentials)
-module "configuration-jamf-pro-api-role-client-workbrew" {
-  count                      = var.include_workbrew_api_role_client == true ? 1 : 0
-  source                     = "./modules/configuration-jamf-pro-api-role-client-workbrew"
-  jamfplatform_base_url      = var.jamfplatform_base_url
-  jamfplatform_client_id     = var.jamfplatform_client_id
-  jamfplatform_client_secret = var.jamfplatform_client_secret
-  providers = {
-    jamfplatform.jpro = jamfplatform.jpro
-  }
-}
-
 # Workbrew Stage 2: Deploy management resources (after uploading credentials to Workbrew Console)
 module "management-macOS-workbrew" {
   count                      = var.include_workbrew == true ? 1 : 0
@@ -363,37 +321,6 @@ module "management-app-installers-google-chrome-cloud-management" {
 }
 
 ## Begin Jamf Security Cloud Configuration
-
-## Create UEMC and Okta integrations
-module "configuration-jamf-security-cloud-jamf-pro" {
-  count                      = var.include_jsc_uemc == true ? 1 : 0
-  source                     = "./modules/configuration-jamf-security-cloud-jamf-pro"
-  jamfplatform_base_url      = var.jamfplatform_base_url
-  jamfpro_instance_url       = var.jamfpro_instance_url
-  jamfplatform_client_id     = var.jamfplatform_client_id
-  jamfplatform_client_secret = var.jamfplatform_client_secret
-  jsc_username               = var.jsc_username
-  jsc_password               = var.jsc_password
-  providers = {
-    jamfplatform.jpro = jamfplatform.jpro
-    jsc.jsc           = jsc.jsc
-  }
-}
-
-## Create Jamf Security Cloud Activation Profile containing ALL JSC Services
-module "configuration-jamf-security-cloud-all-services" {
-  count                      = var.include_jsc_all_services == true ? 1 : 0
-  source                     = "./modules/configuration-jamf-security-cloud-all-services"
-  jsc_username               = var.jsc_username
-  jsc_password               = var.jsc_password
-  jamfplatform_base_url      = var.jamfplatform_base_url
-  jamfplatform_client_id     = var.jamfplatform_client_id
-  jamfplatform_client_secret = var.jamfplatform_client_secret
-  providers = {
-    jamfplatform.jpro = jamfplatform.jpro
-    jsc.jsc           = jsc.jsc
-  }
-}
 
 module "network-security-access-policy" {
   source             = "./modules/network-security-access-policy"
