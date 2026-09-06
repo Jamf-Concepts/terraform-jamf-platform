@@ -15,8 +15,8 @@ variable "jamfplatform_client_secret" {
   sensitive   = true
 }
 
-variable "jamfplatform_tenant_id" {
-  description = "Tenant UUID from account.jamf.com Integration details panel."
+variable "jamfplatform_environment_id" {
+  description = "Environment UUID from account.jamf.com Integration details panel."
   type        = string
 }
 

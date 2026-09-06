@@ -15,18 +15,18 @@ terraform {
 
 ## Jamf Platform provider root configuration
 provider "jamfplatform" {
-  base_url      = var.jamfplatform_base_url
-  client_id     = var.jamfplatform_client_id
-  client_secret = var.jamfplatform_client_secret
-  tenant_id     = var.jamfplatform_tenant_id
+  base_url       = var.jamfplatform_base_url
+  client_id      = var.jamfplatform_client_id
+  client_secret  = var.jamfplatform_client_secret
+  environment_id = var.jamfplatform_environment_id
 }
 
 provider "jamfplatform" {
-  alias         = "jpro"
-  base_url      = var.jamfplatform_base_url
-  client_id     = var.jamfplatform_client_id
-  client_secret = var.jamfplatform_client_secret
-  tenant_id     = var.jamfplatform_tenant_id
+  alias          = "jpro"
+  base_url       = var.jamfplatform_base_url
+  client_id      = var.jamfplatform_client_id
+  client_secret  = var.jamfplatform_client_secret
+  environment_id = var.jamfplatform_environment_id
 }
 
 # JSC provider root configuration
