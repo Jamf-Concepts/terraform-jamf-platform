@@ -1,6 +1,6 @@
 ## Root provider requirements
 terraform {
-  required_version = ">= 1.14" # actions (action_trigger) require 1.14+
+  required_version = ">= 1.5" # this repo runs on OpenTofu; action/action_trigger blocks are not supported
   required_providers {
     jamfplatform = {
       source  = "Jamf-Concepts/jamfplatform"
