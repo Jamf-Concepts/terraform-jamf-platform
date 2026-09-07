@@ -1,6 +1,6 @@
 ## Root provider requirements
 terraform {
-  required_version = ">= 1.11"
+  required_version = ">= 1.14" # actions (action_trigger) require 1.14+
   required_providers {
     jamfplatform = {
       source  = "Jamf-Concepts/jamfplatform"

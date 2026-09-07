@@ -322,6 +322,31 @@ module "management-app-installers-google-chrome-cloud-management" {
 
 ## Begin Jamf Security Cloud Configuration
 
+## Create UEMC (JAMF_PRO, platform_tenant auth -- no credential to mint)
+module "configuration-jamf-security-cloud-jamf-pro" {
+  count                      = var.include_jsc_uemc == true ? 1 : 0
+  source                     = "./modules/configuration-jamf-security-cloud-jamf-pro"
+  jamfplatform_base_url      = var.jamfplatform_base_url
+  jamfplatform_client_id     = var.jamfplatform_client_id
+  jamfplatform_client_secret = var.jamfplatform_client_secret
+  providers = {
+    jamfplatform.jpro = jamfplatform.jpro
+  }
+}
+
+## Create Jamf Security Cloud Activation Profile containing ALL JSC Services
+module "configuration-jamf-security-cloud-all-services" {
+  count                      = var.include_jsc_all_services == true ? 1 : 0
+  source                     = "./modules/configuration-jamf-security-cloud-all-services"
+  jamfplatform_base_url      = var.jamfplatform_base_url
+  jamfplatform_client_id     = var.jamfplatform_client_id
+  jamfplatform_client_secret = var.jamfplatform_client_secret
+  uem_connect_dependency     = var.include_jsc_uemc == true ? module.configuration-jamf-security-cloud-jamf-pro[0].uem_connect_id : ""
+  providers = {
+    jamfplatform.jpro = jamfplatform.jpro
+  }
+}
+
 module "network-security-access-policy" {
   source             = "./modules/network-security-access-policy"
   for_each           = toset(var.access_policies)

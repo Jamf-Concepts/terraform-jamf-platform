@@ -4,42 +4,6 @@ variable "jamfplatform_base_url" {
   default   = ""
 }
 
-variable "jsc_username" {
-  type      = string
-  sensitive = false
-  default   = ""
-}
-
-variable "jsc_password" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "okta_client_id" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "okta_org_domain" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "clientid" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "clientsecret" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
 variable "jamfplatform_client_id" {
   type      = string
   sensitive = true
@@ -52,40 +16,8 @@ variable "jamfplatform_client_secret" {
   default   = ""
 }
 
-variable "block_page_logo" {
-  type      = string
-  sensitive = false
-  default   = ""
+variable "uem_connect_dependency" {
+  description = "The sibling UEM Connect module's connector id, passed through only to order this module's deploy actions after that connector exists."
+  type        = string
+  default     = ""
 }
-
-variable "enable_jsc_uemc" {
-  type    = string
-  default = ""
-}
-
-variable "enable_jsc_uemc_output" {
-  type    = string
-  default = ""
-}
-
-variable "category_id_output" {
-  type    = string
-  default = ""
-}
-
-variable "jsc_mobile_plist" {
-  type    = string
-  default = ""
-}
-
-variable "supervisedplist_output" {
-  type    = string
-  default = ""
-}
-
-variable "random_string" {
-  type    = string
-  default = ""
-}
-
-
