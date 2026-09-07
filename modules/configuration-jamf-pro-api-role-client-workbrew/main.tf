@@ -9,19 +9,13 @@ terraform {
   }
 }
 
-resource "jamfplatform_pro_api_role" "workbrew_api_role" {
-  display_name = "Workbrew"
-  privileges = [
-    "Read Smart Computer Groups",
-    "Read Computers",
-    "Read Static Computer Groups",
-    "Read Accounts"
-  ]
-}
-
-resource "jamfplatform_pro_api_client" "workbrew_api_integeration" {
-  display_name        = "Workbrew"
-  enabled             = true
-  api_roles           = [jamfplatform_pro_api_role.workbrew_api_role.display_name]
-  credential_rotation = "1"
-}
+## jamfplatform_pro_api_role and jamfplatform_pro_api_client were withdrawn from
+## the provider at Platform API GA (credential management for Jamf Pro API
+## integrations moved to Jamf Account, human-only, no API path) -- there is
+## currently no programmatic way to mint an API integration for Workbrew at
+## all. Not a Foundations-onboarder concern (this module is unused there,
+## gated behind include_workbrew_api_role_client which Foundations never
+## sets), but left as a no-op rather than deleted so the shared repo's
+## Terraform graph stays valid for every onboarder on this branch. Outputs
+## below return null until Jamf restores a programmatic path or Workbrew
+## accepts a different credential type.
