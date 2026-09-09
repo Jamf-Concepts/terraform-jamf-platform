@@ -24,7 +24,15 @@ terraform {
 ## credentials there, instead of us supplying an API integration's client_id/secret.
 data "jamfplatform_pro_tenant_id" "jamf_pro" {}
 
+## Jamf Security Cloud allows only one UEM Connect integration per tenant
+## (see the provider's CONNECTOR_CONFIG_ALREADY_EXISTS diagnostic). Onboarder
+## test tenants commonly already have one from a prior run, and that's an
+## expected, non-fatal state -- the rest of the deploy should still apply. The
+## caller checks for an existing integration via the Platform API before this
+## module runs and passes its id through; when non-empty, this resource is
+## skipped entirely and the existing integration's id is reused below instead.
 resource "jamfplatform_security_cloud_uem_connect" "jamf_pro" {
+  count      = var.uem_connect_already_exists_id == "" ? 1 : 0
   uem_vendor = "JAMF_PRO"
 
   platform_tenant = {

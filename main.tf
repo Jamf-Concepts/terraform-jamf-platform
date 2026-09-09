@@ -324,11 +324,12 @@ module "management-app-installers-google-chrome-cloud-management" {
 
 ## Create UEMC (JAMF_PRO, platform_tenant auth -- no credential to mint)
 module "configuration-jamf-security-cloud-jamf-pro" {
-  count                      = var.include_jsc_uemc == true ? 1 : 0
-  source                     = "./modules/configuration-jamf-security-cloud-jamf-pro"
-  jamfplatform_base_url      = var.jamfplatform_base_url
-  jamfplatform_client_id     = var.jamfplatform_client_id
-  jamfplatform_client_secret = var.jamfplatform_client_secret
+  count                         = var.include_jsc_uemc == true ? 1 : 0
+  source                        = "./modules/configuration-jamf-security-cloud-jamf-pro"
+  jamfplatform_base_url         = var.jamfplatform_base_url
+  jamfplatform_client_id        = var.jamfplatform_client_id
+  jamfplatform_client_secret    = var.jamfplatform_client_secret
+  uem_connect_already_exists_id = var.uem_connect_already_exists_id
   providers = {
     jamfplatform.jpro = jamfplatform.jpro
   }

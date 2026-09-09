@@ -367,6 +367,12 @@ variable "enable_jsc_uemc" {
   default = false
 }
 
+variable "uem_connect_already_exists_id" {
+  description = "Id of an existing UEM Connect integration for this tenant, if the caller found one before this run via the Platform API. When non-empty, configuration-jamf-security-cloud-jamf-pro skips creating a new integration (Jamf Security Cloud allows only one per tenant) and reuses this id instead."
+  type        = string
+  default     = ""
+}
+
 variable "enable_jsc_uemc_output" {
   type    = bool
   default = false

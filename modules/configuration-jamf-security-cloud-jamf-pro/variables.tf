@@ -40,4 +40,10 @@ variable "random_string" {
   default = ""
 }
 
+variable "uem_connect_already_exists_id" {
+  description = "Id of an existing UEM Connect integration for this tenant, if the caller found one before this run. When non-empty, this module skips creating a new integration (Jamf Security Cloud allows only one per tenant) and reuses this id instead."
+  type        = string
+  default     = ""
+}
+
 
