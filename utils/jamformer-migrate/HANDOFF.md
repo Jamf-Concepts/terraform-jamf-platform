@@ -2,7 +2,7 @@
 
 ## Context
 
-We are building a Go CLI tool called `jamformer-migrate` that migrates Terraform projects from the `deploymenttheory/jamfpro` provider to the `Jamf-Concepts/jamfplatform` provider. The tool lives at:
+We are building a Go CLI tool called `jamformer-migrate` that migrates Terraform projects from the `deploymenttheory/jamfpro` provider to the `jamf/jamfplatform` provider. The tool lives at:
 
 ```
 /Users/admin/Documents/GitHub/jamf/terraform-jamf-platform/utils/jamformer-migrate/

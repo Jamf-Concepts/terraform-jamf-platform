@@ -3,7 +3,7 @@
 A CLI tool that migrates Terraform configuration files from the community
 [`deploymenttheory/jamfpro`](https://registry.terraform.io/providers/deploymenttheory/jamfpro)
 provider to the official
-[`Jamf-Concepts/jamfplatform`](https://registry.terraform.io/providers/Jamf-Concepts/jamfplatform)
+[`jamf/jamfplatform`](https://registry.terraform.io/providers/jamf/jamfplatform)
 provider.
 
 ## Overview
@@ -120,7 +120,7 @@ After the `.tf` files are rewritten, update your provider block:
 terraform {
   required_providers {
     jamfplatform = {
-      source  = "Jamf-Concepts/jamfplatform"
+      source  = "jamf/jamfplatform"
       version = "~> 1.0"
     }
   }
@@ -139,7 +139,7 @@ Address any remaining plan errors before applying.
 ## Resource coverage
 
 The tool handles all resource types from the `deploymenttheory/jamfpro`
-provider that have an equivalent in `Jamf-Concepts/jamfplatform`. Resources
+provider that have an equivalent in `jamf/jamfplatform`. Resources
 are grouped into four internal tiers based on migration complexity:
 
 - **Tier 1** — type rename only (7 resources)

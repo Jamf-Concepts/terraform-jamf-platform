@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Migrate Terraform module resource types from deploymenttheory/jamfpro to
-Jamf-Concepts/jamfplatform.
+jamf/jamfplatform.
 
 Usage:
     python3 utils/migrate_provider_resources.py [modules_dir]

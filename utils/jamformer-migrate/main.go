@@ -19,7 +19,7 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: jamformer-migrate [flags] <input-dir>\n\n")
 		fmt.Fprintf(os.Stderr, "Migrates Terraform .tf files from deploymenttheory/jamfpro provider\n")
-		fmt.Fprintf(os.Stderr, "to Jamf-Concepts/jamfplatform provider.\n\n")
+		fmt.Fprintf(os.Stderr, "to jamf/jamfplatform provider.\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\nExit codes:\n")
