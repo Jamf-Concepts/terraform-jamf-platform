@@ -216,7 +216,7 @@ export TF_VAR_jamfplatform_environment_id="..."
 terraform init
 ```
 
-Terraform downloads the `Jamf-Concepts/jamfplatform` Platform API provider from the registry
+Terraform downloads the `jamf/jamfplatform` Platform API provider from the registry
 into a local `.terraform/` cache. Run this once after cloning.
 
 To update providers to newer versions within the declared constraints, run:
