@@ -20,7 +20,7 @@ credentials or state buckets.
 Built on the
 [Jamf-Concepts/jamfprotect](https://registry.terraform.io/providers/Jamf-Concepts/jamfprotect/latest)
 and
-[Jamf-Concepts/jamfplatform](https://registry.terraform.io/providers/Jamf-Concepts/jamfplatform/latest)
+[jamf/jamfplatform](https://registry.terraform.io/providers/jamf/jamfplatform/latest)
 providers. Jamf Pro is reached through the Platform API gateway, which means a
 regional endpoint and a platform environment UUID instead of a per-instance
 hostname.
@@ -685,7 +685,7 @@ versions is the more conservative position, and a reasonable one.
 | Provider | Source | Minimum |
 |---|---|---|
 | jamfprotect | `Jamf-Concepts/jamfprotect` | 0.10.0 |
-| jamfplatform | `Jamf-Concepts/jamfplatform` | 0.29.0 |
+| jamfplatform | `jamf/jamfplatform` | 0.32.0 |
 
 **Providers are configured inside the module, not in each root.** This keeps
 customer workspaces thin, at the cost of a module that cannot be called with

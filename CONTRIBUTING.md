@@ -29,7 +29,7 @@ Open a GitHub issue with:
 Provider bugs belong on the provider repositories rather than here:
 
 - [Jamf-Concepts/terraform-provider-jamfprotect](https://github.com/Jamf-Concepts/terraform-provider-jamfprotect)
-- [Jamf-Concepts/terraform-provider-jamfplatform](https://github.com/Jamf-Concepts/terraform-provider-jamfplatform)
+- [jamf/terraform-provider-jamfplatform](https://github.com/jamf/terraform-provider-jamfplatform)
 
 ## Proposing changes
 
@@ -116,7 +116,7 @@ sandbox tenant and note which feature or fix motivated it.
 In scope:
 
 - Jamf Protect resources via `Jamf-Concepts/jamfprotect`
-- Jamf Pro resources via `Jamf-Concepts/jamfplatform`, where they support the
+- Jamf Pro resources via `jamf/jamfplatform`, where they support the
   Protect deployment
 - The pipeline, the scripts, and the documentation around both
 
