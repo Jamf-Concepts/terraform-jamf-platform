@@ -29,7 +29,7 @@ Open a GitHub issue with:
   redacted)
 - A minimal HCL snippet that reproduces the issue
 
-Report provider bugs in `Jamf-Concepts/jamfplatform` on that provider's own
+Report provider bugs in `jamf/jamfplatform` on that provider's own
 repository.
 
 ## Proposing changes
@@ -81,7 +81,7 @@ sandbox tenant and note what feature or fix motivated the bump.
 In scope:
 
 - Jamf Pro resources and Jamf Platform features (e.g. Blueprints) via the
-  `Jamf-Concepts/jamfplatform` provider
+  `jamf/jamfplatform` provider
 
 Out of scope:
 

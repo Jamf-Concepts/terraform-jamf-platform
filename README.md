@@ -7,7 +7,7 @@
 > repository are unrelated and follow different layouts.
 
 Terraform configuration for managing the Jamf Platform using the
-[Jamf-Concepts/jamfplatform](https://registry.terraform.io/providers/Jamf-Concepts/jamfplatform/latest)
+[jamf/jamfplatform](https://registry.terraform.io/providers/jamf/jamfplatform/latest)
 provider, Jamf's own provider, which fronts both Jamf Pro resources and
 Jamf Platform features such as Blueprints through a single regional API
 gateway.
@@ -430,7 +430,7 @@ aligned with jamformer's output on purpose, so the structural refactor is a
 move rather than a rewrite.
 
 > **Provider note.** Jamformer targets the `deploymenttheory/jamfpro`
-> provider, whereas this branch uses the `Jamf-Concepts/jamfplatform`
+> provider, whereas this branch uses the `jamf/jamfplatform`
 > provider. The resource *type names* differ accordingly (`jamfpro_*` →
 > `jamfplatform_pro_*`, smart groups → `jamfplatform_device_group`), so
 > adopting a jamformer export here involves translating resource types in
@@ -486,7 +486,7 @@ find-and-replace step and let Terraform manage the state rewrite.
 
 | Provider | Source | Minimum version |
 |---|---|---|
-| jamfplatform | `Jamf-Concepts/jamfplatform` | 0.29.0 |
+| jamfplatform | `jamf/jamfplatform` | 0.32.0 |
 | time | `hashicorp/time` | 0.13.0 |
 | itunessearchapi | `neilmartin83/itunessearchapi` | 0.1.0 |
 
