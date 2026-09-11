@@ -14,7 +14,7 @@ terraform {
 ## baseline supports), so unlike the classic-API modules this doesn't need a
 ## smart group per OS version.
 resource "jamfplatform_device_group" "all_macs_cbengine_benchmark" {
-  name        = "${var.benchmark_title} - All Managed Macs"
+  name        = "[Foundations] ${var.benchmark_title} - All Managed Macs"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -31,7 +31,7 @@ data "jamfplatform_cbengine_rules" "benchmark" {
 }
 
 resource "jamfplatform_cbengine_benchmark" "benchmark" {
-  title              = "${var.benchmark_title} - macOS"
+  title              = "[Foundations] ${var.benchmark_title} - macOS"
   description        = "Deployed by the Jamf Foundations onboarder via the Compliance Benchmarks Engine."
   source_baseline_id = var.baseline_id
 

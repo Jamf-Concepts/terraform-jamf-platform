@@ -12,7 +12,7 @@ terraform {
 ## Target every managed Mac, mirroring the device-group pattern used by
 ## compliance-macOS-cbengine-cis-level-1.
 resource "jamfplatform_device_group" "all_macs_software_update" {
-  name        = "Software Update Blueprint - All Managed Macs"
+  name        = "[Foundations] Software Update Blueprint - All Managed Macs"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -25,7 +25,7 @@ resource "jamfplatform_device_group" "all_macs_software_update" {
 }
 
 resource "jamfplatform_blueprints_blueprint" "software_update" {
-  name        = "[Jamf Foundations] macOS Software Update Enforcement"
+  name        = "[Foundations] macOS Software Update Enforcement"
   description = "Deployed by the Jamf Foundations onboarder. Enforces OS patching via the Jamf Blueprints Software Update Settings component (DDM)."
   deployed    = true
 

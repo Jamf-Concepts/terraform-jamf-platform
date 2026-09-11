@@ -14,36 +14,36 @@ terraform {
 ## Create Categories
 
 resource "jamfplatform_pro_category" "category_communication" {
-  name     = "Communication"
+  name     = "[Foundations] Communication"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_developer_tools" {
-  name     = "Developer Tools"
+  name     = "[Foundations] Developer Tools"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_network" {
-  name     = "Network Security"
+  name     = "[Foundations] Network Security"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_printers" {
-  name     = "Printers"
+  name     = "[Foundations] Printers"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_productivity" {
-  name     = "Productivity"
+  name     = "[Foundations] Productivity"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_security_compliance" {
-  name     = "Security and Compliance"
+  name     = "[Foundations] Security and Compliance"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_uninstallers" {
-  name     = "Uninstallers"
+  name     = "[Foundations] Uninstallers"
   priority = 9
 }
