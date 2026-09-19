@@ -11,16 +11,16 @@ terraform {
 
 ## Create categories
 resource "jamfplatform_pro_category" "category_ssoe" {
-  name     = "IdP & SSO"
+  name     = "[Foundations] IdP & SSO"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfplatform_pro_script" "script_ssoe-okta" {
-  name     = "SSOe-(Okta)"
-  priority = "AFTER"
-  info     = "This script will check for the presence of the Okta Verify App. If not present, it will download and install the latest version. It will then launch the app with the the URL of the Experience Jamf Okta tenant."
-  script_contents   = file("${path.module}/support_files/computer_scripts/SSOe-(Okta).zsh")
+  name            = "SSOe-(Okta)"
+  priority        = "AFTER"
+  info            = "This script will check for the presence of the Okta Verify App. If not present, it will download and install the latest version. It will then launch the app with the the URL of the Experience Jamf Okta tenant."
+  script_contents = file("${path.module}/support_files/computer_scripts/SSOe-(Okta).zsh")
 }
 
 ## Create Smart Computer Groups
@@ -83,7 +83,7 @@ resource "jamfplatform_pro_policy" "policy_ssoe" {
 
 
   general = {
-    name            = "Enable SSOe (Okta)"
+    name            = "[Foundations] Enable SSOe (Okta)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Once per computer"

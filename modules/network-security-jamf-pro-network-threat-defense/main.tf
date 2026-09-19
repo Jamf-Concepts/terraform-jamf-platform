@@ -33,7 +33,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "mtd" {
 
   depends_on = [jsc_ap.mtd_only]
   general = {
-    name                = "Network Threat Defense - macOS (Supervised)"
+    name                = "[Foundations] Network Threat Defense - macOS (Supervised)"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     level               = "Computer Level"

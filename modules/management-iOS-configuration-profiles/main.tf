@@ -21,12 +21,12 @@ terraform {
 
 ## Create Categories
 resource "jamfplatform_pro_category" "category_restrictions" {
-  name     = "Restrictions"
+  name     = "[Foundations] Restrictions"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_demo" {
-  name     = "Demo"
+  name     = "[Foundations] Demo"
   priority = 9
 }
 
@@ -34,7 +34,7 @@ resource "jamfplatform_pro_category" "category_demo" {
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_apple_id_changes" {
 
   general = {
-    name                = "Restrict Apple Account Changes"
+    name                = "[Foundations] Restrict Apple Account Changes"
     description         = "This restricts the ability to modify account settings for Apple ID"
     distribution_method = "Install Automatically"
     level               = "Device Level"
@@ -52,7 +52,7 @@ resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_c
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_airdrop" {
 
   general = {
-    name                = "Restrict AirDrop"
+    name                = "[Foundations] Restrict AirDrop"
     description         = "This restricts the ability to use AirDrop"
     distribution_method = "Install Automatically"
     level               = "Device Level"
@@ -70,7 +70,7 @@ resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_c
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_passcode_requirements" {
 
   general = {
-    name                = "Passcode Requirements"
+    name                = "[Foundations] Passcode Requirements"
     description         = "Enforces a non complex 6 digit passcode"
     distribution_method = "Install Automatically"
     level               = "Device Level"
@@ -88,7 +88,7 @@ resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_c
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_erase_all_content_and_settings" {
 
   general = {
-    name                = "Restrict Erase All Content and Settings"
+    name                = "[Foundations] Restrict Erase All Content and Settings"
     description         = "Restricts Erase All Content and Settings"
     distribution_method = "Install Automatically"
     level               = "Device Level"
@@ -106,7 +106,7 @@ resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_c
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_camera" {
 
   general = {
-    name                = "Restrict Camera"
+    name                = "[Foundations] Restrict Camera"
     description         = "Restricts the Camera in all Use and Apps"
     distribution_method = "Install Automatically"
     level               = "Device Level"
@@ -124,7 +124,7 @@ resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_c
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_restrict_screenshots" {
 
   general = {
-    name                = "Restrict Screenshots"
+    name                = "[Foundations] Restrict Screenshots"
     description         = "Restricts the Ability to take Screenshots"
     distribution_method = "Install Automatically"
     level               = "Device Level"
@@ -142,7 +142,7 @@ resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_c
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_user_enrollment_byod_restrictions" {
 
   general = {
-    name                = "Demo - User Enrollment / BYOD Restrictions"
+    name                = "[Foundations] Demo - User Enrollment / BYOD Restrictions"
     description         = "Sets DLP restrictions for User Enrollment / BYOD"
     distribution_method = "Install Automatically"
     level               = "Device Level"
@@ -160,7 +160,7 @@ resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_c
 ## Extension Attribute for Shared Device and Kiosk Mode examples
 
 resource "jamfplatform_pro_mobile_device_extension_attribute" "device_type" {
-  name        = "Device Type"
+  name        = "[Foundations] Device Type"
   description = "Select between kiosk, shared, or none for device types"
   data_type   = "STRING"
 
@@ -175,7 +175,7 @@ resource "jamfplatform_pro_mobile_device_extension_attribute" "device_type" {
 ## Smart Groups for Shared Device and Kiosk Mode
 
 resource "jamfplatform_device_group" "device_type_kiosk_mode" {
-  name = "Demo - Kiosk Devices"
+  name = "[Foundations] Demo - Kiosk Devices"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -189,7 +189,7 @@ resource "jamfplatform_device_group" "device_type_kiosk_mode" {
 }
 
 resource "jamfplatform_device_group" "device_type_shared_device_mode" {
-  name = "Demo - Shared Devices"
+  name = "[Foundations] Demo - Shared Devices"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -207,7 +207,7 @@ resource "jamfplatform_device_group" "device_type_shared_device_mode" {
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_kiosk_mode" {
 
   general = {
-    name                = "Demo - Kiosk Mode - Safari (Single App Mode)"
+    name                = "[Foundations] Demo - Kiosk Mode - Safari (Single App Mode)"
     description         = "Places device in Single App Mode for Safari"
     distribution_method = "Install Automatically"
     level               = "Device Level"
@@ -225,7 +225,7 @@ resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_c
 resource "jamfplatform_pro_mobile_device_configuration_profile" "mobile_device_configuration_profile_shared_device_mode" {
 
   general = {
-    name                = "Demo - Shared Device Mode - Restrictions"
+    name                = "[Foundations] Demo - Shared Device Mode - Restrictions"
     description         = "Restricts AirDrop, Apple Account changes, Screenshots, Erase, and Camera"
     distribution_method = "Install Automatically"
     level               = "Device Level"

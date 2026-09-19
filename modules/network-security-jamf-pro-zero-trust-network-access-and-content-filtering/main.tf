@@ -33,7 +33,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "ztna_dp" {
 
   depends_on = [jsc_ap.ztna_dp_only]
   general = {
-    name                = "Jamf Connect ZTNA and Content Filtering - macOS (Supervised)"
+    name                = "[Foundations] Jamf Connect ZTNA and Content Filtering - macOS (Supervised)"
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
     level               = "Computer Level"

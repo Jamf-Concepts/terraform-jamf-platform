@@ -11,7 +11,7 @@ terraform {
 
 ## Create Smart Computer Groups - Quality Of Life
 resource "jamfplatform_device_group" "group_sonoma_computers" {
-  name        = "*Sonoma Macs"
+  name        = "[Foundations] *Sonoma Macs"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -24,7 +24,7 @@ resource "jamfplatform_device_group" "group_sonoma_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_computers" {
-  name        = "*Sequoia Macs"
+  name        = "[Foundations] *Sequoia Macs"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -37,7 +37,7 @@ resource "jamfplatform_device_group" "group_sequoia_computers" {
 }
 
 resource "jamfplatform_device_group" "group_last_checkin" {
-  name        = "*7 Days Since Last Check-In"
+  name        = "[Foundations] *7 Days Since Last Check-In"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -50,7 +50,7 @@ resource "jamfplatform_device_group" "group_last_checkin" {
 }
 
 resource "jamfplatform_device_group" "group_available_swu" {
-  name        = "*Available Software Updates"
+  name        = "[Foundations] *Available Software Updates"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -65,7 +65,7 @@ resource "jamfplatform_device_group" "group_available_swu" {
 ## Create Smart Mobile Device Groups - Quality Of Life
 
 resource "jamfplatform_device_group" "supervised_ios" {
-  name = "*Supervised Devices"
+  name = "[Foundations] *Supervised Devices"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -79,7 +79,7 @@ resource "jamfplatform_device_group" "supervised_ios" {
 }
 
 resource "jamfplatform_device_group" "unsupervised_ios" {
-  name = "*Un-Supervised Devices"
+  name = "[Foundations] *Un-Supervised Devices"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -93,7 +93,7 @@ resource "jamfplatform_device_group" "unsupervised_ios" {
 }
 
 resource "jamfplatform_device_group" "byod_ios" {
-  name = "*BYOD Devices"
+  name = "[Foundations] *BYOD Devices"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -107,7 +107,7 @@ resource "jamfplatform_device_group" "byod_ios" {
 }
 
 resource "jamfplatform_device_group" "ios_17" {
-  name = "*Devices Running iOS 17"
+  name = "[Foundations] *Devices Running iOS 17"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -121,7 +121,7 @@ resource "jamfplatform_device_group" "ios_17" {
 }
 
 resource "jamfplatform_device_group" "ios_18" {
-  name = "*Devices Running iOS 18"
+  name = "[Foundations] *Devices Running iOS 18"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -135,7 +135,7 @@ resource "jamfplatform_device_group" "ios_18" {
 }
 
 resource "jamfplatform_device_group" "group_last_checkin_mobile" {
-  name = "*Last Check-In More Than a Week Ago"
+  name = "[Foundations] *Last Check-In More Than a Week Ago"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -149,7 +149,7 @@ resource "jamfplatform_device_group" "group_last_checkin_mobile" {
 }
 
 resource "jamfplatform_device_group" "group_used_space_above_75" {
-  name = "*Used Storage above 75 percent"
+  name = "[Foundations] *Used Storage above 75 percent"
 
   group_type  = "smart"
   device_type = "mobile"
@@ -163,7 +163,7 @@ resource "jamfplatform_device_group" "group_used_space_above_75" {
 }
 
 resource "jamfplatform_device_group" "group_passcode_not_present" {
-  name = "*Passcode Not Present"
+  name = "[Foundations] *Passcode Not Present"
 
   group_type  = "smart"
   device_type = "mobile"

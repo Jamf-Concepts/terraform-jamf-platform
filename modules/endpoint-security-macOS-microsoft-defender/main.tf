@@ -16,13 +16,13 @@ data "http" "defender_combined" {
 
 ## Create Categories
 resource "jamfplatform_pro_category" "category_defender" {
-  name     = "Microsoft Defender"
+  name     = "[Foundations] Microsoft Defender"
   priority = 9
 }
 
 ## Create Smart Group for scoping Microsoft Defender
 resource "jamfplatform_device_group" "microsoft_defender_target" {
-  name        = "Microsoft Defender Target Group"
+  name        = "[Foundations] Microsoft Defender Target Group"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -44,7 +44,7 @@ resource "jamfplatform_device_group" "microsoft_defender_target" {
 resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configuration_combined" {
 
   general = {
-    name                = "Microsoft Defender MacOS Settings"
+    name                = "[Foundations] Microsoft Defender MacOS Settings"
     description         = "This will configure all necessary settings for Microsoft Defender for Endpoint on macOS including Content Filtering, Notifications, PPPC, Allowed System Extensions and Managed Login Items. For more information, please see: https://learn.microsoft.com/en-us/defender-endpoint/mac-jamfpro-policies#step-2-create-and-deploy-microsoft-defender-for-endpoint-configuration-profiles"
     level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_defender.id
@@ -63,7 +63,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
 resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configuration_mau" {
 
   general = {
-    name                = "Microsoft Defender Auto Update Settings"
+    name                = "[Foundations] Microsoft Defender Auto Update Settings"
     description         = "Configuration profile to manage Microsoft Defender for Endpoint auto update settings on macOS devices."
     level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_defender.id
@@ -82,7 +82,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configura
 resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configuration_onboarding" {
 
   general = {
-    name                = "Microsoft Defender Onboarding Settings"
+    name                = "[Foundations] Microsoft Defender Onboarding Settings"
     description         = "This profile contains the Microsoft Defender for Endpoint onboarding configuration for macOS devices."
     level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_defender.id

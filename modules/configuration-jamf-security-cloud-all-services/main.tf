@@ -20,12 +20,12 @@ terraform {
 ## configuration profile itself; this module no longer creates one directly.
 
 resource "jamfplatform_pro_category" "jsc_all_services_profiles" {
-  name     = "Jamf Security Cloud - Activation Profiles"
+  name     = "[Foundations] Jamf Security Cloud - Activation Profiles"
   priority = 9
 }
 
 resource "jamfplatform_device_group" "all_macs" {
-  name        = "All Computers"
+  name        = "[Foundations] All Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -38,7 +38,7 @@ resource "jamfplatform_device_group" "all_macs" {
 }
 
 resource "jamfplatform_device_group" "supervised_devices" {
-  name        = "Supervised Mobile Devices"
+  name        = "[Foundations] Supervised Mobile Devices"
   group_type  = "smart"
   device_type = "mobile"
   criteria = [

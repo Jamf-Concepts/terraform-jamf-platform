@@ -11,33 +11,33 @@ terraform {
 
 ## Create categories
 resource "jamfplatform_pro_category" "category_sonoma_stig_benchmarks" {
-  name     = "Sonoma - DISA STIG Benchmarks"
+  name     = "[Foundations] Sonoma - DISA STIG Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_sequoia_stig_benchmarks" {
-  name     = "Sequoia - DISA STIG Benchmarks"
+  name     = "[Foundations] Sequoia - DISA STIG Benchmarks"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfplatform_pro_script" "script_sonoma_stig_compliance" {
-  name     = "Sonoma - DISA STIG Compliance"
-  priority = "AFTER"
-  info     = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sonoma"
-  script_contents   = file("${path.module}/support_files/computer_scripts/sonoma_stig_compliance.sh")
+  name            = "[Foundations] Sonoma - DISA STIG Compliance"
+  priority        = "AFTER"
+  info            = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sonoma"
+  script_contents = file("${path.module}/support_files/computer_scripts/sonoma_stig_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_stig_compliance" {
-  name     = "Sequoia - DISA STIG Compliance"
-  priority = "AFTER"
-  info     = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sequoia"
-  script_contents   = file("${path.module}/support_files/computer_scripts/sequoia_stig_compliance.sh")
+  name            = "[Foundations] Sequoia - DISA STIG Compliance"
+  priority        = "AFTER"
+  info            = "This script will apply a set of rules related to the DISA STIG benchmark for macOS Sequoia"
+  script_contents = file("${path.module}/support_files/computer_scripts/sequoia_stig_compliance.sh")
 }
 
 ## Create computer extension attributes
 resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_failed_count" {
-  name              = "DISA STIG - Failed Results Count"
+  name              = "[Foundations] DISA STIG - Failed Results Count"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "INTEGER"
@@ -46,7 +46,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_failed_count" 
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_failed_list" {
-  name              = "DISA STIG - Failed Results List"
+  name              = "[Foundations] DISA STIG - Failed Results List"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "STRING"
@@ -55,7 +55,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_failed_list" {
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_version" {
-  name              = "DISA STIG - Compliance Version"
+  name              = "[Foundations] DISA STIG - Compliance Version"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "STRING"
@@ -65,7 +65,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_stig_version" {
 
 ## Create Smart Computer Groups
 resource "jamfplatform_device_group" "group_sonoma_computers" {
-  name        = "DISA STIG - Sonoma Computers"
+  name        = "[Foundations] DISA STIG - Sonoma Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -84,7 +84,7 @@ resource "jamfplatform_device_group" "group_sonoma_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sonoma_stig_non_compliant" {
-  name        = "DISA STIG - Sonoma - Non Compliant Computers"
+  name        = "[Foundations] DISA STIG - Sonoma - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -103,7 +103,7 @@ resource "jamfplatform_device_group" "group_sonoma_stig_non_compliant" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_computers" {
-  name        = "DISA STIG - Sequoia Computers"
+  name        = "[Foundations] DISA STIG - Sequoia Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -122,7 +122,7 @@ resource "jamfplatform_device_group" "group_sequoia_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_stig_non_compliant" {
-  name        = "DISA STIG - Sequoia - Non Compliant Computers"
+  name        = "[Foundations] DISA STIG - Sequoia - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -146,7 +146,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_stig_audit" {
 
 
   general = {
-    name            = "DISA STIG - Audit (Sonoma)"
+    name            = "[Foundations] DISA STIG - Audit (Sonoma)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -188,7 +188,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_stig_remediation" {
 
 
   general = {
-    name            = "DISA STIG - Remediation (Sonoma)"
+    name            = "[Foundations] DISA STIG - Remediation (Sonoma)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -232,7 +232,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_stig_audit" {
 
 
   general = {
-    name            = "DISA STIG - Audit (Sequoia)"
+    name            = "[Foundations] DISA STIG - Audit (Sequoia)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -274,7 +274,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_stig_remediation" {
 
 
   general = {
-    name            = "DISA STIG - Remediation (Sequoia)"
+    name            = "[Foundations] DISA STIG - Remediation (Sequoia)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -365,7 +365,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_stig_smart_card"
 
 
   general = {
-    name                = "Sonoma DISA STIG - Smart Card"
+    name                = "[Foundations] Sonoma DISA STIG - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'DISA STIG - Sonoma Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
@@ -434,7 +434,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_stig_smart_card
 
 
   general = {
-    name                = "Sequoia DISA STIG - Smart Card"
+    name                = "[Foundations] Sequoia DISA STIG - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'DISA STIG - Sequoia Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"

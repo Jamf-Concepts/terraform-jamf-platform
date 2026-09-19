@@ -12,9 +12,9 @@ terraform {
 
 ## Create Jamf Protect <> Jamf Pro integration
 resource "jamfplatform_pro_jamf_protect" "protect_integration" {
-  client_id    = var.jamfprotect_client_id
-  password     = var.jamfprotect_client_password
-  auto_install = true
+  client_id           = var.jamfprotect_client_id
+  password            = var.jamfprotect_client_password
+  auto_install        = true
   api_url             = var.jamfprotect_url
   password_wo_version = 1
   timeouts = {
@@ -24,14 +24,14 @@ resource "jamfplatform_pro_jamf_protect" "protect_integration" {
 
 ## Create Category
 resource "jamfplatform_pro_category" "category_jamfprotect_security" {
-  name     = "Security - Jamf Protect"
+  name     = "[Foundations] Security - Jamf Protect"
   priority = 9
 }
 
 # Create Smart Group and Congfiguration Profile to identify Sequoia Macs and make Jamf Protect a non removable system extension
 
 resource "jamfplatform_device_group" "group_sequoia_computers_jamf_protect" {
-  name        = "Macs on MacOS Sequoia (Jamf Protect System Extension Enforcement)"
+  name        = "[Foundations] Macs on MacOS Sequoia (Jamf Protect System Extension Enforcement)"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -46,7 +46,7 @@ resource "jamfplatform_device_group" "group_sequoia_computers_jamf_protect" {
 resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configuration_profile_jamf_protect_system_extension" {
 
   general = {
-    name                = "Jamf Protect System Extension Enforcement"
+    name                = "[Foundations] Jamf Protect System Extension Enforcement"
     description         = "This configuration profile prevents users from disabling the Jamf Protect System Extension"
     level               = "Computer Level"
     redeploy_on_update  = "Newly Assigned"

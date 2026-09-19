@@ -10,12 +10,12 @@ terraform {
 }
 
 resource "jamfplatform_pro_category" "microsoft_psso" {
-  name     = "Microsoft Entra PSSO"
+  name     = "[Foundations] Microsoft Entra PSSO"
   priority = 9
 }
 
 resource "jamfplatform_device_group" "microsoft_psso_target" {
-  name        = "Microsoft Entra PSSO Target Group"
+  name        = "[Foundations] Microsoft Entra PSSO Target Group"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -34,7 +34,7 @@ resource "jamfplatform_device_group" "microsoft_psso_target" {
 }
 
 resource "jamfplatform_device_group" "microsoft_psso_exclusion" {
-  name        = "Microsoft Entra PSSO Exclusion Group"
+  name        = "[Foundations] Microsoft Entra PSSO Exclusion Group"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -66,7 +66,7 @@ resource "jamfplatform_pro_policy" "install_microsoft_company_portal" {
 
 
   general = {
-    name                        = "Install Microsoft Company Portal"
+    name                        = "[Foundations] Install Microsoft Company Portal"
     enabled                     = true
     trigger_checkin             = true
     trigger_enrollment_complete = true
@@ -94,7 +94,7 @@ resource "jamfplatform_pro_policy" "install_microsoft_company_portal" {
 resource "jamfplatform_pro_macos_configuration_profile" "microsoft_psso_settings" {
 
   general = {
-    name                = "Microsoft Entra PSSO Settings"
+    name                = "[Foundations] Microsoft Entra PSSO Settings"
     description         = "Configuration Profile to set Microsoft Entra PSSO settings"
     level               = "Computer Level"
     distribution_method = "Install Automatically"

@@ -11,45 +11,45 @@ terraform {
 
 ## Create categories
 resource "jamfplatform_pro_category" "category_sonoma_800_171_benchmarks" {
-  name     = "Sonoma - NIST 800-171 Benchmarks"
+  name     = "[Foundations] Sonoma - NIST 800-171 Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_sequoia_800_171_benchmarks" {
-  name     = "Sequoia - NIST 800-171 Benchmarks"
+  name     = "[Foundations] Sequoia - NIST 800-171 Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_tahoe_800_171_benchmarks" {
-  name     = "Tahoe - NIST 800-171 Benchmarks"
+  name     = "[Foundations] Tahoe - NIST 800-171 Benchmarks"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfplatform_pro_script" "script_sonoma_800_171_compliance" {
-  name     = "Sonoma - NIST 800-171 Compliance"
-  priority = "AFTER"
-  info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sonoma"
-  script_contents   = file("${path.module}/support_files/computer_scripts/sonoma_800-171_compliance.sh")
+  name            = "[Foundations] Sonoma - NIST 800-171 Compliance"
+  priority        = "AFTER"
+  info            = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sonoma"
+  script_contents = file("${path.module}/support_files/computer_scripts/sonoma_800-171_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_800_171_compliance" {
-  name     = "Sequoia - NIST 800-171 Compliance"
-  priority = "AFTER"
-  info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sequoia"
-  script_contents   = file("${path.module}/support_files/computer_scripts/sequoia_800-171_compliance.sh")
+  name            = "[Foundations] Sequoia - NIST 800-171 Compliance"
+  priority        = "AFTER"
+  info            = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Sequoia"
+  script_contents = file("${path.module}/support_files/computer_scripts/sequoia_800-171_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_tahoe_800_171_compliance" {
-  name     = "Tahoe - NIST 800-171 Compliance"
-  priority = "AFTER"
-  info     = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Tahoe"
-  script_contents   = file("${path.module}/support_files/computer_scripts/tahoe_800-171_compliance.sh")
+  name            = "[Foundations] Tahoe - NIST 800-171 Compliance"
+  priority        = "AFTER"
+  info            = "This script will apply a set of rules related to the NIST 800-171 benchmark for macOS Tahoe"
+  script_contents = file("${path.module}/support_files/computer_scripts/tahoe_800-171_compliance.sh")
 }
 
 ## Create computer extension attributes
 resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_failed_count" {
-  name              = "NIST 800-171 - Failed Results Count"
+  name              = "[Foundations] NIST 800-171 - Failed Results Count"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "INTEGER"
@@ -58,7 +58,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_failed_coun
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_failed_list" {
-  name              = "NIST 800-171 - Failed Results List"
+  name              = "[Foundations] NIST 800-171 - Failed Results List"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "STRING"
@@ -67,7 +67,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_failed_list
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_version" {
-  name              = "NIST 800-171 - Compliance Version"
+  name              = "[Foundations] NIST 800-171 - Compliance Version"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "STRING"
@@ -77,7 +77,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_800_171_version" {
 
 ## Create Smart Computer Groups
 resource "jamfplatform_device_group" "group_sonoma_computers" {
-  name        = "NIST 800-171 - Sonoma Computers"
+  name        = "[Foundations] NIST 800-171 - Sonoma Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -96,7 +96,7 @@ resource "jamfplatform_device_group" "group_sonoma_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sonoma_800_171_non_compliant" {
-  name        = "NIST 800-171 - Sonoma - Non Compliant Computers"
+  name        = "[Foundations] NIST 800-171 - Sonoma - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -115,7 +115,7 @@ resource "jamfplatform_device_group" "group_sonoma_800_171_non_compliant" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_computers" {
-  name        = "NIST 800-171 - Sequoia Computers"
+  name        = "[Foundations] NIST 800-171 - Sequoia Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -134,7 +134,7 @@ resource "jamfplatform_device_group" "group_sequoia_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_800_171_non_compliant" {
-  name        = "NIST 800-171 - Sequoia - Non Compliant Computers"
+  name        = "[Foundations] NIST 800-171 - Sequoia - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -153,7 +153,7 @@ resource "jamfplatform_device_group" "group_sequoia_800_171_non_compliant" {
 }
 
 resource "jamfplatform_device_group" "group_tahoe_computers" {
-  name        = "NIST 800-171 - Tahoe Computers"
+  name        = "[Foundations] NIST 800-171 - Tahoe Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -172,7 +172,7 @@ resource "jamfplatform_device_group" "group_tahoe_computers" {
 }
 
 resource "jamfplatform_device_group" "group_tahoe_800_171_non_compliant" {
-  name        = "NIST 800-171 - Tahoe - Non Compliant Computers"
+  name        = "[Foundations] NIST 800-171 - Tahoe - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -196,7 +196,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_800_171_audit" {
 
 
   general = {
-    name            = "NIST 800-171 - Audit (Sonoma)"
+    name            = "[Foundations] NIST 800-171 - Audit (Sonoma)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -238,7 +238,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_800_171_remediation" {
 
 
   general = {
-    name            = "NIST 800-171 - Remediation (Sonoma)"
+    name            = "[Foundations] NIST 800-171 - Remediation (Sonoma)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -282,7 +282,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_800_171_audit" {
 
 
   general = {
-    name            = "NIST 800-171 - Audit (Sequoia)"
+    name            = "[Foundations] NIST 800-171 - Audit (Sequoia)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -324,7 +324,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_800_171_remediation" {
 
 
   general = {
-    name            = "NIST 800-171 - Remediation (Sequoia)"
+    name            = "[Foundations] NIST 800-171 - Remediation (Sequoia)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -368,7 +368,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_800_171_audit" {
 
 
   general = {
-    name            = "NIST 800-171 - Audit (Tahoe)"
+    name            = "[Foundations] NIST 800-171 - Audit (Tahoe)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -410,7 +410,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_800_171_remediation" {
 
 
   general = {
-    name            = "NIST 800-171 - Remediation (Tahoe)"
+    name            = "[Foundations] NIST 800-171 - Remediation (Tahoe)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -504,7 +504,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sonoma_800_171_smart_ca
 
 
   general = {
-    name                = "Sonoma NIST 800-171 - Smart Card"
+    name                = "[Foundations] Sonoma NIST 800-171 - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Sonoma Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
@@ -576,7 +576,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "sequoia_800_171_smart_c
 
 
   general = {
-    name                = "Sequoia NIST 800-171 - Smart Card"
+    name                = "[Foundations] Sequoia NIST 800-171 - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Sequoia Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"
@@ -648,7 +648,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "tahoe_800_171_smart_car
 
 
   general = {
-    name                = "Tahoe NIST 800-171 - Smart Card"
+    name                = "[Foundations] Tahoe NIST 800-171 - Smart Card"
     description         = "To scope this configuration profile, navigate to the Scope tab above and add the 'NIST 800-171 - Tahoe Computers' smart group. Then, be sure to navigate to Smart Computer Groups, select that group and remove the placeholder serial number. This configuration profile is not scoped intentionally due to potential issues that Smart Cards may cause on an endpoint."
     distribution_method = "Install Automatically"
     redeploy_on_update  = "Newly Assigned"

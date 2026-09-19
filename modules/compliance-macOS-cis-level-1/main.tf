@@ -11,37 +11,37 @@ terraform {
 
 ## Create categories
 resource "jamfplatform_pro_category" "category_sonoma_cis_lvl1_benchmarks" {
-  name     = "Sonoma - CIS Level 1 Benchmarks"
+  name     = "[Foundations] Sonoma - CIS Level 1 Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_sequoia_cis_lvl1_benchmarks" {
-  name     = "Sequoia - CIS Level 1 Benchmarks"
+  name     = "[Foundations] Sequoia - CIS Level 1 Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_tahoe_cis_lvl1_benchmarks" {
-  name     = "Tahoe - CIS Level 1 Benchmarks"
+  name     = "[Foundations] Tahoe - CIS Level 1 Benchmarks"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfplatform_pro_script" "script_sonoma_cis_lvl1_compliance" {
-  name            = "Sonoma - CIS Level 1 Compliance"
+  name            = "[Foundations] Sonoma - CIS Level 1 Compliance"
   priority        = "AFTER"
   info            = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Sonoma"
   script_contents = file("${path.module}/support_files/computer_scripts/sonoma_cis_lvl1_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_sequoia_cis_lvl1_compliance" {
-  name            = "Sequoia - CIS Level 1 Compliance"
+  name            = "[Foundations] Sequoia - CIS Level 1 Compliance"
   priority        = "AFTER"
   info            = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Sequoia"
   script_contents = file("${path.module}/support_files/computer_scripts/sequoia_cis_lvl1_compliance.sh")
 }
 
 resource "jamfplatform_pro_script" "script_tahoe_cis_lvl1_compliance" {
-  name            = "Tahoe - CIS Level 1 Compliance"
+  name            = "[Foundations] Tahoe - CIS Level 1 Compliance"
   priority        = "AFTER"
   info            = "This script will apply a set of rules related to the CIS Level 1 benchmark for macOS Tahoe"
   script_contents = file("${path.module}/support_files/computer_scripts/tahoe_cis_lvl1_compliance.sh")
@@ -49,7 +49,7 @@ resource "jamfplatform_pro_script" "script_tahoe_cis_lvl1_compliance" {
 
 ## Create computer extension attributes
 resource "jamfplatform_pro_computer_extension_attribute" "ea_cis_lvl1_failed_count" {
-  name              = "CIS Level 1 - Failed Results Count"
+  name              = "[Foundations] CIS Level 1 - Failed Results Count"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "INTEGER"
@@ -58,7 +58,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_cis_lvl1_failed_cou
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_cis_lvl1_failed_list" {
-  name              = "CIS Level 1 - Failed Results List"
+  name              = "[Foundations] CIS Level 1 - Failed Results List"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "STRING"
@@ -67,7 +67,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_cis_lvl1_failed_lis
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "ea_cis_lvl1_version" {
-  name              = "CIS Level 1 - Compliance Version"
+  name              = "[Foundations] CIS Level 1 - Compliance Version"
   input_type        = "SCRIPT"
   enabled           = true
   data_type         = "STRING"
@@ -77,7 +77,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "ea_cis_lvl1_version" {
 
 ## Create Smart Computer Groups
 resource "jamfplatform_device_group" "group_sonoma_computers" {
-  name        = "CIS Level 1 - Sonoma Computers"
+  name        = "[Foundations] CIS Level 1 - Sonoma Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -96,7 +96,7 @@ resource "jamfplatform_device_group" "group_sonoma_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sonoma_cis_lvl1_non_compliant" {
-  name        = "CIS Level 1 - Sonoma - Non Compliant Computers"
+  name        = "[Foundations] CIS Level 1 - Sonoma - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -115,7 +115,7 @@ resource "jamfplatform_device_group" "group_sonoma_cis_lvl1_non_compliant" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_computers" {
-  name        = "CIS Level 1 - Sequoia Computers"
+  name        = "[Foundations] CIS Level 1 - Sequoia Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -134,7 +134,7 @@ resource "jamfplatform_device_group" "group_sequoia_computers" {
 }
 
 resource "jamfplatform_device_group" "group_sequoia_cis_lvl1_non_compliant" {
-  name        = "CIS Level 1 - Sequoia - Non Compliant Computers"
+  name        = "[Foundations] CIS Level 1 - Sequoia - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -153,7 +153,7 @@ resource "jamfplatform_device_group" "group_sequoia_cis_lvl1_non_compliant" {
 }
 
 resource "jamfplatform_device_group" "group_tahoe_computers" {
-  name        = "CIS Level 1 - Tahoe Computers"
+  name        = "[Foundations] CIS Level 1 - Tahoe Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -172,7 +172,7 @@ resource "jamfplatform_device_group" "group_tahoe_computers" {
 }
 
 resource "jamfplatform_device_group" "group_tahoe_cis_lvl1_non_compliant" {
-  name        = "CIS Level 1 - Tahoe - Non Compliant Computers"
+  name        = "[Foundations] CIS Level 1 - Tahoe - Non Compliant Computers"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -196,7 +196,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_cis_lvl1_audit" {
 
 
   general = {
-    name            = "CIS Level 1 - Audit (Sonoma)"
+    name            = "[Foundations] CIS Level 1 - Audit (Sonoma)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -238,7 +238,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_cis_lvl1_remediation" {
 
 
   general = {
-    name            = "CIS Level 1 - Remediation (Sonoma)"
+    name            = "[Foundations] CIS Level 1 - Remediation (Sonoma)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -282,7 +282,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_cis_lvl1_audit" {
 
 
   general = {
-    name            = "CIS Level 1 - Audit (Sequoia)"
+    name            = "[Foundations] CIS Level 1 - Audit (Sequoia)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -324,7 +324,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_cis_lvl1_remediation" {
 
 
   general = {
-    name            = "CIS Level 1 - Remediation (Sequoia)"
+    name            = "[Foundations] CIS Level 1 - Remediation (Sequoia)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -368,7 +368,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_cis_lvl1_audit" {
 
 
   general = {
-    name            = "CIS Level 1 - Audit (Tahoe)"
+    name            = "[Foundations] CIS Level 1 - Audit (Tahoe)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"
@@ -410,7 +410,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_cis_lvl1_remediation" {
 
 
   general = {
-    name            = "CIS Level 1 - Remediation (Tahoe)"
+    name            = "[Foundations] CIS Level 1 - Remediation (Tahoe)"
     enabled         = true
     trigger_checkin = true
     frequency       = "Ongoing"

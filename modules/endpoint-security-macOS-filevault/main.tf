@@ -11,21 +11,21 @@ terraform {
 
 ## Create Categories
 resource "jamfplatform_pro_category" "category_disk_encrpytion" {
-  name     = "Disk Encryption"
+  name     = "[Foundations] Disk Encryption"
   priority = 9
 }
 
 ## Create scripts
 resource "jamfplatform_pro_script" "script_reissuekey" {
-  name     = "Reissue FileVault 2 Key"
-  priority = "AFTER"
-  info     = "Source: https://github.com/jamf/FileVault2_Scripts/blob/master/reissueKey.sh"
-  script_contents   = file("${path.module}/support_files/reissuekey.sh")
+  name            = "[Foundations] Reissue FileVault 2 Key"
+  priority        = "AFTER"
+  info            = "Source: https://github.com/jamf/FileVault2_Scripts/blob/master/reissueKey.sh"
+  script_contents = file("${path.module}/support_files/reissuekey.sh")
 }
 
 ## Create Smart Computer Groups - Scoping
 resource "jamfplatform_device_group" "group_invalid_recovery_key" {
-  name        = "Invalid FileVault 2 Recovery Key"
+  name        = "[Foundations] Invalid FileVault 2 Recovery Key"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -44,7 +44,7 @@ resource "jamfplatform_device_group" "group_invalid_recovery_key" {
 }
 
 resource "jamfplatform_device_group" "group_disk_encrypted" {
-  name        = "* FileVault 2 Enabled"
+  name        = "[Foundations] * FileVault 2 Enabled"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -63,7 +63,7 @@ resource "jamfplatform_pro_policy" "policy_reissue_recovery_key" {
 
 
   general = {
-    name          = "Reissue FileVault 2 Recovery Key"
+    name          = "[Foundations] Reissue FileVault 2 Recovery Key"
     enabled       = true
     trigger_other = ""
     frequency     = "Ongoing"
@@ -111,7 +111,7 @@ resource "jamfplatform_pro_policy" "policy_reissue_recovery_key" {
 resource "jamfplatform_pro_macos_configuration_profile" "jamfpro_macos_configuration_profile_enablefv" {
 
   general = {
-    name                = "Enable FileVault 2"
+    name                = "[Foundations] Enable FileVault 2"
     description         = "This configuration profile enforces FileVault 2 encryption. Prompts at next login"
     level               = "Computer Level"
     category_id         = jamfplatform_pro_category.category_disk_encrpytion.id

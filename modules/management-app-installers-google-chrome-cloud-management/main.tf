@@ -11,13 +11,13 @@ terraform {
 
 ## Create Categories
 resource "jamfplatform_pro_category" "google_chrome_cloud_management" {
-  name     = "Google Chrome Cloud Management"
+  name     = "[Foundations] Google Chrome Cloud Management"
   priority = 9
 }
 
 ## Create Smart Computer Groups
 resource "jamfplatform_device_group" "google_chrome_cloud_management" {
-  name        = "Google Chrome Cloud Management Devices"
+  name        = "[Foundations] Google Chrome Cloud Management Devices"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -43,7 +43,7 @@ locals {
 resource "jamfplatform_pro_macos_configuration_profile" "google_chrome_cloud_management" {
 
   general = {
-    name                = "Google Chrome Cloud Management Settings"
+    name                = "[Foundations] Google Chrome Cloud Management Settings"
     description         = "To customize Google Chrome Enterprise for your organization, check out the Google documentation: https://support.google.com/chrome/a/answer/9771882?hl=en"
     level               = "Computer Level"
     category_id         = jamfplatform_pro_category.google_chrome_cloud_management.id

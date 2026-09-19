@@ -11,13 +11,13 @@ terraform {
 
 ## Create Microsoft 365 Category
 resource "jamfplatform_pro_category" "category_microsoft_365" {
-  name     = "Microsoft 365"
+  name     = "[Foundations] Microsoft 365"
   priority = 9
 }
 
 ## Create Microsoft 365 Smart Groups
 resource "jamfplatform_device_group" "group_msft_word" {
-  name        = "Auto Update:  Microsoft Word"
+  name        = "[Foundations] Auto Update:  Microsoft Word"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -30,7 +30,7 @@ resource "jamfplatform_device_group" "group_msft_word" {
 }
 
 resource "jamfplatform_device_group" "group_msft_excel" {
-  name        = "Auto Update: Microsoft Excel"
+  name        = "[Foundations] Auto Update: Microsoft Excel"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -43,7 +43,7 @@ resource "jamfplatform_device_group" "group_msft_excel" {
 }
 
 resource "jamfplatform_device_group" "group_msft_onedrive" {
-  name        = "Auto Update: Microsoft OneDrive"
+  name        = "[Foundations] Auto Update: Microsoft OneDrive"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -56,7 +56,7 @@ resource "jamfplatform_device_group" "group_msft_onedrive" {
 }
 
 resource "jamfplatform_device_group" "group_msft_outlook" {
-  name        = "Auto Update: Microsoft Outlook"
+  name        = "[Foundations] Auto Update: Microsoft Outlook"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -69,7 +69,7 @@ resource "jamfplatform_device_group" "group_msft_outlook" {
 }
 
 resource "jamfplatform_device_group" "group_msft_powerpoint" {
-  name        = "Auto Update:  Microsoft PowerPoint"
+  name        = "[Foundations] Auto Update:  Microsoft PowerPoint"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -93,7 +93,7 @@ resource "jamfplatform_device_group" "group_msft_powerpoint" {
 # }
 
 resource "jamfplatform_device_group" "group_msft_teams" {
-  name        = "Auto Update: Microsoft Teams"
+  name        = "[Foundations] Auto Update: Microsoft Teams"
   group_type  = "smart"
   device_type = "computer"
   criteria = [

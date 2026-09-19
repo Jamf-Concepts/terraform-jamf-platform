@@ -14,18 +14,18 @@ terraform {
 }
 
 resource "jamfplatform_pro_category" "workbrew_category" {
-  name     = "Workbrew"
+  name     = "[Foundations] Workbrew"
   priority = 9
 }
 
 
 resource "jamfplatform_pro_script" "workbrew_script" {
-  name            = "Workbrew Activation"
+  name            = "[Foundations] Workbrew Activation"
   os_requirements = ""
   priority        = "BEFORE"
   info            = "Script to activate Workbrew agent on macOS devices."
   notes           = ""
-  script_contents          = file("${path.module}/support_files/Workbrew Activation.sh")
+  script_contents = file("${path.module}/support_files/Workbrew Activation.sh")
   parameter_4     = "Workbrew Workspace API Key"
   parameter_5     = ""
   parameter_6     = ""
@@ -67,7 +67,7 @@ resource "jamfplatform_pro_package" "workbrew_package" {
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "workbrew_installed_ea" {
-  name              = "Workbrew Installed"
+  name              = "[Foundations] Workbrew Installed"
   enabled           = true
   input_type        = "SCRIPT"
   description       = "Checks if the Workbrew agent is installed."
@@ -77,7 +77,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "workbrew_installed_ea"
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "workbrew_version_ea" {
-  name              = "Workbrew Version"
+  name              = "[Foundations] Workbrew Version"
   enabled           = true
   input_type        = "SCRIPT"
   description       = "Retrieves the installed version of the Workbrew."
@@ -87,7 +87,7 @@ resource "jamfplatform_pro_computer_extension_attribute" "workbrew_version_ea" {
 }
 
 resource "jamfplatform_pro_computer_extension_attribute" "homebrew_version_ea" {
-  name              = "Homebrew Version"
+  name              = "[Foundations] Homebrew Version"
   enabled           = true
   input_type        = "SCRIPT"
   description       = "Retrieves the installed version of Homebrew."
@@ -100,7 +100,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "workbrew_managed_login_
 
 
   general = {
-    name                = "Workbrew Managed Login Item"
+    name                = "[Foundations] Workbrew Managed Login Item"
     description         = ""
     level               = "Computer Level"
     distribution_method = "Install Automatically"
@@ -117,7 +117,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "workbrew_managed_login_
 }
 
 resource "jamfplatform_device_group" "workbrew_target_smart_computer_group" {
-  name        = "Workbrew Target Target Group"
+  name        = "[Foundations] Workbrew Target Target Group"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -136,7 +136,7 @@ resource "jamfplatform_device_group" "workbrew_target_smart_computer_group" {
 }
 
 resource "jamfplatform_device_group" "workbrew_installed_smart_computer_group" {
-  name = "Workbrew Installed"
+  name = "[Foundations] Workbrew Installed"
 
   group_type  = "smart"
   device_type = "computer"
@@ -150,7 +150,7 @@ resource "jamfplatform_device_group" "workbrew_installed_smart_computer_group" {
 }
 
 resource "jamfplatform_device_group" "workbrew_not_installed_smart_computer_group" {
-  name = "Workbrew Not Installed"
+  name = "[Foundations] Workbrew Not Installed"
 
   group_type  = "smart"
   device_type = "computer"
@@ -174,7 +174,7 @@ resource "jamfplatform_pro_policy" "workbrew_install_policy" {
 
 
   general = {
-    name                        = "Install Workbrew Agent"
+    name                        = "[Foundations] Install Workbrew Agent"
     enabled                     = true
     trigger_enrollment_complete = true
     trigger_checkin             = true

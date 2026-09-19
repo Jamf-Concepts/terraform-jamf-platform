@@ -10,12 +10,12 @@ terraform {
 }
 
 resource "jamfplatform_pro_category" "okta_psso" {
-  name     = "Okta PSSO"
+  name     = "[Foundations] Okta PSSO"
   priority = 9
 }
 
 resource "jamfplatform_device_group" "okta_psso_target" {
-  name        = "Okta PSSO Target Group"
+  name        = "[Foundations] Okta PSSO Target Group"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -34,7 +34,7 @@ resource "jamfplatform_device_group" "okta_psso_target" {
 }
 
 resource "jamfplatform_device_group" "okta_psso_exclusion" {
-  name        = "Okta PSSO Exclusion Group"
+  name        = "[Foundations] Okta PSSO Exclusion Group"
   group_type  = "smart"
   device_type = "computer"
   criteria = [
@@ -65,7 +65,7 @@ resource "jamfplatform_pro_policy" "install_okta_verify" {
 
 
   general = {
-    name                        = "Install Okta Verify"
+    name                        = "[Foundations] Install Okta Verify"
     enabled                     = true
     trigger_checkin             = true
     trigger_enrollment_complete = true
@@ -93,7 +93,7 @@ resource "jamfplatform_pro_policy" "install_okta_verify" {
 resource "jamfplatform_pro_macos_configuration_profile" "okta_device_access_scep" {
 
   general = {
-    name                = "Okta Device Access SCEP"
+    name                = "[Foundations] Okta Device Access SCEP"
     description         = ""
     level               = "Computer Level"
     distribution_method = "Install Automatically"
@@ -113,7 +113,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "okta_device_access_scep
 resource "jamfplatform_pro_macos_configuration_profile" "okta_verify_psso" {
 
   general = {
-    name                = "Okta Verify for PSSO at Setup"
+    name                = "[Foundations] Okta Verify for PSSO at Setup"
     description         = ""
     level               = "Computer Level"
     distribution_method = "Install Automatically"
@@ -133,7 +133,7 @@ resource "jamfplatform_pro_macos_configuration_profile" "okta_verify_psso" {
 resource "jamfplatform_pro_macos_configuration_profile" "okta_verify_psso_app_config" {
 
   general = {
-    name                = "Okta Verify App Configuration"
+    name                = "[Foundations] Okta Verify App Configuration"
     description         = ""
     level               = "Computer Level"
     distribution_method = "Install Automatically"

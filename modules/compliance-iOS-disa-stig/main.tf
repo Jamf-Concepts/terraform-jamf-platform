@@ -11,17 +11,17 @@ terraform {
 
 ## Create categories
 resource "jamfplatform_pro_category" "category_ios17_stig_benchmarks" {
-  name     = "iOS 17 - DISA STIG Benchmarks"
+  name     = "[Foundations] iOS 17 - DISA STIG Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_ios18_cis_benchmarks" {
-  name     = "iOS 18 - DISA STIG Benchmarks"
+  name     = "[Foundations] iOS 18 - DISA STIG Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_device_group" "group_ios17" {
-  name = "iOS 17 - DISA STIG"
+  name = "[Foundations] iOS 17 - DISA STIG"
 
 
   group_type  = "smart"
@@ -41,7 +41,7 @@ resource "jamfplatform_device_group" "group_ios17" {
 }
 
 resource "jamfplatform_device_group" "group_ios18" {
-  name = "iOS 18 - DISA STIG"
+  name = "[Foundations] iOS 18 - DISA STIG"
 
 
   group_type  = "smart"

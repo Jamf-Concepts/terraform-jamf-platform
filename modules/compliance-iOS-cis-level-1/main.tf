@@ -11,22 +11,22 @@ terraform {
 
 ## Create categories
 resource "jamfplatform_pro_category" "category_ios17_cis_benchmarks" {
-  name     = "iOS 17 - CIS Level 1 Benchmarks"
+  name     = "[Foundations] iOS 17 - CIS Level 1 Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_ios18_cis_benchmarks" {
-  name     = "iOS 18 - CIS Level 1 Benchmarks"
+  name     = "[Foundations] iOS 18 - CIS Level 1 Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_pro_category" "category_ios26_cis_benchmarks" {
-  name     = "iOS 26 - CIS Level 1 Benchmarks"
+  name     = "[Foundations] iOS 26 - CIS Level 1 Benchmarks"
   priority = 9
 }
 
 resource "jamfplatform_device_group" "group_ios17" {
-  name = "iOS 17 - CIS Level 1"
+  name = "[Foundations] iOS 17 - CIS Level 1"
 
 
   group_type  = "smart"
@@ -46,7 +46,7 @@ resource "jamfplatform_device_group" "group_ios17" {
 }
 
 resource "jamfplatform_device_group" "group_ios18" {
-  name = "iOS 18 - CIS Level 1"
+  name = "[Foundations] iOS 18 - CIS Level 1"
 
 
   group_type  = "smart"
@@ -66,7 +66,7 @@ resource "jamfplatform_device_group" "group_ios18" {
 }
 
 resource "jamfplatform_device_group" "group_ios26" {
-  name = "iOS 26 - CIS Level 1"
+  name = "[Foundations] iOS 26 - CIS Level 1"
 
 
   group_type  = "smart"
