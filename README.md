@@ -56,7 +56,7 @@ By the end of this session you will be able to:
 | --- | --- | --- |
 | `device_groups.tf` | Device group | Standalone resource, no dependencies |
 | `blueprints.tf` | Blueprint (software update settings) | Resource references, the `deployed` flag, `component_blocks`, DDM overview |
-| `blueprints.tf` | Blueprint (Safari restrictions) | `legacy_payloads`, inline MDM payload syntax |
+| `blueprints.tf` | Blueprint (Safari restrictions) | `apple_declarations`, JSON payload files with `file()` |
 | `compliance_benchmarks.tf` | Compliance Benchmark | Data sources, hand-picked rules, ODV values, async resource creation |
 
 ---
@@ -127,9 +127,9 @@ you create in **Jamf Account** at [account.jamf.com](https://account.jamf.com).
 > **Copy the client secret now.** Jamf Account never shows it again once you
 > close the panel.
 
-> **Scope the integration to a platform environment, not a single tenant.** A
-> platform environment groups tenants across product types. Jamf Account offers
-> the Blueprints and Compliance Benchmarks permissions only at that scope.
+> **Scope the integration to a platform environment.** A platform environment
+> groups tenants across product types, and Jamf Account offers the Blueprints
+> and Compliance Benchmarks permissions only at that scope.
 
 **Finding your environment ID:** click the platform environment shown in the
 Integration details panel to copy its UUID. That is the `environment_id` value
@@ -276,7 +276,7 @@ resource "jamfplatform_device_group" "test_machines" {
 - The block address is `jamfplatform_device_group.test_machines`. To reference
   this group's Platform UUID from another resource, use
   `jamfplatform_device_group.test_machines.id`. Terraform substitutes the
-  API-assigned UUID at plan time, so you never look up or hard-code a UUID.
+  API-assigned UUID at plan time, so you do not look up or hard-code a UUID.
 - `criteria` is a list of evaluation rules. Each entry after the first needs
   `and_or` set to `"and"` or `"or"` to define how it joins the previous rule.
   The first entry omits `and_or`.
@@ -345,7 +345,7 @@ resource "jamfplatform_blueprints_blueprint" "software_update" {
 - `device_groups = [jamfplatform_device_group.test_machines.id]` is a resource
   reference. Terraform reads the `id` attribute from the device group you
   created and substitutes it here. Because this is a reference, Terraform knows
-  the group must exist before the blueprint, so you never specify ordering
+  the group must exist before the blueprint, so you do not specify ordering
   yourself.
 - `device_groups` takes a set of UUID strings. Even when targeting one group,
   wrap the reference in `[...]`.
@@ -374,11 +374,29 @@ appears in the Jamf UI scoped to **Test Machines**.
 
 ## Step 3: Safari Restrictions Blueprint
 
-This step introduces `legacy_payloads`, the mechanism for delivering classic
-MDM configuration profile payloads through a blueprint. A blueprint can carry
-any Apple-defined payload type, identified by a reverse-domain key like
-`com.apple.applicationaccess`. That puts the DDM-native components and Apple's
-older MDM payload library behind one resource.
+This step introduces `apple_declarations`, the component that delivers any
+Apple DDM declaration through a blueprint. Each declaration has a `channel`, a
+`type` (Apple's reverse-domain identifier, such as
+`com.apple.configuration.safari.settings`) and a `payload`, a JSON object. The
+provider checks the payload against Apple's published schemas during
+`terraform plan`. A misspelled key fails the plan, where Jamf would otherwise
+discard it.
+
+You keep the payload in its own JSON file. Open `safari.settings.json` in the
+repo root, which is empty, and paste in:
+
+```json
+{
+  "AllowHistoryClearing": false,
+  "AllowPrivateBrowsing": false
+}
+```
+
+> [!TIP]
+> [DDM Explorer](https://apps.apple.com/gb/app/ddm-explorer/id6754861743) shows
+> every key a declaration type accepts and builds the payload as you tick them.
+> Search for **Safari Settings**, set your values, click **Copy JSON** and paste
+> the result into `safari.settings.json`.
 
 Open `blueprints.tf` and add the following below the first resource:
 
@@ -393,14 +411,12 @@ resource "jamfplatform_blueprints_blueprint" "safari_restrictions" {
   component_blocks = [
     {
       name = "Safari Restrictions"
-      legacy_payloads = [
+      apple_declarations = [
         {
-          payload_type = "com.apple.applicationaccess"
-          settings = jsonencode({
-            allowSafariHistoryClearing = false
-            allowSafariPrivateBrowsing = false
-          })
-        }
+          channel = "SYSTEM"
+          type    = "com.apple.configuration.safari.settings"
+          payload = file("${path.module}/safari.settings.json")
+        },
       ]
     },
   ]
@@ -409,14 +425,22 @@ resource "jamfplatform_blueprints_blueprint" "safari_restrictions" {
 
 **Key points:**
 
-- `legacy_payloads` lives inside a component block and takes a list of objects.
-  Each object requires a `payload_type` (the Apple reverse-domain identifier for
-  the MDM payload) and an optional `settings`, a JSON object string you write
-  with `jsonencode({ ... })`. The keys and values match Apple's MDM protocol
-  specification for that payload type.
-- Inside `jsonencode({ ... })`, boolean values are HCL booleans (`true`/`false`),
-  not strings.
-- You can combine `legacy_payloads` with first-class DDM components like
+- `apple_declarations` lives inside a component block and takes a list of
+  objects. Each object requires `channel` (`SYSTEM` for the device channel,
+  `USER` for the user channel), `type` and `payload`.
+- `type` is matched exactly, including case. Jamf delivers nothing for a type
+  spelled differently.
+- `payload` is a JSON object string. `file()` reads it from disk, and
+  `${path.module}` anchors the path to the directory holding this configuration.
+  Keys are Apple's own, spelled as Apple declares them, and booleans are JSON
+  `true`/`false`.
+- The provider keeps the formatting and key order of your file. Jamf stores the
+  payload compact with sorted keys, and the provider compares the two as JSON,
+  so an indented file produces no diff on later plans.
+- A block can carry several declarations, and a payload can reference another
+  declaration in the same list with `$PAYLOAD_n`, where `n` is the 1-based
+  position.
+- You can combine `apple_declarations` with first-class DDM components like
   `software_update_settings`, in the same block or across several blocks of one
   blueprint. Group related settings together, one blueprint per configuration
   boundary.
@@ -437,7 +461,7 @@ A compliance benchmark applies security rules from a baseline to a device
 group, then either monitors compliance or enforces it. Jamf ships a range of
 baselines. This step introduces **data sources**, which read existing data from
 an API without Terraform managing the result. The compliance rules live in Jamf,
-and Terraform only ever reads them.
+and Terraform reads them.
 
 ### Discover available baselines
 
@@ -495,8 +519,8 @@ output "cis_lvl1_rules" {
 **Key points:**
 
 - `data "jamfplatform_cbengine_rules"` fetches the rule set from the Platform
-  API at plan time. The `data.` prefix marks it as a read: Terraform never
-  creates, updates or deletes it.
+  API at plan time. The `data.` prefix marks it as a read: Terraform does not
+  create, update or delete it.
 - `output` blocks print values after apply. The `for` expression projects each
   rule into a readable string. Rules tagged with `[ODV: ...]` require an
   **organisation-defined value**, a parameter you supply such as a password
@@ -636,7 +660,7 @@ Run a plan:
 terraform plan
 ```
 
-Terraform shows the `legacy_payloads` diff and plans to restore the
+Terraform shows the `apple_declarations` payload diff and plans to restore the
 HCL-declared values. The next apply overwrites your UI change.
 
 ---
@@ -779,10 +803,9 @@ device_groups = ["12345678-abcd-ef01-2345-67890abcdef0"]
 device_groups = [jamfplatform_device_group.terraform_managed.id]
 ```
 
-> **This is the problem jamformer solves.** Reading an existing tenant,
-> jamformer spots UUID references between resources and writes Terraform
-> symbolic references in their place. The HCL comes out correct, with no UUID
-> replacement left for you to do.
+> **jamformer solves this.** Reading an existing tenant, jamformer spots UUID
+> references between resources and writes Terraform symbolic references in their
+> place, so no UUID replacement is left for you.
 
 Run apply to perform the import:
 
