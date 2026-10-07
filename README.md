@@ -1,39 +1,57 @@
-# terraform-jamf-platform — `ref-jamfpro` reference layout
+# terraform-jamf-platform: `ref-jamfpro` reference layout
 
 > **You are on the `ref-jamfpro` branch.** This is an orphaned reference
-> branch containing a single-module Terraform layout for Jamf Pro,
-> intended for admins new to Terraform and for Pro Services technical
-> enablement engagements. Other branches in this repository are
-> unrelated and follow different layouts.
+> branch with a single-module Terraform layout for Jamf Pro, built on the
+> Deployment Theory jamfpro community provider. It is for admins new to
+> Terraform and for Pro Services technical enablement engagements. Other
+> branches in this repository are unrelated and follow different layouts.
 
-Terraform configuration for managing Jamf Pro using the
-[deploymenttheory/jamfpro](https://registry.terraform.io/providers/deploymenttheory/jamfpro/latest)
+> **Jamf does not own or support the Deployment Theory jamfpro community provider.**
+> Deployment Theory, an independent community group, builds and maintains
+> it. For a vendor-owned, first-party solution, use the
+> [`ref-jamfplatform`](https://github.com/Jamf-Concepts/terraform-jamf-platform/tree/ref-jamfplatform)
+> branch, which uses Jamf's own
+> [jamf/jamfplatform](https://registry.terraform.io/providers/jamf/jamfplatform/latest)
+> provider.
+
+Terraform configuration for managing Jamf Pro using the Deployment Theory
+jamfpro community provider,
+[deploymenttheory/jamfpro](https://registry.terraform.io/providers/deploymenttheory/jamfpro/latest).
+This branch is a nod to where it all began. Deployment Theory's provider gave
+Jamf admins Terraform support for Jamf Pro before Jamf shipped a first-party
 provider.
 
 This repository is aimed at Jamf administrators who are new to Terraform. It
-assumes strong familiarity with Jamf Pro — policies, smart groups, configuration
-profiles, ADE, VPP — and explains the Terraform-specific concepts as they come
-up. It is not a general Terraform tutorial.
+assumes strong familiarity with Jamf Pro (policies, smart groups, configuration
+profiles, ADE, VPP) and explains Terraform concepts as they come up. It is not
+a general Terraform tutorial.
 
-Jamf publishes and maintains these providers. We do not deliver Infrastructure
-as Code transformation as a commercial service. This repository is a reference
-and learning resource; it is not a deliverable.
+Jamf does not own, maintain, or support the community providers this branch
+uses. Report provider bugs and feature requests to their maintainers. Jamf
+does not deliver Infrastructure as Code transformation as a commercial
+service. This repository is a reference and learning resource, not a
+deliverable.
 
 ---
 
 ## What this covers
 
-- Jamf Pro: categories, departments, buildings, smart groups, configuration
-  profiles, packages, policies, app installers, Mac and iOS applications,
-  ADE device enrollments, VPP, computer and mobile device prestages
+- Jamf Pro (via the Deployment Theory jamfpro community provider):
+  categories, departments, buildings, smart groups, configuration profiles,
+  packages, policies, app installers, Mac and iOS applications, ADE device
+  enrollments, VPP, computer and mobile device prestages
+
+This branch does not cover Jamf Platform features such as Blueprints. The
+[`ref-jamfplatform`](https://github.com/Jamf-Concepts/terraform-jamf-platform/tree/ref-jamfplatform)
+branch covers them.
 
 ---
 
 ## Prerequisites
 
-- A Jamf Pro sandbox tenant — **do not use a production instance while learning**
+- A Jamf Pro sandbox tenant. **Do not use a production instance while learning**
 - [Terraform](https://developer.hashicorp.com/terraform/install) >= 1.11.0
-- OAuth2 API client credentials for the Jamf Pro provider (see setup steps below)
+- OAuth2 API client credentials for the Deployment Theory jamfpro community provider (see setup steps below)
 
 ### Installing Terraform
 
@@ -52,8 +70,8 @@ For other platforms, see [developer.hashicorp.com/terraform/install](https://dev
 [Visual Studio Code](https://code.visualstudio.com) with the
 [HashiCorp Terraform extension](https://marketplace.visualstudio.com/items?itemName=HashiCorp.terraform)
 gives you syntax highlighting, auto-complete, and inline documentation for
-resource attributes. It is not required but makes editing `.tf` files
-significantly easier.
+resource attributes. It is optional, and editing `.tf` files is harder without
+it.
 
 ### Jamf Pro: create an API client
 
@@ -61,7 +79,7 @@ significantly easier.
 2. Create an API Role with the privileges required. Use **All** while learning;
    tighten later.
 3. Create an API Client, attach the role, and generate a secret.
-4. Note the **Client ID** and **Client Secret** — these go in `terraform.tfvars`.
+4. Note the **Client ID** and **Client Secret**. These go in `terraform.tfvars`.
 
 ---
 
@@ -105,14 +123,14 @@ terraform-jamf-platform/
             └── app_configurations/
 ```
 
-**`environments/dev/`** contains only what differs per environment: state
+**`environments/dev/`** holds only what differs per environment: state
 backend config, provider URLs, and credentials. It calls `modules/jamfpro`
 to deploy the shared resource definitions.
 
-**`modules/jamfpro/`** contains the actual Jamf resource definitions — the
-policies, profiles, groups, and so on. This is where most editing happens.
-Profile payloads and app configurations live in `support_files/` alongside
-the resources that reference them.
+**`modules/jamfpro/`** holds the Jamf resource definitions: the policies,
+profiles, groups, and so on. You do most of your editing here. Profile
+payloads and app configurations sit in `support_files/` beside the resources
+that reference them.
 
 ### Why this split
 
@@ -120,35 +138,34 @@ The same architecture handles a single sandbox instance and a fleet of
 production environments without restructuring:
 
 - **One canonical source of resource definitions.** All policies, profiles,
-  smart groups, and so on live in `modules/jamfpro/`. There is no copy of
-  the policy library in each environment folder, so a fix or new resource
-  is written once and inherited by every environment.
+  smart groups, and so on live in `modules/jamfpro/`. No environment folder
+  holds a copy of the policy library, so you write a fix or new resource once
+  and every environment inherits it.
 - **One env folder per Jamf tenant.** Each environment folder holds only
-  what is genuinely tenant-specific: which Jamf Pro URL to talk to, which
-  OAuth2 credentials to use, where state lives, and which Apple-issued
-  tokens to read. Everything else comes from the module.
-- **Per-environment state isolation.** Each env folder has its own
-  `terraform.tfstate`, so applying to dev cannot affect prod and vice
-  versa. Concurrent applies against different tenants are safe.
+  tenant-specific settings: the Jamf Pro URL, the OAuth2 credentials, the
+  state location, and the Apple-issued tokens to read. The module supplies
+  everything else.
+- **Per-environment state isolation.** Each env folder keeps its own
+  `terraform.tfstate`, so applying to dev cannot affect prod, and the reverse.
+  Concurrent applies against different tenants are safe.
 - **Two ways to handle environment-specific differences.** Resources that
-  are common but configured slightly differently (e.g. a smart group with
-  different criteria in dev vs prod) become module variables, set per-env
-  in `terraform.tfvars`. Resources that should exist in only one
-  environment (e.g. a debug-only smart group in dev) are defined directly
-  in that environment's `main.tf` alongside the module call.
+  are common but configured differently (e.g. a smart group with different
+  criteria in dev vs prod) become module variables, set per env in
+  `terraform.tfvars`. Resources that should exist in one environment only
+  (e.g. a debug-only smart group in dev) go in that environment's `main.tf`
+  beside the module call.
 
 ### How it scales
 
 | Stage | Layout |
 |---|---|
-| Day 1 — single sandbox tenant | `environments/dev/` only. Module is shared but only one env consumes it. |
-| Day N — sandbox plus production | Copy `environments/dev/` to `environments/production/`. Update the new folder's `terraform.tfvars` and (if using a remote backend) `backend.tf`. Both env folders call the same module. |
-| Day N+1 — add staging or another business unit | Repeat the copy. Each new env is one folder, one state file, one set of credentials. The module never changes shape. |
+| Day 1: single sandbox tenant | `environments/dev/` only. Module is shared but only one env consumes it. |
+| Day N: sandbox plus production | Copy `environments/dev/` to `environments/production/`. Update the new folder's `terraform.tfvars` and (if using a remote backend) `backend.tf`. Both env folders call the same module. |
+| Day N+1: add staging or another business unit | Repeat the copy. Each new env is one folder, one state file, one set of credentials. The module never changes shape. |
 
 Shared changes go in `modules/jamfpro/` and apply to every environment on
 its next plan. Environment-only changes go in that environment's folder.
-This is the boundary that lets the repo grow from one tenant to many
-without rewriting anything.
+This boundary lets the repo grow from one tenant to many without a rewrite.
 
 ---
 
@@ -158,7 +175,7 @@ without rewriting anything.
 
 This work lives on the orphaned `ref-jamfpro` branch and will not move.
 Other branches in this repository are unrelated. Use `--branch` and
-`--single-branch` so you only fetch what you need:
+`--single-branch` to fetch only what you need:
 
 ```bash
 git clone --branch ref-jamfpro --single-branch https://github.com/Jamf-Concepts/terraform-jamf-platform.git
@@ -167,10 +184,10 @@ cp terraform.tfvars.example terraform.tfvars
 ```
 
 Edit `terraform.tfvars` with your tenant URL and OAuth2 credentials. This file
-is gitignored and must never be committed.
+is gitignored. Never commit it.
 
-Alternatively, export credentials as environment variables — no `terraform.tfvars`
-file needed:
+You can also export credentials as environment variables and skip
+`terraform.tfvars`:
 
 ```bash
 export TF_VAR_jamfpro_instance_fqdn="https://yourcompany.jamfcloud.com"
@@ -193,8 +210,8 @@ declared constraints, run `terraform init -upgrade` instead.
 
 `terraform fmt -recursive` reformats every `.tf` file under the given path
 to canonical style. Run it from the repo root after edits. `terraform validate`
-checks for syntax errors and broken references in the environment you are
-about to plan against.
+checks the environment you are about to plan against for syntax errors and
+broken references.
 
 ```bash
 # From the repo root
@@ -211,11 +228,11 @@ terraform plan -parallelism=1
 ```
 
 `-parallelism=1` is required. The Jamf Pro API rate-limits concurrent
-requests and returns errors under parallel load. Always run plan and apply
-single-threaded.
+requests and returns errors under parallel load. Run plan and apply
+single-threaded every time.
 
-Terraform will show every resource it intends to create. Review it before
-applying. A resource with `+` will be created; `-` destroyed; `~` modified
+Terraform shows every resource it intends to change. Review the plan before
+applying. `+` marks a resource to create, `-` to destroy, and `~` to modify
 in place.
 
 ### 5. Apply
@@ -227,29 +244,29 @@ terraform apply -parallelism=1
 Type `yes` when prompted. Terraform creates each resource in your Jamf Pro
 tenant and records the result in the state file (`terraform.tfstate`).
 
-The state file is Terraform's record of everything it has created. Do not
-delete or edit it manually — if it is lost, Terraform can no longer manage
-those resources without re-importing them. The [Graduating to remote state](#graduating-to-remote-state)
-section covers how to store state somewhere more durable when you are ready.
+The state file is Terraform's record of everything it created. Do not delete
+or edit it by hand. If you lose it, Terraform can no longer manage those
+resources without re-importing them. The [Graduating to remote state](#graduating-to-remote-state)
+section covers durable state storage for when you are ready.
 
 ### 6. Removing resources
 
-To remove everything Terraform has created in your tenant:
+To remove everything Terraform created in your tenant:
 
 ```bash
 terraform destroy -parallelism=1
 ```
 
-This is useful for cleaning up a sandbox after testing. It will permanently
-delete every resource in the state file from your Jamf tenant.
+Use this to clean up a sandbox after testing. It deletes every resource in the
+state file from your Jamf tenant, and you cannot undo it.
 
 ---
 
 ## Apple-issued tokens (ADE and VPP)
 
 ADE server tokens (`.p7m`) and VPP service tokens (`.vpptoken`) are
-downloaded from Apple Business Manager or Apple School Manager. They are
-tenant-specific — each Jamf Pro environment has its own.
+downloaded from Apple Business Manager or Apple School Manager. Each Jamf Pro
+environment has its own.
 
 Place token files in the appropriate directory under your environment folder:
 
@@ -259,20 +276,20 @@ environments/dev/support_files/volume_purchasing_tokens/your-vpp-token.vpptoken
 ```
 
 `*.p7m` and `*.vpptoken` are gitignored in this repository to prevent
-accidental exposure when cloning or forking. In your own private repo you
-have three handling options:
+exposure when cloning or forking. In your own private repo you have three
+handling options:
 
-- **Commit the tokens to a private repo** — simplest pattern for small teams
-  and the most realistic for customers without an existing secret manager.
-  Remove `*.p7m` and `*.vpptoken` from `.gitignore` and trust the repo's
-  access controls. Rotate by replacing the file and committing.
-- **Encrypt at rest in the repo** — SOPS with age, git-crypt, or sealed
-  secrets. Tokens commit as ciphertext and decrypt at apply time. Defense in
-  depth at the cost of an extra tool to manage.
-- **Externalise via a secret store** — fetch tokens at apply time from Vault,
-  AWS Secrets Manager, GCP Secret Manager, or your CI's secret store. Most
-  secure, most plumbing. The CI runner writes the file to disk before
-  `terraform apply` runs.
+- **Commit the tokens to a private repo.** This is the simplest pattern for
+  small teams and the most realistic for customers without an existing secret
+  manager. Remove `*.p7m` and `*.vpptoken` from `.gitignore` and rely on the
+  repo's access controls. Rotate by replacing the file and committing.
+- **Encrypt at rest in the repo.** Use SOPS with age, git-crypt, or sealed
+  secrets. Tokens commit as ciphertext and decrypt at apply time. You get
+  defense in depth and one more tool to manage.
+- **Fetch from a secret store.** Pull tokens at apply time from Vault, AWS
+  Secrets Manager, GCP Secret Manager, or your CI's secret store. This is the
+  most secure option and needs the most plumbing. The CI runner writes the
+  file to disk before `terraform apply` runs.
 
 Whichever you pick, rotate tokens on Apple's published schedule and revoke
 any token that may have been exposed.
@@ -286,16 +303,16 @@ vpp_token_path_default = "support_files/volume_purchasing_tokens/your-vpp-token.
 ```
 
 The root module reads each file and passes the encoded content to
-`modules/jamfpro`. The module never sees the file path — only the content.
+`modules/jamfpro`. The module never sees the file path, only the content.
 
 ---
 
 ## Customising the module
 
 **Adding a new policy, profile, or smart group:** edit the relevant `.tf`
-file in `modules/jamfpro/` directly. Resources follow the `for_each`-over-locals
-pattern where there are multiple similar items, or single resource blocks where
-configuration is unique. Follow whichever pattern the surrounding file uses.
+file in `modules/jamfpro/`. Resources use the `for_each`-over-locals pattern
+where several items are similar, and single resource blocks where the
+configuration is unique. Follow the pattern in the surrounding file.
 
 **Adding a configuration profile payload:** place the `.mobileconfig` file in
 `modules/jamfpro/support_files/macos_configuration_profiles/` (or the
@@ -305,16 +322,15 @@ mobile equivalent), then reference it in the resource with:
 payloads = file("${path.module}/support_files/macos_configuration_profiles/your-profile.mobileconfig")
 ```
 
-`${path.module}` always resolves to the `modules/jamfpro/` directory, regardless
-of where Terraform is invoked from.
+`${path.module}` resolves to the `modules/jamfpro/` directory wherever you
+invoke Terraform.
 
 **Changing scope or behaviour per environment:** if a resource needs different
-values in dev vs production (a different smart group scope, a different policy
+values in dev and production (a different smart group scope, a different policy
 frequency), expose it as a module variable in `modules/jamfpro/variables.tf`,
 wire it through in `environments/dev/main.tf`, and set the value in
-`terraform.tfvars`. For resources that should exist only in a specific
-environment, define them directly in `environments/dev/main.tf` rather than
-in the shared module.
+`terraform.tfvars`. Define resources that exist in one environment only in
+`environments/dev/main.tf` rather than the shared module.
 
 ---
 
@@ -330,7 +346,7 @@ Edit the files that differ per environment:
 
 | File | What to change |
 |---|---|
-| `backend.tf` | If using a remote backend, update the state key, prefix, or workspace name to be unique per environment (e.g. `jamf/production/terraform.tfstate`). With the default local backend, no change is needed — each env folder gets its own `terraform.tfstate`. |
+| `backend.tf` | If using a remote backend, update the state key, prefix, or workspace name to be unique per environment (e.g. `jamf/production/terraform.tfstate`). With the default local backend, no change is needed. Each env folder gets its own `terraform.tfstate`. |
 | `provider.tf` | No change needed if both tenants are on the same region; the URLs come from `terraform.tfvars`. |
 | `terraform.tfvars` | Credentials and token paths for the production tenant. |
 
@@ -338,46 +354,44 @@ Run `terraform init` from the new environment folder before the first plan.
 
 ### Long-lived branch strategy (optional, customer-side)
 
-This repository is structured around env-folders, not Git branches. The
-notes below are a separate pattern you can adopt in **your own** Git repo
-once you have copied this project out and started managing your own tenants.
-It is not how this repo itself is laid out.
+This repository uses env folders, not Git branches. The notes below describe
+a separate pattern for **your own** Git repo, after you copy this project out
+and start managing your own tenants. This repo does not use it.
 
 A common branch-based promotion model:
 
-- `main` — production environment
-- `staging` — branched from main, staging environment
-- `dev` — branched from staging, sandbox/dev environment
+- `main`: production environment
+- `staging`: branched from main, staging environment
+- `dev`: branched from staging, sandbox/dev environment
 - Feature branches off `dev` for individual changes
 
-Changes are promoted by merging dev into staging (reviewed), then staging
-into main (reviewed). `backend.tf` is the one file that may legitimately
-diverge between branches (different state keys per environment) and should
-not be merged across environment boundaries. `terraform.tfvars` is
-gitignored and configured locally on each checkout, so it never enters the
-merge picture at all.
+You promote changes by merging dev into staging (reviewed), then staging into
+main (reviewed). `backend.tf` can diverge between branches
+(different state keys per environment), so do not merge it across environment
+boundaries. `terraform.tfvars` is gitignored and configured locally on each
+checkout, so it never enters a merge.
 
-This is the approach used by [Deployment Theory's demo repository](https://github.com/deploymenttheory/terraform-demo-jamfpro)
-and is documented there in more detail. Whether to use folders, branches,
-or both is a customer decision — Jamf does not prescribe one over the other.
+[Deployment Theory's demo repository](https://github.com/deploymenttheory/terraform-demo-jamfpro)
+uses this approach and documents it in more detail. Whether to use folders,
+branches, or both is your decision. Jamf does not prescribe one.
 
 ---
 
 ## Graduating to remote state
 
-Local state (the default) is fine for a single operator on a single machine.
-When more than one person applies changes, or when you want state locked during
-apply to prevent concurrent runs, switch to a remote backend.
+Local state (the default) suits a single operator on a single machine. Switch
+to a remote backend when more than one person applies changes, or when you want
+state locked during apply to block concurrent runs.
 
-The four most common options are documented as commented examples in
-`environments/dev/backend.tf`. Uncomment exactly one, fill in the values for
-your account, and run:
+`environments/dev/backend.tf` documents the four most common options as
+commented examples. Uncomment one, fill in the values for your account, and
+run:
 
 ```bash
 terraform init -migrate-state
 ```
 
-Terraform will copy your local state into the new backend.
+Terraform copies your local state into the new backend.
 
 **HCP Terraform** is the lowest-friction remote option for teams without
 existing cloud infrastructure. The free tier covers up to 500 managed
@@ -386,44 +400,44 @@ Working Directory at the relevant `environments/<name>/` folder, and HCP
 Terraform handles locking, history, and remote runs.
 
 Jamf does not provide guidance on architecting remote state, CI/CD pipelines,
-or workspace strategy beyond what is documented here. If you need that help,
-consult your existing IaC tooling vendor or a partner.
+or workspace strategy beyond what this README covers. For that help, consult
+your existing IaC tooling vendor or a partner.
 
 ---
 
 ## Relationship to jamformer
 
-[jamformer](https://github.com/Jamf-Concepts/jamformer) is a tool that reads
-an existing Jamf Pro instance and generates Terraform configuration files from
-it. It produces a single-environment flat output in a structure similar to
-`modules/jamfpro/` in this repository.
+[jamformer](https://github.com/Jamf-Concepts/jamformer) reads an existing Jamf
+Pro instance and generates Terraform configuration files from it. It produces
+flat single-environment output in a structure similar to `modules/jamfpro/` in
+this repository.
 
-This repository is what you refactor a jamformer export into once you need
-more than one environment. The file naming conventions (`smart_computer_groups.tf`,
+Refactor a jamformer export into this repository once you need more than one
+environment. The file naming conventions (`smart_computer_groups.tf`,
 `macos_configuration_profiles.tf`, etc.) and the support files layout
-(`support_files/macos_configuration_profiles/`, etc.) are intentionally
-aligned with jamformer's output so the refactor is a move rather than a rewrite.
+(`support_files/macos_configuration_profiles/`, etc.) match jamformer's output
+by design, so the refactor is a move rather than a rewrite.
 
 ### Token convention
 
-jamformer reads token files directly inside the resource via `file()`. This
-repository reads token files in `environments/dev/main.tf` and passes the
-content into the module instead, because module boundaries should not expose
-filesystem paths from the calling environment. Two transforms are used:
+jamformer reads token files inside the resource via `file()`. This repository
+reads token files in `environments/dev/main.tf` and passes the content into the
+module, because module boundaries should not expose filesystem paths from the
+calling environment. It uses two transforms:
 
-- **ADE** — `ade_token_encoded_default = filebase64(var.ade_token_path_default)`. The
+- **ADE**: `ade_token_encoded_default = filebase64(var.ade_token_path_default)`. The
   deploymenttheory provider expects base64-encoded `.p7m` content.
-- **VPP** — `vpp_token_default = trimspace(file(var.vpp_token_path_default))`.
+- **VPP**: `vpp_token_default = trimspace(file(var.vpp_token_path_default))`.
   Raw `.vpptoken` content, no encoding.
 
-If you are refactoring a jamformer export into this layout, replace the
-in-resource `file()` calls with these module variables and move the actual
-file reads up to `environments/dev/main.tf`.
+If you refactor a jamformer export into this layout, replace the in-resource
+`file()` calls with these module variables and move the file reads up to
+`environments/dev/main.tf`.
 
 ### Import blocks
 
 jamformer generates `import` blocks at the root of its output, targeting
-resources by their root-level address:
+resources by root-level address:
 
 ```hcl
 import {
@@ -436,16 +450,16 @@ In this repository the same resource lives inside the `jamfpro` module, so
 its address is `module.jamfpro.jamfpro_smart_computer_group_v2.example`. You
 have two options for adopting a jamformer export here:
 
-1. **Rewrite the imports** — move each `import` block to `environments/dev/main.tf`
+1. **Rewrite the imports.** Move each `import` block to `environments/dev/main.tf`
    and prefix every `to` address with `module.jamfpro.`. Terraform 1.5+
    supports module-pathed import targets.
-2. **Apply flat first, then relocate** — apply the jamformer output as-is
+2. **Apply flat first, then relocate.** Apply the jamformer output as-is
    against your tenant in a flat single-env scaffold, then use
-   `terraform state mv` to move each resource into the module address. The
-   import blocks can be deleted once state is in place.
+   `terraform state mv` to move each resource into the module address. Delete
+   the import blocks once state is in place.
 
-Option 2 is generally easier for large jamformer exports because you skip
-the find-and-replace step and let Terraform manage the state rewrite.
+Option 2 is easier for large jamformer exports. You skip the find-and-replace
+and let Terraform rewrite the state.
 
 ---
 
@@ -457,12 +471,16 @@ the find-and-replace step and let Terraform manage the state rewrite.
 | time | `hashicorp/time` | 0.13.0 |
 | itunessearchapi | `neilmartin83/itunessearchapi` | 0.1.0 |
 
-The `itunessearchapi` provider is a community-maintained provider, not a Jamf
-product. It is used to fetch app metadata (name, version, bundle ID, icon URL)
-from the iTunes Search API at plan time, removing the need to pin those values
-manually. It is not required for any Jamf Pro functionality
-and can be removed along with `mac_applications.tf` and
-`mobile_device_applications.tf` if preferred.
+The Deployment Theory jamfpro community provider is built and maintained by
+Deployment Theory. Jamf does not own or support it. For a vendor-owned
+alternative, see the [`ref-jamfplatform`](https://github.com/Jamf-Concepts/terraform-jamf-platform/tree/ref-jamfplatform)
+branch.
+
+The `itunessearchapi` provider is also community-maintained, not a Jamf
+product. It fetches app metadata (name, version, bundle ID, icon URL) from the
+iTunes Search API at plan time, so you do not pin those values by hand. No Jamf
+Pro functionality depends on it. Remove it along with `mac_applications.tf` and
+`mobile_device_applications.tf` if you prefer.
 
 Provider version constraints are declared in `modules/jamfpro/terraform.tf`.
 Run `terraform init -upgrade` to update to newer versions within the
@@ -472,43 +490,46 @@ constraints.
 
 ## Troubleshooting
 
-**`Error: 429 Too Many Requests`** — the Jamf Pro API is rate-limiting you
-even with `-parallelism=1`. The provider retries internally but occasionally
-surfaces the error. Re-run `terraform apply` and it usually resolves.
+Jamf does not support the community providers. Report provider bugs to their
+maintainers, for example in the
+[deploymenttheory/terraform-provider-jamfpro](https://github.com/deploymenttheory/terraform-provider-jamfpro/issues)
+repository.
 
-**`Error: invalid OAuth2 token` mid-apply** — the access token expired
-during a long-running apply. The provider refreshes automatically but
-timing edge cases exist. Re-run `terraform apply`; Terraform picks up where
-it left off using state.
+**`Error: 429 Too Many Requests`**: the Jamf Pro API is rate-limiting you
+even with `-parallelism=1`. The provider retries but sometimes
+surfaces the error. Re-run `terraform apply`.
 
-**`Error: encoded_token is invalid`** on the device enrollment resource —
-the `.p7m` file is being passed as raw content instead of base64. Confirm
+**`Error: invalid OAuth2 token` mid-apply**: the access token expired during a
+long-running apply. The provider refreshes tokens, but timing edge cases exist.
+Re-run `terraform apply`; Terraform resumes from state.
+
+**`Error: encoded_token is invalid`** on the device enrollment resource: the
+`.p7m` file reached the provider as raw content instead of base64. Confirm
 `environments/dev/main.tf` uses `filebase64()` for the ADE token, not
 `file()`.
 
-**Postcondition failed on volume_purchasing_locations** — the async VPP
-content sync did not complete in 2 minutes. Open the VPP location in Jamf
-Pro and wait for the content list to populate, then re-run `terraform apply`.
+**Postcondition failed on volume_purchasing_locations**: the async VPP content
+sync did not finish within 2 minutes. Open the VPP location in Jamf Pro, wait
+for the content list to populate, then re-run `terraform apply`.
 
-**`Error: state locked`** — a previous run crashed without releasing the
-state lock. The error message includes a lock ID. Run
-`terraform force-unlock <ID>` to clear it. Only do this if you are sure
-no other apply is in progress.
+**`Error: state locked`**: a previous run crashed without releasing the state
+lock. The error message includes a lock ID. Run `terraform force-unlock <ID>`
+to clear it, but only if no other apply is in progress.
 
-**`terraform plan` shows changes you did not make** — someone has edited a
-resource in the Jamf Pro UI. Either revert the manual change in the UI or
-update the HCL to match. Resources should be managed in one place, not
-both.
+**`terraform plan` shows changes you did not make**: someone edited a resource
+in the Jamf Pro UI. Revert the manual change in the UI or update the HCL to
+match. Manage each resource in one place, not both.
 
-**Different provider versions on different machines** — the
-`.terraform.lock.hcl` is gitignored in this repository (see [CONTRIBUTING.md](CONTRIBUTING.md)
-for the rationale). Run `terraform init -upgrade` on each machine to align
-on the latest version that satisfies the constraints in `terraform.tf`.
+**Different provider versions on different machines**: `.terraform.lock.hcl`
+is gitignored in this repository (see [CONTRIBUTING.md](CONTRIBUTING.md) for
+the rationale). Run `terraform init -upgrade` on each machine to align on the
+latest version that satisfies the constraints in `terraform.tf`.
 
 ---
 
 ## Further reading
 
-- [Resources for getting started with Terraform and Jamf](https://concepts.jamf.com/guides/infrastructure-as-code/resources-for-getting-started-with-terraform-and-jamf/) — curated learning resources for Jamf admins new to IaC
-- [Managing Jamf configuration with Terraform: an introduction](https://concepts.jamf.com/guides/infrastructure-as-code/managing-jamf-configuration-with-terraform-an-introduction/) — hands-on walkthrough using the Jamf Pro provider
-- [Adopting Terraform for Jamf with jamformer](https://concepts.jamf.com/guides/infrastructure-as-code/adopting-terraform-for-jamf-with-jamformer/) — using jamformer to bootstrap from an existing tenant
+- [`ref-jamfplatform` branch](https://github.com/Jamf-Concepts/terraform-jamf-platform/tree/ref-jamfplatform): the vendor-owned, first-party equivalent of this layout, built on Jamf's own provider
+- [Resources for getting started with Terraform and Jamf](https://concepts.jamf.com/guides/infrastructure-as-code/resources-for-getting-started-with-terraform-and-jamf/): curated learning resources for Jamf admins new to IaC
+- [Managing Jamf configuration with Terraform: an introduction](https://concepts.jamf.com/guides/infrastructure-as-code/managing-jamf-configuration-with-terraform-an-introduction/): hands-on walkthrough using the Jamf Pro provider
+- [Adopting Terraform for Jamf with jamformer](https://concepts.jamf.com/guides/infrastructure-as-code/adopting-terraform-for-jamf-with-jamformer/): using jamformer to bootstrap from an existing tenant
