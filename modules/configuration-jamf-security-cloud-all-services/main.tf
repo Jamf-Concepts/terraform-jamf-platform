@@ -110,23 +110,40 @@ resource "null_resource" "deploy_activation_profile" {
         -d "grant_type=client_credentials&client_id=$JAMFPLATFORM_CLIENT_ID&client_secret=$JAMFPLATFORM_CLIENT_SECRET" \
         | jq -r '.access_token')
 
+      # The UEM Connect connector this depends on (see uem_connect_dependency
+      # above) can report created in Terraform before JSC's backend has
+      # actually indexed it -- deploy-to-uem 404s with "Config doesn't exist
+      # for customer" in that window. Retry on 404 only; any other status is
+      # a real failure and fails fast.
       deploy() {
         platform="$1"
         group="$2"
-        body_file=$(mktemp)
-        status=$(curl -s -o "$body_file" -w '%%{http_code}' -X POST \
-          "$BASE_URL/securitycloud/uem-connect/v1/activation-profiles/$ACTIVATION_PROFILE_CODE/deploy-to-uem" \
-          -H "Authorization: Bearer $TOKEN" \
-          -H "X-Environment-Id: $JAMFPLATFORM_ENVIRONMENT_ID" \
-          -H "Content-Type: application/json" \
-          -d "$(jq -n --arg platform "$platform" --arg group "$group" '{uem: "JAMF", platform: $platform, uemGroups: [$group]}')")
-        if [ "$status" != "204" ]; then
+        attempt=1
+        max_attempts=6
+        while :; do
+          body_file=$(mktemp)
+          status=$(curl -s -o "$body_file" -w '%%{http_code}' -X POST \
+            "$BASE_URL/securitycloud/uem-connect/v1/activation-profiles/$ACTIVATION_PROFILE_CODE/deploy-to-uem" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "X-Environment-Id: $JAMFPLATFORM_ENVIRONMENT_ID" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg platform "$platform" --arg group "$group" '{uem: "JAMF", platform: $platform, uemGroups: [$group]}')")
+          if [ "$status" = "204" ]; then
+            rm -f "$body_file"
+            return 0
+          fi
+          if [ "$status" = "404" ] && [ "$attempt" -lt "$max_attempts" ]; then
+            echo "Activation profile deploy for platform=$platform got 404 (UEM Connect config not indexed yet), retrying in 10s (attempt $attempt/$max_attempts)..." >&2
+            rm -f "$body_file"
+            attempt=$((attempt + 1))
+            sleep 10
+            continue
+          fi
           echo "Activation profile deploy failed for platform=$platform (HTTP $status):" >&2
           cat "$body_file" >&2
           rm -f "$body_file"
           exit 1
-        fi
-        rm -f "$body_file"
+        done
       }
 
       deploy "SUPERVISED_MAC" "$MAC_GROUP_ID"
