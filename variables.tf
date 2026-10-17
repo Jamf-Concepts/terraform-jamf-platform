@@ -636,6 +636,12 @@ variable "app_installers" {
   default     = []
 }
 
+variable "app_store_urls" {
+  description = "App Store URLs for mobile device apps to create (VPP-distributed, Self Service), e.g. https://apps.apple.com/us/app/slack/id618783545"
+  type        = list(string)
+  default     = []
+}
+
 variable "google_chrome_cloud_management_enrollment_token" {
   description = "The enrollment token for Google Chrome Cloud Management"
   type        = string
