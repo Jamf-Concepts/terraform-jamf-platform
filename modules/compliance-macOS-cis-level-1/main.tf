@@ -215,6 +215,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_cis_lvl1_audit" {
     scripts = [
       {
         id          = jamfplatform_pro_script.script_sonoma_cis_lvl1_compliance.id
+        priority    = "After"
         parameter_4 = "--check"
       },
     ]
@@ -257,6 +258,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_cis_lvl1_remediation" {
     scripts = [
       {
         id          = jamfplatform_pro_script.script_sonoma_cis_lvl1_compliance.id
+        priority    = "After"
         parameter_4 = "--check"
         parameter_5 = "--fix"
         parameter_6 = "--check"
@@ -301,6 +303,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_cis_lvl1_audit" {
     scripts = [
       {
         id          = jamfplatform_pro_script.script_sequoia_cis_lvl1_compliance.id
+        priority    = "After"
         parameter_4 = "--check"
       },
     ]
@@ -343,6 +346,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_cis_lvl1_remediation" {
     scripts = [
       {
         id          = jamfplatform_pro_script.script_sequoia_cis_lvl1_compliance.id
+        priority    = "After"
         parameter_4 = "--check"
         parameter_5 = "--fix"
         parameter_6 = "--check"
@@ -387,6 +391,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_cis_lvl1_audit" {
     scripts = [
       {
         id          = jamfplatform_pro_script.script_tahoe_cis_lvl1_compliance.id
+        priority    = "After"
         parameter_4 = "--check"
       },
     ]
@@ -429,6 +434,7 @@ resource "jamfplatform_pro_policy" "policy_tahoe_cis_lvl1_remediation" {
     scripts = [
       {
         id          = jamfplatform_pro_script.script_tahoe_cis_lvl1_compliance.id
+        priority    = "After"
         parameter_4 = "--check"
         parameter_5 = "--fix"
         parameter_6 = "--check"

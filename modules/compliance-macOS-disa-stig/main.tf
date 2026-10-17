@@ -165,6 +165,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_stig_audit" {
     scripts = [
       {
         id         = jamfplatform_pro_script.script_sonoma_stig_compliance.id
+        priority   = "After"
         parameter4 = "--check"
       },
     ]
@@ -207,6 +208,7 @@ resource "jamfplatform_pro_policy" "policy_sonoma_stig_remediation" {
     scripts = [
       {
         id         = jamfplatform_pro_script.script_sonoma_stig_compliance.id
+        priority   = "After"
         parameter4 = "--check"
         parameter5 = "--fix"
         parameter6 = "--check"
@@ -251,6 +253,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_stig_audit" {
     scripts = [
       {
         id         = jamfplatform_pro_script.script_sequoia_stig_compliance.id
+        priority   = "After"
         parameter4 = "--check"
       },
     ]
@@ -293,6 +296,7 @@ resource "jamfplatform_pro_policy" "policy_sequoia_stig_remediation" {
     scripts = [
       {
         id         = jamfplatform_pro_script.script_sequoia_stig_compliance.id
+        priority   = "After"
         parameter4 = "--check"
         parameter5 = "--fix"
         parameter6 = "--check"
