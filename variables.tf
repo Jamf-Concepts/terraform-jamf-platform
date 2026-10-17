@@ -642,6 +642,12 @@ variable "app_store_urls" {
   default     = []
 }
 
+variable "vpp_license_available_urls" {
+  description = "Subset of app_store_urls the caller has confirmed already have an unassigned Volume Purchasing license in this environment -- only these get auto-assigned via VPP. See modules/onboarder-app-store-apps for why."
+  type        = list(string)
+  default     = []
+}
+
 variable "google_chrome_cloud_management_enrollment_token" {
   description = "The enrollment token for Google Chrome Cloud Management"
   type        = string

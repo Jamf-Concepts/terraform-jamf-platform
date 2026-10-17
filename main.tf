@@ -25,9 +25,10 @@ module "onboarder-app-installers" {
 }
 
 module "onboarder-app-store-apps" {
-  count          = length(var.app_store_urls) > 0 ? 1 : 0
-  source         = "./modules/onboarder-app-store-apps"
-  app_store_urls = var.app_store_urls
+  count                      = length(var.app_store_urls) > 0 ? 1 : 0
+  source                     = "./modules/onboarder-app-store-apps"
+  app_store_urls             = var.app_store_urls
+  vpp_license_available_urls = var.vpp_license_available_urls
   providers = {
     jamfplatform.jpro = jamfplatform.jpro
   }

@@ -12,7 +12,8 @@ terraform {
 locals {
   # for_each needs a stable, unique key per app; the URL itself is unique
   # across the selected set and doubles as that key.
-  app_store_urls = toset(var.app_store_urls)
+  app_store_urls             = toset(var.app_store_urls)
+  vpp_license_available_urls = toset(var.vpp_license_available_urls)
 }
 
 ## Resolve each selected App Store URL into name/version/bundle_id/icon --
@@ -61,8 +62,10 @@ resource "jamfplatform_pro_mobile_device_app" "mobile" {
   }
 
   # assign_vpp_device_based_licenses is rejected outright for a title that
-  # isn't actually VPP-backed, so only ever set it when the listing says so.
-  vpp = each.value.vpp_device_based_licensing ? {
+  # isn't actually VPP-backed, or one this environment has no unassigned
+  # license for (409 "App is not available for device assignment") -- only
+  # ever set it when both are true.
+  vpp = (each.value.vpp_device_based_licensing && contains(local.vpp_license_available_urls, each.key)) ? {
     assign_vpp_device_based_licenses = true
   } : null
 
